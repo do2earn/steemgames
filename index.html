@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Discover games built on the Steem blockchain. Explore game details, stats and rankings, and vote daily.">
+  <meta name="application-name" content="Steem Games">
+  <meta name="robots" content="index,follow">
+  <title>Steem Games | Steem Blockchain Game Directory</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
+  <script type="module" src="assets/js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Steem Games home">
+      <img src="assets/images/steemgames-logo.png" alt="" onerror="this.hidden=true">
+      <span>STEEM <b>GAMES</b></span>
+    </a>
+    <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav id="mainMenu" class="menu" hidden>
+      <a href="#games">🎮 Games Directory</a>
+      <a href="#rankings">🏆 Rankings</a>
+      <a href="#about">ℹ️ About</a>
+      <button id="menuLoginButton" type="button">🔐 Login</button>
+      <button id="logoutButton" type="button" hidden>Logout</button>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">DISCOVER • PLAY • SUPPORT</p>
+      <h1>Steem Games</h1>
+      <p>Explore games built on the Steem blockchain. Browse the directory freely — sign in only when you want to vote.</p>
+      <div class="hero-stats" id="directoryStats" aria-live="polite">
+        <div><strong id="gameCount">—</strong><span>Games</span></div>
+        <div><strong id="voteCount">—</strong><span>Votes</span></div>
+        <div><strong id="voterCount">—</strong><span>Community</span></div>
+      </div>
+    </section>
+
+    <section id="games" class="section">
+      <div class="section-heading">
+        <div><p class="eyebrow">THE DIRECTORY</p><h2>Explore Games</h2></div>
+        <label class="search"><span class="sr-only">Search games</span><input id="gameSearch" type="search" placeholder="Search games…" autocomplete="off"></label>
+      </div>
+      <div id="gamesStatus" class="status" role="status">Loading games…</div>
+      <div id="gamesGrid" class="games-grid"></div>
+    </section>
+
+    <section id="rankings" class="section">
+      <div class="section-heading"><div><p class="eyebrow">COMMUNITY PICKS</p><h2>Top Games</h2></div></div>
+      <div id="rankingsList" class="rankings-list"><p class="muted">Rankings will appear when game data is available.</p></div>
+    </section>
+
+    <section id="about" class="about section">
+      <p class="eyebrow">ABOUT THE PROJECT</p>
+      <h2>One home for Steem games</h2>
+      <p>Steem Games is a community directory for discovering games, exploring their details, and supporting them with daily votes.</p>
+    </section>
+  </main>
+
+  <footer class="footer"><a href="https://do2earn.dev" target="_blank" rel="noopener noreferrer">Do2Earn</a><span>Steem Games</span></footer>
+
+  <dialog id="loginDialog" class="login-dialog" aria-labelledby="loginTitle">
+    <form id="loginForm" class="login-form">
+      <button class="dialog-close" type="button" id="closeLogin" aria-label="Close login">×</button>
+      <p class="eyebrow">ACCOUNT</p>
+      <h2 id="loginTitle">Login to Steem Games</h2>
+      <p class="muted">The directory is public. Login is only needed for actions such as voting.</p>
+      <label for="loginMethod">Login Method</label>
+      <select id="loginMethod" name="loginMethod">
+        <option value="keychain">Steem Keychain</option>
+        <option value="postingKey" selected>Steem Posting Key</option>
+      </select>
+      <label for="usernameInput">Steem Username</label>
+      <input id="usernameInput" name="username" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9.-]{3,32}" required>
+      <div id="postingKeyFields">
+        <label for="postingKeyInput">Posting Key</label>
+        <input id="postingKeyInput" name="postingKey" type="password" autocomplete="off" spellcheck="false">
+        <small>Your Posting Key is checked and never saved.</small>
+      </div>
+      <button id="loginButton" class="button primary" type="submit">Login</button>
+      <p id="loginFeedback" class="status" role="status" aria-live="polite"></p>
+      <a class="signup" href="https://signup.steemit.com/" target="_blank" rel="noopener noreferrer">Don't have a Steem account? Create one.</a>
+    </form>
+  </dialog>
+  <dialog id="voteDialog" class="vote-dialog" aria-labelledby="voteTitle">
+    <form method="dialog" class="vote-form">
+      <h2 id="voteTitle">Vote for this game</h2>
+      <p id="voteMessage">Sign in to vote once for this game today and earn 2 D2E.</p>
+      <div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button id="voteLoginButton" class="button primary" type="button">Login to Vote</button></div>
+    </form>
+  </dialog>
+</body>
+</html>
