@@ -94,34 +94,7 @@
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script type="module" src="assets/js/app.js"></script>
-  <script>
-    (() => {
-        const apiBase = window.STEEM_GAMES_API_URL || '';
-        const gamesEl = document.getElementById('sgIntroGames');
-        const playersEl = document.getElementById('sgIntroPlayers');
-        const postsEl = document.getElementById('sgIntroPosts');
-        if (!apiBase) return;
-    
-        // Optional aggregate endpoint can provide authoritative totals.
-        fetch(apiBase + '/api/stats', { cache: 'no-store' })
-          .then(response => {
-            if (!response.ok) throw new Error('Stats endpoint unavailable');
-            return response.json();
-          })
-          .then(data => {
-            const stats = data.stats || data;
-            const games = Number(stats.games ?? stats.game_count);
-            const players = Number(stats.players ?? stats.player_count);
-            const posts = Number(stats.posts ?? stats.post_count);
-            if (Number.isFinite(games)) gamesEl.textContent = games.toLocaleString();
-            if (Number.isFinite(players)) playersEl.textContent = players.toLocaleString();
-            if (Number.isFinite(posts)) postsEl.textContent = posts.toLocaleString();
-          })
-          .catch(() => {
-            // Keep the requested display values until a real stats endpoint is available.
-          });
-      })();
-  </script>
+
 </head>
 <body>
   <header class="topbar">
@@ -230,5 +203,33 @@
       <div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button id="voteLoginButton" class="button primary" type="button">Login to Vote</button></div>
     </form>
   </dialog>
+  <script>
+    (() => {
+        const apiBase = window.STEEM_GAMES_API_URL || '';
+        const gamesEl = document.getElementById('sgIntroGames');
+        const playersEl = document.getElementById('sgIntroPlayers');
+        const postsEl = document.getElementById('sgIntroPosts');
+        if (!apiBase) return;
+    
+        // Optional aggregate endpoint can provide authoritative totals.
+        fetch(apiBase + '/api/stats', { cache: 'no-store' })
+          .then(response => {
+            if (!response.ok) throw new Error('Stats endpoint unavailable');
+            return response.json();
+          })
+          .then(data => {
+            const stats = data.stats || data;
+            const games = Number(stats.games ?? stats.game_count);
+            const players = Number(stats.players ?? stats.player_count);
+            const posts = Number(stats.posts ?? stats.post_count);
+            if (Number.isFinite(games)) gamesEl.textContent = games.toLocaleString();
+            if (Number.isFinite(players)) playersEl.textContent = players.toLocaleString();
+            if (Number.isFinite(posts)) postsEl.textContent = posts.toLocaleString();
+          })
+          .catch(() => {
+            // Keep the requested display values until a real stats endpoint is available.
+          });
+      })();
+  </script>
 </body>
 </html>
