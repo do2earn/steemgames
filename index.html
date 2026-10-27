@@ -9,9 +9,119 @@
   <meta name="robots" content="index,follow">
   <title>Steem Games | Steem Blockchain Game Directory</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .sg-intro-card {
+        --sg-ink: #172033;
+        --sg-blue: #2563eb;
+        box-sizing: border-box;
+        width: 100%;
+        padding: clamp(20px, 4vw, 42px);
+        border: 1px solid #e5e9f0;
+        border-radius: 22px;
+        background: #fff;
+        color: var(--sg-ink);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(18, 32, 60, .07);
+      }
+      .sg-intro-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(10px, 2vw, 22px);
+      }
+      .sg-intro-logo {
+        display: block;
+        flex: 0 0 auto;
+        width: clamp(54px, 12vw, 128px);
+        height: clamp(54px, 12vw, 128px);
+        object-fit: contain;
+      }
+      .sg-intro-brand h1 {
+        margin: 0;
+        color: #f0b323;
+        font-family: Impact, Haettenschweiler, "Arial Black", fantasy, sans-serif;
+        font-size: clamp(2.2rem, 9vw, 128px);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -.045em;
+        text-shadow: 2px 3px 0 #8b5e13, 0 5px 16px rgba(240, 179, 35, .18);
+      }
+      .sg-intro-tagline {
+        margin: 14px 0 0;
+        color: var(--sg-blue);
+        font-size: clamp(.95rem, 2.4vw, 1.2rem);
+        font-weight: 800;
+        letter-spacing: .12em;
+      }
+      .sg-intro-messages {
+        display: grid;
+        gap: 9px;
+        margin: clamp(24px, 4vw, 38px) auto 0;
+        width: fit-content;
+        max-width: 100%;
+        text-align: left;
+        font-size: clamp(.9rem, 2.4vw, 1.05rem);
+      }
+      .sg-intro-messages p { margin: 0; }
+      .sg-intro-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: clamp(8px, 2vw, 20px);
+        margin: clamp(26px, 4vw, 40px) auto 0;
+        max-width: 760px;
+      }
+      .sg-intro-stat {
+        display: grid;
+        gap: 2px;
+        padding: 12px 8px;
+        border: 1px solid #e5e9f0;
+        border-radius: 14px;
+        background: #f5f7fb;
+      }
+      .sg-intro-stat strong {
+        color: var(--sg-blue);
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+      }
+      .sg-intro-stat span { color: #667085; font-size: .9rem; }
+      @media (max-width: 420px) {
+        .sg-intro-brand { gap: 8px; }
+        .sg-intro-brand h1 { letter-spacing: -.06em; }
+        .sg-intro-messages { width: 100%; }
+      }
+  </style>
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script type="module" src="assets/js/app.js"></script>
+  <script>
+    (() => {
+        const apiBase = window.STEEM_GAMES_API_URL || '';
+        const gamesEl = document.getElementById('sgIntroGames');
+        const playersEl = document.getElementById('sgIntroPlayers');
+        const postsEl = document.getElementById('sgIntroPosts');
+        if (!apiBase) return;
+    
+        // Optional aggregate endpoint can provide authoritative totals.
+        fetch(apiBase + '/api/stats', { cache: 'no-store' })
+          .then(response => {
+            if (!response.ok) throw new Error('Stats endpoint unavailable');
+            return response.json();
+          })
+          .then(data => {
+            const stats = data.stats || data;
+            const games = Number(stats.games ?? stats.game_count);
+            const players = Number(stats.players ?? stats.player_count);
+            const posts = Number(stats.posts ?? stats.post_count);
+            if (Number.isFinite(games)) gamesEl.textContent = games.toLocaleString();
+            if (Number.isFinite(players)) playersEl.textContent = players.toLocaleString();
+            if (Number.isFinite(posts)) postsEl.textContent = posts.toLocaleString();
+          })
+          .catch(() => {
+            // Keep the requested display values until a real stats endpoint is available.
+          });
+      })();
+  </script>
 </head>
 <body>
   <header class="topbar">
@@ -30,14 +140,40 @@
   </header>
 
   <main class="page">
-    <section class="hero">
-      <p class="eyebrow">DISCOVER • PLAY • SUPPORT</p>
-      <h1>Steem Games</h1>
-      <p>Explore games built on the Steem blockchain. Browse the directory freely — sign in only when you want to vote.</p>
-      <div class="hero-stats" id="directoryStats" aria-live="polite">
-        <div><strong id="gameCount">—</strong><span>Games</span></div>
-        <div><strong id="voteCount">—</strong><span>Votes</span></div>
-        <div><strong id="voterCount">—</strong><span>Community</span></div>
+    <section class="sg-intro-card" aria-labelledby="sg-intro-title">
+      <div class="sg-intro-brand">
+        <img
+          class="sg-intro-logo"
+          src="assets/images/steemgames_logo.png"
+          alt="Steem Games logo"
+          width="128"
+          height="128"
+          onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/do2earn/steemgames/88b0388ea6a4b90aaae63be6586a9b43e8f1ffb2/assets/images/steemgames_logo.png';"
+        >
+        <h1 id="sg-intro-title">Steem Games</h1>
+      </div>
+    
+      <p class="sg-intro-tagline">• Vote • Play • Earn •</p>
+    
+      <div class="sg-intro-messages">
+        <p>✅ Vote the Steem Games &amp; Earn D2E</p>
+        <p>🎮 Play the Steem Games &amp; Earn $STEEM</p>
+        <p>📝 Publish the Gameplay Content &amp; Earn $Steem</p>
+      </div>
+    
+      <div class="sg-intro-stats" aria-label="Steem Games statistics" aria-live="polite">
+        <div class="sg-intro-stat">
+          <strong id="sgIntroGames">16</strong>
+          <span>Games</span>
+        </div>
+        <div class="sg-intro-stat">
+          <strong id="sgIntroPlayers">300</strong>
+          <span>Players</span>
+        </div>
+        <div class="sg-intro-stat">
+          <strong id="sgIntroPosts">5000</strong>
+          <span>Posts</span>
+        </div>
       </div>
     </section>
 
