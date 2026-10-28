@@ -8,7 +8,7 @@
 import { steemRpc } from "./steem-api.js";
 
 const PAGE_SIZE = 100;
-const PAGES_PER_GAME_PER_RUN = 2;
+const PAGES_PER_GAME_PER_RUN = 1;
 const REFRESH_HOURS = 6;
 const LOCK_MINUTES = 20;
 
