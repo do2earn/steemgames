@@ -42,7 +42,7 @@ export default {
         const result = await env.DB.prepare(
           "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames WHERE is_active = 1 ORDER BY points DESC, game_name COLLATE NOCASE ASC"
         ).all();
-        return json(request, { success: true, games: result.results || [] });
+        return json(request, { success: true, stats_engine: "steemworld-offset-v2", games: result.results || [] });
       }
 
       if (url.pathname === "/api/stats") {
