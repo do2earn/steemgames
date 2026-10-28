@@ -1,3 +1,5 @@
+import { refreshDueGameStats } from "./game-stats.js";
+
 const ALLOWED_ORIGINS = new Set([
   "https://steemgames.do2earn.dev",
   "https://do2earn.github.io"
@@ -28,7 +30,7 @@ export default {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
-    if (!["GET"].includes(request.method)) {
+    if (request.method !== "GET") {
       return json(request, { success: false, error: "METHOD_NOT_ALLOWED" }, 405);
     }
     if (!env.DB) {
@@ -38,7 +40,7 @@ export default {
     try {
       if (url.pathname === "/api/games") {
         const result = await env.DB.prepare(
-          "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active FROM steemgames WHERE is_active = 1 ORDER BY points DESC, game_name COLLATE NOCASE ASC"
+          "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames WHERE is_active = 1 ORDER BY points DESC, game_name COLLATE NOCASE ASC"
         ).all();
         return json(request, { success: true, games: result.results || [] });
       }
@@ -58,5 +60,26 @@ export default {
       });
       return json(request, { success: false, error: "DATABASE_QUERY_FAILED" }, 500);
     }
+  },
+
+  scheduled(controller, env, ctx) {
+    if (!env.DB) {
+      console.error("Steem Games scheduled sync failed: D1 binding DB is missing");
+      return;
+    }
+    ctx.waitUntil((async () => {
+      try {
+        const result = await refreshDueGameStats(env.DB);
+        console.log("Steem Games scheduled statistics sync", JSON.stringify({
+          scheduledTime: new Date(controller.scheduledTime).toISOString(),
+          cron: controller.cron,
+          ...result
+        }));
+      } catch (error) {
+        console.error("Steem Games scheduled statistics sync failed", {
+          message: error instanceof Error ? error.message : String(error)
+        });
+      }
+    })());
   }
 };
