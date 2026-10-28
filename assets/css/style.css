@@ -160,3 +160,16 @@ main.page > #games.sg-directory-card .sg-directory{
 .sg-game-logo{display:block;width:76px;height:76px;max-width:100%;margin:0 auto;flex:none;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:#fff;padding:3px}
 @media(max-width:600px){.sg-game-logo-cell{width:72px;min-width:64px}.sg-game-logo{width:54px;height:54px;border-radius:9px;padding:2px}}
 @media(max-width:360px){.sg-game-logo-cell{width:60px;min-width:56px}.sg-game-logo{width:48px;height:48px}}
+
+
+/* Final logo presentation: no square frame, preserve each logo's natural proportions. */
+.sg-game-logo-cell{ text-align:center; width:124px; min-width:104px; }
+.sg-game-logo{ display:block; width:88px; height:88px; max-width:100%; margin:0 auto; flex:none; object-fit:contain; border:0; border-radius:0; background:transparent; padding:0; }
+@media(max-width:600px){
+  .sg-game-logo-cell{width:82px;min-width:72px}
+  .sg-game-logo{width:64px;height:64px;border:0;border-radius:0;background:transparent;padding:0}
+}
+@media(max-width:360px){
+  .sg-game-logo-cell{width:70px;min-width:62px}
+  .sg-game-logo{width:56px;height:56px}
+}
