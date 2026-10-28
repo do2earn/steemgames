@@ -9,14 +9,17 @@ This Worker belongs to the `do2earn/steemgames` project. It is separate from the
 
 ## Scheduled statistics sync
 
-Cloudflare Cron triggers the statistics job every 15 minutes. The job uses public Steem condenser RPC nodes with failover and updates each active game's:
+Cloudflare Cron triggers the statistics job **once per hour at minute 0 (UTC)**. Each run processes at most one active game's 1,000-post page, rotating fairly between games. This limits API traffic and D1 writes; historical backfill is incremental and resumable.
 
+The job uses SteemWorld's indexed tag feed at `https://sds0.steemworld.org` and updates each active game's:
 - `posts`: indexed posts for its dedicated Steem tag.
 - `users`: distinct authors across those posts.
 - `votes`: votes recorded in the Steem Games directory table `steemgames_votes`.
-- `points`: `posts + users + (votes × 0.1)`.
+- `points`: calculated as `posts + users + (votes × 0.1)`.
 
-A historical scan advances in batches and persists its cursor in D1. Once the historical scan completes, subsequent refreshes look for new posts and are throttled to six hours unless an incremental scan is still in progress. Post records and scan-state tables are created with `CREATE TABLE IF NOT EXISTS` by the Worker; no manual D1 migration is required. A D1 lease lock prevents overlapping sync jobs.
+Post counts, unique-author counts, and vote counts are refreshed from the indexed data. The stored `points` value is a high-water mark: it is updated only when the newly calculated score is greater than the existing database value; it is never reduced by a smaller later snapshot. Exact decimal values are stored and used for ranking.
+
+Once historical backfill completes, new-post scans are throttled to a six-hour refresh interval. A D1 lease lock prevents overlapping sync jobs, and API errors do not reset valid stored data.
 
 The Worker uses the existing shared D1 database named `do2earn`. It does not alter or connect to Steem Flags. Statistics sync is read-only with respect to the Steem blockchain; it only writes derived statistics into D1.
 
