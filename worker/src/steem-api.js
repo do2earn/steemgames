@@ -5,8 +5,7 @@
 const STEEM_API_NODES = [
   "https://api.steemit.com",
   "https://steemd.minnowsupportproject.org",
-  "https://steemd.privex.io",
-  "https://steemd.steemgigs.org"
+  "https://steemd.privex.io"
 ];
 
 const REQUEST_TIMEOUT_MS = 3000;
