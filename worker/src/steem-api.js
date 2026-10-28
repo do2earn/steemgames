@@ -8,7 +8,7 @@ const STEEM_API_NODES = [
   "https://steemd.privex.io"
 ];
 
-const REQUEST_TIMEOUT_MS = 3000;
+const REQUEST_TIMEOUT_MS = 5000;
 let preferredNode = 0;
 
 export async function steemRpc(method, params) {
