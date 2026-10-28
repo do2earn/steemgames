@@ -143,8 +143,8 @@ async function updateAggregate(db, gameId, markSynced) {
     users,
     votes,
     calculatedPoints: points,
-    points: Number(current?.points ?? points),
-      };
+    points: Number(current?.points ?? points)
+  };
 }
 
 async function getState(db, gameId) {
@@ -191,7 +191,7 @@ async function setState(db, gameId, patch) {
 function utcMillis(value) {
   if (!value) return NaN;
   let normalized = value.includes("T") ? value : value.replace(" ", "T");
-  if (!/(Z|[+-]\\d{2}:?\\d{2})$/.test(normalized)) normalized += "Z";
+  if (!/(Z|[+-]\d{2}:?\d{2})$/.test(normalized)) normalized += "Z";
   return Date.parse(normalized);
 }
 
