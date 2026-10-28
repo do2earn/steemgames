@@ -144,8 +144,7 @@ async function updateAggregate(db, gameId, markSynced) {
     votes,
     calculatedPoints: points,
     points: Number(current?.points ?? points),
-    pointsRaised: Number(current?.points ?? points) > points ? false : Number(current?.points ?? points) === points
-  };
+      };
 }
 
 async function getState(db, gameId) {
