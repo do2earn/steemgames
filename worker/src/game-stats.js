@@ -8,7 +8,7 @@
 const STEEMWORLD_BASE = "https://sds0.steemworld.org";
 const PAGE_SIZE = 1000;
 const PAGE_OVERLAP = 5;
-const PAGES_PER_GAME_PER_RUN = 2;
+const PAGES_PER_GAME_PER_RUN = 3;
 const REFRESH_HOURS = 6;
 const LOCK_MINUTES = 20;
 const STATE_CURSOR_VERSION = "steemworld-offset-v2";
@@ -206,8 +206,9 @@ async function processGame(db, game) {
   let page = [];
   let pages = 0;
 
-  // Process two 1,000-post pages per game per scheduled run while staying within
-  // conservative Worker subrequest budgets. The overlap prevents gaps
+  // Process up to three 1,000-post pages per game per scheduled run (45 external
+  // feed requests maximum for 15 active games, below the Free-plan limit of 50).
+  // The overlap prevents gaps
   // if the source feed changes while historical backfill is in progress.
   for (let pageIndex = 0; pageIndex < PAGES_PER_GAME_PER_RUN; pageIndex += 1) {
     page = await getPage(game.tag, offset);
