@@ -52,6 +52,10 @@ export default {
 
       return json(request, { success: false, error: "NOT_FOUND" }, 404);
     } catch (error) {
+      console.error("Steem Games API database query failed", {
+        path: url.pathname,
+        message: error instanceof Error ? error.message : String(error)
+      });
       return json(request, { success: false, error: "DATABASE_QUERY_FAILED" }, 500);
     }
   }
