@@ -68,3 +68,30 @@
   main.page{width:calc(100% - 6px)}
   #games .sg-directory{padding:4px}
 }
+
+
+/* Consistent homepage card styling: match the directory and content cards to the intro card. */
+main.page > section:not(.sg-intro-card){
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+  padding:24px;
+  margin:18px 0;
+}
+main.page > #games.sg-directory-card{padding:24px}
+main.page > #about.about{background:var(--surface);margin:18px 0;padding:24px}
+@media(max-width:600px){
+  main.page > section:not(.sg-intro-card){
+    width:100%;
+    margin:12px 0;
+    padding:14px 10px;
+    border-radius:16px;
+  }
+  main.page > #games.sg-directory-card{padding:12px 6px}
+  main.page > #about.about{padding:14px 10px}
+}
+@media(max-width:360px){
+  main.page > section:not(.sg-intro-card){padding:12px 7px}
+  main.page > #games.sg-directory-card{padding:10px 4px}
+}
