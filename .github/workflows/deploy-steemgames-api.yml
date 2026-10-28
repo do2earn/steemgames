@@ -48,7 +48,7 @@ jobs:
           echo "Checking /api/games..."
           curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors \
             "$base/api/games" -o /tmp/steemgames.json
-          jq -e '.success == true and .stats_engine == "steemworld-offset-v2" and (.games | type == "array")' /tmp/steemgames.json >/dev/null
+          jq -e '.success == true and .stats_engine == "steemworld-offset-v3" and (.games | type == "array")' /tmp/steemgames.json >/dev/null
           jq '{success, game_count: (.games | length), sample: [.games[:2][] | {game_name, points, posts, users, votes, stats_synced_at}]}' /tmp/steemgames.json
 
           echo "Checking /api/stats..."
