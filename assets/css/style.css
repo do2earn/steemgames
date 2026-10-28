@@ -54,3 +54,17 @@
   .sg-row-actions{min-width:56px}
   .sg-vote-button,.sg-play-button,.sg-info-button{padding:5px 4px;font-size:.66rem}
 }
+
+
+/* Tighten the second homepage card against the mobile viewport edges. */
+@media(max-width:600px){
+  main.page{width:calc(100% - 8px);margin-left:auto;margin-right:auto}
+  #games.sg-directory-card{width:100%;padding-left:0;padding-right:0;margin-left:0;margin-right:0}
+  #games .sg-directory{width:100%;max-width:none;margin:0;padding:6px;border-radius:12px}
+  #games .sg-directory-heading{padding:0 2px}
+  #games .sg-table-wrap{width:100%;max-width:100%}
+}
+@media(max-width:360px){
+  main.page{width:calc(100% - 6px)}
+  #games .sg-directory{padding:4px}
+}
