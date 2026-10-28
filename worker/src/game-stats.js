@@ -1,16 +1,16 @@
 /**
  * Steem Games statistics sync.
  *
- * Posts are indexed in D1 so counts stay exact across paginated scans and
- * retries. A historical backfill advances over multiple scheduled runs;
- * later runs only scan new posts until reaching the previous high-water mark.
+ * Steem condenser_api.get_discussions_by_created only provides a recent
+ * result window and does not define cursor pagination. Use SteemWorld's
+ * indexed tag feed, which supports limit + offset, to backfill full history.
  */
-import { steemRpc } from "./steem-api.js";
-
+const STEEMWORLD_BASE = "https://sds0.steemworld.org";
 const PAGE_SIZE = 100;
-const PAGES_PER_GAME_PER_RUN = 1;
+const PAGE_OVERLAP = 5;
 const REFRESH_HOURS = 6;
 const LOCK_MINUTES = 20;
+const STATE_CURSOR_VERSION = "steemworld-offset-v1";
 
 async function ensureStatsTables(db) {
   await db.prepare(`
@@ -66,22 +66,30 @@ async function releaseLock(db, token) {
     .bind(token).run();
 }
 
-async function getPage(tag, cursorAuthor, cursorPermlink) {
+async function getPage(tag, offset) {
   if (!tag || !String(tag).trim()) return [];
-  const query = {
-    tag: String(tag).trim().replace(/^#/, ""),
-    limit: PAGE_SIZE
-  };
-  if (cursorAuthor && cursorPermlink) {
-    query.start_author = cursorAuthor;
-    query.start_permlink = cursorPermlink;
+  const cleanTag = String(tag).trim().replace(/^#/, "");
+  const url = `${STEEMWORLD_BASE}/feeds_api/getPostsByTagCreated/${encodeURIComponent(cleanTag)}/null/0/${PAGE_SIZE}/${Math.max(0, offset)}`;
+  const response = await fetch(url, {
+    headers: { "accept": "application/json" },
+    signal: AbortSignal.timeout(10000)
+  });
+  if (!response.ok) throw new Error(`STEEMWORLD_HTTP_${response.status}`);
+  const payload = await response.json();
+  if (payload?.code !== 0 || !Array.isArray(payload?.result?.rows)) {
+    throw new Error("INVALID_STEEMWORLD_FEED_RESPONSE");
   }
-  const result = await steemRpc("condenser_api.get_discussions_by_created", [query]);
-  if (!Array.isArray(result)) throw new Error("INVALID_STEEM_DISCUSSIONS_RESPONSE");
-  return result.filter(post =>
-    post && typeof post.author === "string" &&
-    typeof post.permlink === "string" && typeof post.created === "string"
-  );
+
+  // SteemWorld feed columns: author=6, permlink=7, created=8 (Unix seconds).
+  return payload.result.rows.map(row => {
+    if (!Array.isArray(row) || typeof row[6] !== "string" ||
+        typeof row[7] !== "string" || !Number.isFinite(Number(row[8]))) return null;
+    return {
+      author: row[6],
+      permlink: row[7],
+      created: new Date(Number(row[8]) * 1000).toISOString()
+    };
+  }).filter(Boolean);
 }
 
 async function savePage(db, gameId, posts) {
@@ -124,9 +132,25 @@ async function getState(db, gameId) {
     INSERT OR IGNORE INTO steemgames_stats_state (game_id, mode, baseline_created)
     VALUES (?, 'backfill', datetime('now'))
   `).bind(gameId).run();
-  return db.prepare(
+
+  let state = await db.prepare(
     "SELECT game_id, mode, cursor_author, cursor_permlink, baseline_created FROM steemgames_stats_state WHERE game_id = ?"
   ).bind(gameId).first();
+
+  // Reset old condenser cursor state once because that endpoint does not
+  // support the cursor pagination previously assumed by this worker.
+  if (state?.cursor_permlink !== STATE_CURSOR_VERSION) {
+    await db.prepare(`
+      UPDATE steemgames_stats_state
+         SET mode = 'backfill', cursor_author = '0', cursor_permlink = ?,
+             baseline_created = datetime('now'), updated_at = datetime('now')
+       WHERE game_id = ?
+    `).bind(STATE_CURSOR_VERSION, gameId).run();
+    state = await db.prepare(
+      "SELECT game_id, mode, cursor_author, cursor_permlink, baseline_created FROM steemgames_stats_state WHERE game_id = ?"
+    ).bind(gameId).first();
+  }
+  return state;
 }
 
 async function setState(db, gameId, patch) {
@@ -137,8 +161,8 @@ async function setState(db, gameId, patch) {
      WHERE game_id = ?
   `).bind(
     patch.mode,
-    patch.cursor_author || null,
-    patch.cursor_permlink || null,
+    patch.offset === null ? null : String(patch.offset),
+    STATE_CURSOR_VERSION,
     patch.baseline_created,
     gameId
   ).run();
@@ -170,77 +194,54 @@ async function processGame(db, game) {
     return { gameId: game.id, skipped: true, reason: "FRESH" };
   }
 
-  let cursorAuthor = state.cursor_author;
-  let cursorPermlink = state.cursor_permlink;
   let mode = state.mode;
+  let offset = Math.max(0, Number(state.cursor_author || 0));
   let baseline = state.baseline_created;
   let completed = false;
-  let pages = 0;
   let scanned = 0;
+  const page = await getPage(game.tag, offset);
 
-  for (let i = 0; i < PAGES_PER_GAME_PER_RUN; i += 1) {
-    const page = await getPage(game.tag, cursorAuthor, cursorPermlink);
-    pages += 1;
+  if (mode === "incremental") {
+    const baselineTime = utcMillis(baseline);
+    const boundaryIndex = page.findIndex(post => utcMillis(post.created) <= baselineTime);
+    const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
+    await savePage(db, game.id, newPosts);
+    scanned = newPosts.length;
 
-    if (mode === "incremental") {
-      const baselineTime = utcMillis(baseline);
-      const boundaryIndex = page.findIndex(post => utcMillis(post.created) <= baselineTime);
-      const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
-      await savePage(db, game.id, newPosts);
-      scanned += newPosts.length;
-
-      if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
-        if (page[0]?.created && utcMillis(page[0].created) > baselineTime) baseline = page[0].created;
-        cursorAuthor = null;
-        cursorPermlink = null;
-        completed = true;
-        await setState(db, game.id, {
-          mode: "incremental", cursor_author: null, cursor_permlink: null,
-          baseline_created: baseline
-        });
-        break;
-      }
-
-      const last = page[page.length - 1];
-      cursorAuthor = last.author;
-      cursorPermlink = last.permlink;
-      await setState(db, game.id, {
-        mode, cursor_author: cursorAuthor, cursor_permlink: cursorPermlink,
-        baseline_created: baseline
-      });
-      continue;
+    if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
+      if (page[0]?.created && utcMillis(page[0].created) > baselineTime) baseline = page[0].created;
+      offset = 0;
+      completed = true;
+    } else {
+      offset += Math.max(1, page.length - PAGE_OVERLAP);
     }
-
+  } else {
     await savePage(db, game.id, page);
-    scanned += page.length;
+    scanned = page.length;
 
     if (page.length < PAGE_SIZE) {
       mode = "incremental";
-      cursorAuthor = null;
-      cursorPermlink = null;
+      offset = 0;
       completed = true;
-      await setState(db, game.id, {
-        mode, cursor_author: null, cursor_permlink: null,
-        baseline_created: baseline
-      });
-      break;
+      if (page[0]?.created && utcMillis(page[0].created) > utcMillis(baseline)) {
+        baseline = page[0].created;
+      }
+    } else {
+      offset += Math.max(1, page.length - PAGE_OVERLAP);
     }
-
-    const last = page[page.length - 1];
-    cursorAuthor = last.author;
-    cursorPermlink = last.permlink;
-    await setState(db, game.id, {
-      mode, cursor_author: cursorAuthor, cursor_permlink: cursorPermlink,
-      baseline_created: baseline
-    });
   }
 
+  await setState(db, game.id, {
+    mode,
+    offset: completed ? null : offset,
+    baseline_created: baseline
+  });
   const totals = await updateAggregate(db, game.id, completed);
   return {
     gameId: game.id,
     gameName: game.game_name,
     mode,
-    pages,
+    offset: completed ? 0 : offset,
     scanned,
     completed,
     ...totals
