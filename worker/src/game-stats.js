@@ -52,7 +52,7 @@ async function ensureStatsTables(db) {
   `).run();
   await db.prepare(`
     INSERT OR IGNORE INTO steemgames_stats_meta (id, last_points_updated_at)
-    VALUES (1, NULL)
+    SELECT 1, MAX(stats_synced_at) FROM steemgames
   `).run();
 }
 
