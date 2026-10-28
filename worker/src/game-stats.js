@@ -8,6 +8,7 @@
 const STEEMWORLD_BASE = "https://sds0.steemworld.org";
 const PAGE_SIZE = 100;
 const PAGE_OVERLAP = 5;
+const PAGES_PER_GAME_PER_RUN = 2;
 const REFRESH_HOURS = 6;
 const LOCK_MINUTES = 20;
 const STATE_CURSOR_VERSION = "steemworld-offset-v1";
@@ -199,25 +200,35 @@ async function processGame(db, game) {
   let baseline = state.baseline_created;
   let completed = false;
   let scanned = 0;
-  const page = await getPage(game.tag, offset);
+  let page = [];
+  let pages = 0;
 
-  if (mode === "incremental") {
-    const baselineTime = utcMillis(baseline);
-    const boundaryIndex = page.findIndex(post => utcMillis(post.created) <= baselineTime);
-    const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
-    await savePage(db, game.id, newPosts);
-    scanned = newPosts.length;
+  // Process two pages per game per scheduled run while staying within
+  // conservative Worker subrequest budgets. The overlap prevents gaps
+  // if the source feed changes while historical backfill is in progress.
+  for (let pageIndex = 0; pageIndex < PAGES_PER_GAME_PER_RUN; pageIndex += 1) {
+    page = await getPage(game.tag, offset);
+    pages += 1;
+    if (mode === "incremental") {
+      const baselineTime = utcMillis(baseline);
+      const boundaryIndex = page.findIndex(post => utcMillis(post.created) <= baselineTime);
+      const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
+      await savePage(db, game.id, newPosts);
+      scanned += newPosts.length;
 
-    if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
-      if (page[0]?.created && utcMillis(page[0].created) > baselineTime) baseline = page[0].created;
-      offset = 0;
-      completed = true;
-    } else {
+      if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
+        if (page[0]?.created && utcMillis(page[0].created) > baselineTime) baseline = page[0].created;
+        offset = 0;
+        completed = true;
+        break;
+      }
+
       offset += Math.max(1, page.length - PAGE_OVERLAP);
+      continue;
     }
-  } else {
+
     await savePage(db, game.id, page);
-    scanned = page.length;
+    scanned += page.length;
 
     if (page.length < PAGE_SIZE) {
       mode = "incremental";
@@ -226,9 +237,14 @@ async function processGame(db, game) {
       if (page[0]?.created && utcMillis(page[0].created) > utcMillis(baseline)) {
         baseline = page[0].created;
       }
-    } else {
-      offset += Math.max(1, page.length - PAGE_OVERLAP);
+      break;
     }
+
+    offset += Math.max(1, page.length - PAGE_OVERLAP);
+  }
+
+  if (mode === "incremental" && completed) {
+    offset = 0;
   }
 
   await setState(db, game.id, {
@@ -241,6 +257,7 @@ async function processGame(db, game) {
     gameId: game.id,
     gameName: game.game_name,
     mode,
+    pages,
     offset: completed ? 0 : offset,
     scanned,
     completed,
