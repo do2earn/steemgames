@@ -24,6 +24,36 @@ function json(request, body, status = 200) {
   });
 }
 
+const GAME_LOGO_FILES = [
+  ["cur8games", "cur8_logo.png"],
+  ["drugwars", "drugwars_logo.png"],
+  ["hariraid", "hariraid_logo.png"],
+  ["memorygame", "memorygame_logo.png"],
+  ["pixelcraft", "pixelcraft_logo.png"],
+  ["steem4poker", "steem4poker_logo.png"],
+  ["steem4snake", "steem4snake_logo.png"],
+  ["steem8ball", "steem8ball_logo.png"],
+  ["steemarchers", "steemarchers_logo.png"],
+  ["steembingo", "steembingo_logo.png"],
+  ["steemflags", "steemflags_logo.png"],
+  ["steemheights", "steemheights_logo.png"],
+  ["steemhop", "steemhop_logo.png"],
+  ["steemludo", "steemludo_logo.png"],
+  ["steemmaze", "steemmaze_logo.png"],
+  ["steemretrogames", "steemretrogames_logo.png"]
+];
+
+async function ensureGameLogoFilenames(db) {
+  for (const [normalizedName, filename] of GAME_LOGO_FILES) {
+    await db.prepare(`
+      UPDATE steemgames
+         SET game_logo = ?
+       WHERE lower(replace(replace(replace(game_name, ' ', ''), '-', ''), '_', '')) = ?
+         AND (game_logo IS NULL OR game_logo != ?)
+    `).bind(filename, normalizedName, filename).run();
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -39,6 +69,7 @@ export default {
 
     try {
       if (url.pathname === "/api/games") {
+        await ensureGameLogoFilenames(env.DB);
         const includeInactive = url.searchParams.get("include_inactive") === "1";
         const query = includeInactive
           ? "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames ORDER BY game_name COLLATE NOCASE ASC"
@@ -79,6 +110,7 @@ export default {
     }
     ctx.waitUntil((async () => {
       try {
+        await ensureGameLogoFilenames(env.DB);
         const result = await refreshDueGameStats(env.DB);
         console.log("Steem Games scheduled statistics sync", JSON.stringify({
           scheduledTime: new Date(controller.scheduledTime).toISOString(),
