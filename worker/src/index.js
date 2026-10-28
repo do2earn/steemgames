@@ -39,9 +39,11 @@ export default {
 
     try {
       if (url.pathname === "/api/games") {
-        const result = await env.DB.prepare(
-          "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames WHERE is_active = 1 ORDER BY points DESC, game_name COLLATE NOCASE ASC"
-        ).all();
+        const includeInactive = url.searchParams.get("include_inactive") === "1";
+        const query = includeInactive
+          ? "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames ORDER BY game_name COLLATE NOCASE ASC"
+          : "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames WHERE is_active = 1 ORDER BY points DESC, game_name COLLATE NOCASE ASC";
+        const result = await env.DB.prepare(query).all();
         return json(request, { success: true, stats_engine: "steemworld-offset-v4", games: result.results || [] });
       }
 
