@@ -44,6 +44,16 @@ async function ensureStatsTables(db) {
       token TEXT NOT NULL
     )
   `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS steemgames_stats_meta (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      last_points_updated_at TEXT
+    )
+  `).run();
+  await db.prepare(`
+    INSERT OR IGNORE INTO steemgames_stats_meta (id, last_points_updated_at)
+    VALUES (1, NULL)
+  `).run();
 }
 
 async function acquireLock(db) {
@@ -119,6 +129,10 @@ async function updateAggregate(db, gameId, markSynced) {
   const users = Number(aggregate?.users || 0);
   const votes = Number(votesRow?.votes || 0);
   const points = posts + users + votes * 0.1;
+  const previous = await db.prepare(
+    "SELECT points FROM steemgames WHERE id = ? AND is_active = 1"
+  ).bind(gameId).first();
+  const pointsIncreased = points > Number(previous?.points || 0);
 
   // Posts/users/votes stay current, but points are a high-water mark:
   // never lower the leaderboard score when a later snapshot is smaller.
@@ -133,6 +147,14 @@ async function updateAggregate(db, gameId, markSynced) {
            updated_at = datetime('now')
      WHERE id = ? AND is_active = 1
   `).bind(posts, users, votes, points, points, markSynced ? 1 : 0, gameId).run();
+
+  if (pointsIncreased) {
+    await db.prepare(`
+      UPDATE steemgames_stats_meta
+         SET last_points_updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+       WHERE id = 1
+    `).run();
+  }
 
   const current = await db.prepare(
     "SELECT points FROM steemgames WHERE id = ?"
