@@ -119,3 +119,37 @@ main.page > #games.sg-directory-card > .sg-directory{
 @media(max-width:360px){
   main.page > #games.sg-directory-card{padding:12px 7px}
 }
+
+
+/* Final card fix: the directory is injected inside #steemgamesComponent, not a direct child. */
+main.page > #games.sg-directory-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+main.page > #games.sg-directory-card #steemgamesComponent{
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  padding:0;
+}
+main.page > #games.sg-directory-card .sg-directory{
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  padding:0;
+  margin:0;
+  width:100%;
+  max-width:none;
+}
+@media(max-width:600px){
+  main.page > #games.sg-directory-card{padding:14px 10px}
+  main.page > #games.sg-directory-card #steemgamesComponent,
+  main.page > #games.sg-directory-card .sg-directory{padding:0}
+}
+@media(max-width:360px){
+  main.page > #games.sg-directory-card{padding:12px 7px}
+}
