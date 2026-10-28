@@ -6,7 +6,7 @@
  * indexed tag feed, which supports limit + offset, to backfill full history.
  */
 const STEEMWORLD_BASE = "https://sds0.steemworld.org";
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 1000;
 const PAGE_OVERLAP = 5;
 const PAGES_PER_GAME_PER_RUN = 2;
 const REFRESH_HOURS = 6;
@@ -95,12 +95,15 @@ async function getPage(tag, offset) {
 
 async function savePage(db, gameId, posts) {
   if (!posts.length) return;
-  const statements = posts.map(post => db.prepare(`
-    INSERT OR IGNORE INTO steemgames_post_index
-      (game_id, author, permlink, created_at)
-    VALUES (?, ?, ?, ?)
-  `).bind(gameId, post.author, post.permlink, post.created));
-  await db.batch(statements);
+  // Keep each D1 batch modest even when the feed page contains 1,000 posts.
+  for (let start = 0; start < posts.length; start += 100) {
+    const statements = posts.slice(start, start + 100).map(post => db.prepare(`
+      INSERT OR IGNORE INTO steemgames_post_index
+        (game_id, author, permlink, created_at)
+      VALUES (?, ?, ?, ?)
+    `).bind(gameId, post.author, post.permlink, post.created));
+    await db.batch(statements);
+  }
 }
 
 async function updateAggregate(db, gameId, markSynced) {
@@ -203,7 +206,7 @@ async function processGame(db, game) {
   let page = [];
   let pages = 0;
 
-  // Process two pages per game per scheduled run while staying within
+  // Process two 1,000-post pages per game per scheduled run while staying within
   // conservative Worker subrequest budgets. The overlap prevents gaps
   // if the source feed changes while historical backfill is in progress.
   for (let pageIndex = 0; pageIndex < PAGES_PER_GAME_PER_RUN; pageIndex += 1) {
