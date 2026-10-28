@@ -1,0 +1,40 @@
+name: Download Live Steem Games Worker Source
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  download-worker-source:
+    name: Download Worker source from Cloudflare
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download live Worker script
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          mkdir -p worker-source-export
+          curl --fail --silent --show-error --location \
+            --dump-header worker-source-export/response-headers.txt \
+            --output worker-source-export/steemgames-worker-source.bin \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/steemgames"
+          echo "Downloaded Cloudflare response. Content-Type:"
+          grep -i '^content-type:' worker-source-export/response-headers.txt | tail -n 1 || true
+          file worker-source-export/steemgames-worker-source.bin || true
+
+      - name: Upload source response as downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: steemgames-worker-source
+          path: worker-source-export/
+          if-no-files-found: error
+          retention-days: 3
