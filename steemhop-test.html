@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steem Hop Tag Count Test</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172033;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:20px}.card{max-width:760px;margin:24px auto;background:#fff;border:1px solid #dce3ed;border-radius:18px;padding:24px;box-shadow:0 8px 28px #1720330b}h1{margin:0 0 6px;font-size:clamp(24px,5vw,34px)}.muted{color:#64748b}.tag{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:8px;padding:4px 10px;font-weight:700}.count{font-size:clamp(42px,10vw,68px);font-weight:800;letter-spacing:-2px;margin:18px 0 4px;overflow-wrap:anywhere}.status{padding:12px 14px;background:#f1f5f9;border-radius:10px;margin:16px 0;overflow-wrap:anywhere}.buttons{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:12px 18px;font-size:16px;font-weight:700;cursor:pointer;background:#2563eb;color:white}button.secondary{background:#475569}button:disabled{opacity:.5;cursor:wait}.small{font-size:13px;color:#64748b}.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:16px}.detail{background:#f8fafc;padding:12px;border-radius:10px}.detail strong{display:block;font-size:20px;overflow-wrap:anywhere}a{color:#1d4ed8}
+</style>
+</head>
+<body>
+<main class="card">
+<h1>Steem Hop — Tag Count Test</h1>
+<p class="muted">Count posts returned by SteemWorld for the dedicated tag:</p>
+<p><span class="tag">#steemhop</span></p>
+<div id="count" class="count">—</div>
+<div id="status" class="status" role="status">Press “Count all posts” to start a live scan.</div>
+<div class="buttons">
+<button id="start">Count all posts</button>
+<button id="stop" class="secondary" disabled>Stop</button>
+</div>
+<div class="details">
+<div class="detail"><span class="small">Pages read</span><strong id="pages">0</strong></div>
+<div class="detail"><span class="small">Posts scanned</span><strong id="scanned">0</strong></div>
+<div class="detail"><span class="small">Unique authors</span><strong id="authors">—</strong></div>
+</div>
+<p class="small">Source: SteemWorld feeds API. The scan reads pages until the API returns fewer than 1,000 rows. The result is the count indexed by this API, not an independent full-node blockchain audit.</p>
+<p class="small"><a href="https://sds0.steemworld.org/describeMethod/feeds_api.getPostsByTagCreated" target="_blank" rel="noopener">API method documentation</a></p>
+</main>
+<script>
+(() => {
+  const API = "https://sds0.steemworld.org/feeds_api/getPostsByTagCreated/";
+  const TAG = "steemhop";
+  const LIMIT = 1000;
+  const $ = id => document.getElementById(id);
+  let controller = null;
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  async function scan() {
+    if (controller) return;
+    controller = new AbortController();
+    $("start").disabled = true;
+    $("stop").disabled = false;
+    $("count").textContent = "…";
+    $("pages").textContent = "0";
+    $("scanned").textContent = "0";
+    $("authors").textContent = "—";
+    const seen = new Set();
+    const authors = new Set();
+    let offset = 0;
+    let pages = 0;
+    let finished = false;
+    try {
+      $("status").textContent = "Connecting to SteemWorld…";
+      while (!finished) {
+        const url = API + encodeURIComponent(TAG) + "/null/0/" + LIMIT + "/" + offset;
+        const response = await fetch(url, { signal: controller.signal, cache: "no-store" });
+        if (!response.ok) throw new Error("API HTTP status " + response.status);
+        const payload = await response.json();
+        if (payload.code !== 0 || !payload.result || !Array.isArray(payload.result.rows)) {
+          throw new Error("Unexpected API response format");
+        }
+        const rows = payload.result.rows;
+        pages++;
+        for (const row of rows) {
+          if (!Array.isArray(row) || typeof row[6] !== "string" || typeof row[7] !== "string") continue;
+          const key = row[6] + "/" + row[7];
+          seen.add(key);
+          authors.add(row[6]);
+        }
+        $("count").textContent = seen.size.toLocaleString();
+        $("pages").textContent = pages.toLocaleString();
+        $("scanned").textContent = (offset + rows.length).toLocaleString();
+        $("authors").textContent = authors.size.toLocaleString();
+        $("status").textContent = "Reading page " + pages + " — " + seen.size.toLocaleString() + " unique posts counted so far.";
+        if (rows.length < LIMIT) {
+          finished = true;
+          $("status").textContent = "Finished. API returned " + rows.length + " rows on the final page. Total: " + seen.size.toLocaleString() + " unique posts.";
+        } else {
+          offset += rows.length;
+          await sleep(120);
+        }
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        $("status").textContent = "Scan stopped. Partial count shown: " + seen.size.toLocaleString() + " unique posts.";
+      } else {
+        $("status").textContent = "Scan failed: " + error.message + ". Check your internet connection or whether the API allows browser requests (CORS).";
+      }
+    } finally {
+      controller = null;
+      $("start").disabled = false;
+      $("stop").disabled = true;
+    }
+  }
+  $("start").addEventListener("click", scan);
+  $("stop").addEventListener("click", () => { if (controller) controller.abort(); });
+})();
+</script>
+</body>
+</html>
