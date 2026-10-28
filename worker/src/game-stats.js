@@ -1,145 +1,284 @@
 /**
- * Steem Games statistics calculation and D1 persistence.
+ * Steem Games statistics sync.
  *
- * This module is intentionally separate from the request handlers. It does not
- * fetch data from Steem yet; the caller supplies verified post/user counts from
- * the selected Steem API adapter.
- *
- * Refresh policy: a game's external statistics are stale when stats_synced_at
- * is NULL or at least six hours old. Keep API fetching sequential in the caller
- * to avoid unnecessary load on Steem API nodes.
+ * Posts are indexed in D1 so counts stay exact across paginated scans and
+ * retries. A historical backfill advances over multiple scheduled runs;
+ * later runs only scan new posts until reaching the previous high-water mark.
  */
+import { steemRpc } from "./steem-api.js";
 
-export const STATS_REFRESH_INTERVAL_HOURS = 6;
-const STATS_REFRESH_INTERVAL_SQL = "-6 hours";
+const PAGE_SIZE = 100;
+const PAGES_PER_GAME_PER_RUN = 2;
+const REFRESH_HOURS = 6;
+const LOCK_MINUTES = 20;
 
-function assertNonNegativeInteger(value, field) {
-  if (!Number.isSafeInteger(value) || value < 0) {
-    throw new TypeError(`${field} must be a non-negative safe integer`);
-  }
+async function ensureStatsTables(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS steemgames_post_index (
+      game_id INTEGER NOT NULL,
+      author TEXT NOT NULL,
+      permlink TEXT NOT NULL,
+      created_at TEXT,
+      PRIMARY KEY (game_id, author, permlink)
+    )
+  `).run();
+  await db.prepare(`
+    CREATE INDEX IF NOT EXISTS idx_steemgames_post_index_game_created
+    ON steemgames_post_index (game_id, created_at)
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS steemgames_stats_state (
+      game_id INTEGER PRIMARY KEY,
+      mode TEXT NOT NULL DEFAULT 'backfill',
+      cursor_author TEXT,
+      cursor_permlink TEXT,
+      baseline_created TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS steemgames_stats_lock (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      lease_until TEXT NOT NULL,
+      token TEXT NOT NULL
+    )
+  `).run();
 }
 
-/**
- * Return active games whose Steem-derived statistics are missing or stale.
- * D1 evaluates timestamps in UTC; stats_synced_at is written with datetime('now').
- */
-export async function getGamesDueForStatsRefresh(db) {
-  const result = await db.prepare(
-    `SELECT id, game_name, tag, stats_synced_at
-       FROM steemgames
-      WHERE is_active = 1
-        AND (
-          stats_synced_at IS NULL
-          OR julianday(stats_synced_at) IS NULL
-          OR julianday(stats_synced_at) <= julianday('now', ?)
-        )
-      ORDER BY id ASC`
-  ).bind(STATS_REFRESH_INTERVAL_SQL).all();
-
-  return result.results || [];
-}
-
-/**
- * Count all recorded directory votes for one game.
- * These are SG directory votes, not blockchain votes on game posts.
- */
-export async function countDirectoryVotes(db, gameId) {
+async function acquireLock(db) {
+  const token = crypto.randomUUID();
+  await db.prepare(`
+    INSERT INTO steemgames_stats_lock (id, lease_until, token)
+    VALUES (1, datetime('now', '+20 minutes'), ?)
+    ON CONFLICT(id) DO UPDATE SET
+      lease_until = excluded.lease_until,
+      token = excluded.token
+    WHERE julianday(steemgames_stats_lock.lease_until) <= julianday('now')
+  `).bind(token).run();
   const row = await db.prepare(
+    "SELECT token FROM steemgames_stats_lock WHERE id = 1 AND token = ?"
+  ).bind(token).first();
+  return row ? token : null;
+}
+
+async function releaseLock(db, token) {
+  await db.prepare("DELETE FROM steemgames_stats_lock WHERE id = 1 AND token = ?")
+    .bind(token).run();
+}
+
+async function getPage(tag, cursorAuthor, cursorPermlink) {
+  if (!tag || !String(tag).trim()) return [];
+  const query = {
+    tag: String(tag).trim().replace(/^#/, ""),
+    limit: PAGE_SIZE
+  };
+  if (cursorAuthor && cursorPermlink) {
+    query.start_author = cursorAuthor;
+    query.start_permlink = cursorPermlink;
+  }
+  const result = await steemRpc("condenser_api.get_discussions_by_created", [query]);
+  if (!Array.isArray(result)) throw new Error("INVALID_STEEM_DISCUSSIONS_RESPONSE");
+  return result.filter(post =>
+    post && typeof post.author === "string" &&
+    typeof post.permlink === "string" && typeof post.created === "string"
+  );
+}
+
+async function savePage(db, gameId, posts) {
+  if (!posts.length) return;
+  const statements = posts.map(post => db.prepare(`
+    INSERT OR IGNORE INTO steemgames_post_index
+      (game_id, author, permlink, created_at)
+    VALUES (?, ?, ?, ?)
+  `).bind(gameId, post.author, post.permlink, post.created));
+  await db.batch(statements);
+}
+
+async function updateAggregate(db, gameId, markSynced) {
+  const aggregate = await db.prepare(`
+    SELECT COUNT(*) AS posts, COUNT(DISTINCT author) AS users
+    FROM steemgames_post_index WHERE game_id = ?
+  `).bind(gameId).first();
+  const votesRow = await db.prepare(
     "SELECT COUNT(*) AS votes FROM steemgames_votes WHERE game_id = ?"
   ).bind(gameId).first();
 
-  return Number(row?.votes || 0);
+  const posts = Number(aggregate?.posts || 0);
+  const users = Number(aggregate?.users || 0);
+  const votes = Number(votesRow?.votes || 0);
+  const points = posts + users + votes * 0.1;
+
+  await db.prepare(`
+    UPDATE steemgames
+       SET posts = ?, users = ?, votes = ?, points = ?,
+           stats_synced_at = CASE WHEN ? = 1 THEN datetime('now') ELSE stats_synced_at END,
+           updated_at = datetime('now')
+     WHERE id = ? AND is_active = 1
+  `).bind(posts, users, votes, points, markSynced ? 1 : 0, gameId).run();
+
+  return { posts, users, votes, points };
 }
 
-/**
- * Calculate and persist a game's metrics.
- *
- * stats.posts: total post count for the game's dedicated Steem tag.
- * stats.users: user count from the selected, verified game-statistics source.
- *
- * Votes are counted from steemgames_votes in D1. Exact decimal points are
- * stored in REAL and the listing endpoint should sort by the unrounded value.
- * UI rounding belongs in the frontend, not in this function.
- */
-export async function saveGameStats(db, gameId, stats) {
-  if (!Number.isSafeInteger(gameId) || gameId < 1) {
-    throw new TypeError("gameId must be a positive safe integer");
-  }
-
-  const posts = stats?.posts;
-  const users = stats?.users;
-  assertNonNegativeInteger(posts, "posts");
-  assertNonNegativeInteger(users, "users");
-
-  const game = await db.prepare(
-    "SELECT id FROM steemgames WHERE id = ? AND is_active = 1"
+async function getState(db, gameId) {
+  await db.prepare(`
+    INSERT OR IGNORE INTO steemgames_stats_state (game_id, mode, baseline_created)
+    VALUES (?, 'backfill', datetime('now'))
+  `).bind(gameId).run();
+  return db.prepare(
+    "SELECT game_id, mode, cursor_author, cursor_permlink, baseline_created FROM steemgames_stats_state WHERE game_id = ?"
   ).bind(gameId).first();
-
-  if (!game) {
-    throw new Error(`Active Steem Games entry not found: ${gameId}`);
-  }
-
-  const votes = await countDirectoryVotes(db, gameId);
-  const points = posts + users + (votes * 0.1);
-
-  const result = await db.prepare(
-    `UPDATE steemgames
-        SET posts = ?,
-            users = ?,
-            votes = ?,
-            points = ?,
-            stats_synced_at = datetime('now'),
-            updated_at = datetime('now')
-      WHERE id = ? AND is_active = 1`
-  ).bind(posts, users, votes, points, gameId).run();
-
-  if (!result.success || result.meta?.changes !== 1) {
-    throw new Error(`Failed to save statistics for game id ${gameId}`);
-  }
-
-  return { gameId, posts, users, votes, points };
 }
 
-/**
- * Process stale games one at a time. fetchExternalStats(game) must return
- * { posts, users } from the chosen Steem/game statistics source.
- *
- * The API adapter and a cross-isolate refresh lock must be added before this
- * function is called automatically from public request handlers. Sequential
- * processing reduces load, but by itself is not a distributed concurrency lock.
- */
-export async function refreshDueGameStats(db, fetchExternalStats) {
-  if (typeof fetchExternalStats !== "function") {
-    throw new TypeError("fetchExternalStats must be a function");
+async function setState(db, gameId, patch) {
+  await db.prepare(`
+    UPDATE steemgames_stats_state
+       SET mode = ?, cursor_author = ?, cursor_permlink = ?,
+           baseline_created = ?, updated_at = datetime('now')
+     WHERE game_id = ?
+  `).bind(
+    patch.mode,
+    patch.cursor_author || null,
+    patch.cursor_permlink || null,
+    patch.baseline_created,
+    gameId
+  ).run();
+}
+
+async function processGame(db, game) {
+  const state = await getState(db, game.id);
+  const syncRow = await db.prepare(
+    "SELECT stats_synced_at FROM steemgames WHERE id = ?"
+  ).bind(game.id).first();
+  const syncAge = syncRow?.stats_synced_at
+    ? await db.prepare(
+        "SELECT (julianday('now') - julianday(?)) * 24 AS hours"
+      ).bind(syncRow.stats_synced_at).first()
+    : null;
+
+  if (
+    state.mode === "incremental" &&
+    !state.cursor_author &&
+    Number(syncAge?.hours ?? 999999) < REFRESH_HOURS
+  ) {
+    return { gameId: game.id, skipped: true, reason: "FRESH" };
   }
 
-  const dueGames = await getGamesDueForStatsRefresh(db);
-  const results = [];
+  let cursorAuthor = state.cursor_author;
+  let cursorPermlink = state.cursor_permlink;
+  let mode = state.mode;
+  let baseline = state.baseline_created;
+  let completed = false;
+  let pages = 0;
+  let scanned = 0;
 
-  for (const game of dueGames) {
-    try {
-      const stats = await fetchExternalStats(game);
-      const saved = await saveGameStats(db, game.id, stats);
-      results.push({ ...saved, success: true });
-    } catch (error) {
-      console.error("Steem Games stats refresh failed", {
-        gameId: game.id,
-        gameName: game.game_name,
-        message: error instanceof Error ? error.message : String(error)
+  for (let i = 0; i < PAGES_PER_GAME_PER_RUN; i += 1) {
+    const page = await getPage(game.tag, cursorAuthor, cursorPermlink);
+    pages += 1;
+
+    if (mode === "incremental") {
+      const boundaryIndex = page.findIndex(post => post.created <= baseline);
+      const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
+      await savePage(db, game.id, newPosts);
+      scanned += newPosts.length;
+
+      if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
+        if (page[0]?.created && page[0].created > baseline) baseline = page[0].created;
+        cursorAuthor = null;
+        cursorPermlink = null;
+        completed = true;
+        await setState(db, game.id, {
+          mode: "incremental", cursor_author: null, cursor_permlink: null,
+          baseline_created: baseline
+        });
+        break;
+      }
+
+      const last = page[page.length - 1];
+      cursorAuthor = last.author;
+      cursorPermlink = last.permlink;
+      await setState(db, game.id, {
+        mode, cursor_author: cursorAuthor, cursor_permlink: cursorPermlink,
+        baseline_created: baseline
       });
-      results.push({
-        gameId: game.id,
-        gameName: game.game_name,
-        success: false,
-        error: error instanceof Error ? error.message : String(error)
-      });
+      continue;
     }
+
+    await savePage(db, game.id, page);
+    scanned += page.length;
+
+    if (page.length < PAGE_SIZE) {
+      mode = "incremental";
+      cursorAuthor = null;
+      cursorPermlink = null;
+      completed = true;
+      await setState(db, game.id, {
+        mode, cursor_author: null, cursor_permlink: null,
+        baseline_created: baseline
+      });
+      break;
+    }
+
+    const last = page[page.length - 1];
+    cursorAuthor = last.author;
+    cursorPermlink = last.permlink;
+    await setState(db, game.id, {
+      mode, cursor_author: cursorAuthor, cursor_permlink: cursorPermlink,
+      baseline_created: baseline
+    });
   }
 
+  const totals = await updateAggregate(db, game.id, completed);
   return {
-    checked: dueGames.length,
-    updated: results.filter((item) => item.success).length,
-    failed: results.filter((item) => !item.success).length,
-    results
+    gameId: game.id,
+    gameName: game.game_name,
+    mode,
+    pages,
+    scanned,
+    completed,
+    ...totals
   };
+}
+
+export async function refreshDueGameStats(db) {
+  await ensureStatsTables(db);
+  const token = await acquireLock(db);
+  if (!token) return { skipped: true, reason: "SYNC_LOCKED" };
+
+  try {
+    const result = await db.prepare(`
+      SELECT id, game_name, tag
+      FROM steemgames
+      WHERE is_active = 1
+      ORDER BY id ASC
+    `).all();
+
+    const results = [];
+    for (const game of result.results || []) {
+      try {
+        results.push({ success: true, ...(await processGame(db, game)) });
+      } catch (error) {
+        console.error("Steem Games statistics sync failed", {
+          gameId: game.id,
+          gameName: game.game_name,
+          message: error instanceof Error ? error.message : String(error)
+        });
+        results.push({
+          success: false,
+          gameId: game.id,
+          gameName: game.game_name,
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
+    }
+
+    return {
+      skipped: false,
+      games: results.length,
+      updated: results.filter(item => item.success && !item.skipped).length,
+      failed: results.filter(item => !item.success).length,
+      results
+    };
+  } finally {
+    await releaseLock(db, token);
+  }
 }
