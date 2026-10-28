@@ -6,13 +6,10 @@ const STEEM_API_NODES = [
   "https://api.steemit.com",
   "https://steemd.minnowsupportproject.org",
   "https://steemd.privex.io",
-  "https://steemd.steemgigs.org",
-  "https://rpc.curiesteem.com",
-  "https://rpc.steemliberator.com",
-  "https://rpc.steemviz.com"
+  "https://steemd.steemgigs.org"
 ];
 
-const REQUEST_TIMEOUT_MS = 6500;
+const REQUEST_TIMEOUT_MS = 3000;
 let preferredNode = 0;
 
 export async function steemRpc(method, params) {
