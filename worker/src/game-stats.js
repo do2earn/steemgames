@@ -120,15 +120,32 @@ async function updateAggregate(db, gameId, markSynced) {
   const votes = Number(votesRow?.votes || 0);
   const points = posts + users + votes * 0.1;
 
+  // Posts/users/votes stay current, but points are a high-water mark:
+  // never lower the leaderboard score when a later snapshot is smaller.
   await db.prepare(`
     UPDATE steemgames
-       SET posts = ?, users = ?, votes = ?, points = ?,
+       SET posts = ?, users = ?, votes = ?,
+           points = CASE
+             WHEN ? > COALESCE(points, 0) THEN ?
+             ELSE points
+           END,
            stats_synced_at = CASE WHEN ? = 1 THEN datetime('now') ELSE stats_synced_at END,
            updated_at = datetime('now')
      WHERE id = ? AND is_active = 1
-  `).bind(posts, users, votes, points, markSynced ? 1 : 0, gameId).run();
+  `).bind(posts, users, votes, points, points, markSynced ? 1 : 0, gameId).run();
 
-  return { posts, users, votes, points };
+  const current = await db.prepare(
+    "SELECT points FROM steemgames WHERE id = ?"
+  ).bind(gameId).first();
+
+  return {
+    posts,
+    users,
+    votes,
+    calculatedPoints: points,
+    points: Number(current?.points ?? points),
+    pointsRaised: Number(current?.points ?? points) > points ? false : Number(current?.points ?? points) === points
+  };
 }
 
 async function getState(db, gameId) {
@@ -175,7 +192,7 @@ async function setState(db, gameId, patch) {
 function utcMillis(value) {
   if (!value) return NaN;
   let normalized = value.includes("T") ? value : value.replace(" ", "T");
-  if (!/(Z|[+-]\d{2}:?\d{2})$/.test(normalized)) normalized += "Z";
+  if (!/(Z|[+-]\\d{2}:?\\d{2})$/.test(normalized)) normalized += "Z";
   return Date.parse(normalized);
 }
 
