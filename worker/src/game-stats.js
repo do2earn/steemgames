@@ -144,6 +144,13 @@ async function setState(db, gameId, patch) {
   ).run();
 }
 
+function utcMillis(value) {
+  if (!value) return NaN;
+  let normalized = value.includes("T") ? value : value.replace(" ", "T");
+  if (!/(Z|[+-]\\d{2}:?\\d{2})$/.test(normalized)) normalized += "Z";
+  return Date.parse(normalized);
+}
+
 async function processGame(db, game) {
   const state = await getState(db, game.id);
   const syncRow = await db.prepare(
@@ -176,14 +183,14 @@ async function processGame(db, game) {
     pages += 1;
 
     if (mode === "incremental") {
-      const baselineTime = Date.parse(baseline.replace(" ", "T") + (baseline.includes("T") ? "" : "Z"));
-      const boundaryIndex = page.findIndex(post => Date.parse(post.created + "Z") <= baselineTime);
+      const baselineTime = utcMillis(baseline);
+      const boundaryIndex = page.findIndex(post => utcMillis(post.created) <= baselineTime);
       const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
       await savePage(db, game.id, newPosts);
       scanned += newPosts.length;
 
       if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
-        if (page[0]?.created && Date.parse(page[0].created + "Z") > baselineTime) baseline = page[0].created;
+        if (page[0]?.created && utcMillis(page[0].created) > baselineTime) baseline = page[0].created;
         cursorAuthor = null;
         cursorPermlink = null;
         completed = true;
