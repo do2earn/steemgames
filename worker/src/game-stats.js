@@ -11,7 +11,7 @@ const PAGE_OVERLAP = 5;
 const PAGES_PER_GAME_PER_RUN = 2;
 const REFRESH_HOURS = 6;
 const LOCK_MINUTES = 20;
-const STATE_CURSOR_VERSION = "steemworld-offset-v1";
+const STATE_CURSOR_VERSION = "steemworld-offset-v2";
 
 async function ensureStatsTables(db) {
   await db.prepare(`
