@@ -32,3 +32,21 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: worker
           command: deploy
+
+      - name: Smoke-test live API endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://steemgames.do2earn.workers.dev"
+
+          echo "Checking /api/games..."
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors \
+            "$base/api/games" -o /tmp/steemgames.json
+          jq -e '.success == true and (.games | type == "array")' /tmp/steemgames.json >/dev/null
+          jq '{success, game_count: (.games | length), sample: [.games[:2][] | {game_name, points, posts, users, votes, stats_synced_at}]}' /tmp/steemgames.json
+
+          echo "Checking /api/stats..."
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors \
+            "$base/api/stats" -o /tmp/steemgames-stats.json
+          jq -e '.success == true and (.stats | type == "object")' /tmp/steemgames-stats.json >/dev/null
+          jq . /tmp/steemgames-stats.json
