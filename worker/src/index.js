@@ -44,7 +44,15 @@ export default {
           ? "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames ORDER BY game_name COLLATE NOCASE ASC"
           : "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames WHERE is_active = 1 ORDER BY points DESC, game_name COLLATE NOCASE ASC";
         const result = await env.DB.prepare(query).all();
-        return json(request, { success: true, stats_engine: "steemworld-offset-v4", games: result.results || [] });
+        const meta = await env.DB.prepare(
+          "SELECT last_points_updated_at FROM steemgames_stats_meta WHERE id = 1"
+        ).first().catch(() => null);
+        return json(request, {
+          success: true,
+          stats_engine: "steemworld-offset-v4",
+          last_points_updated_at: meta?.last_points_updated_at || null,
+          games: result.results || []
+        });
       }
 
       if (url.pathname === "/api/stats") {
