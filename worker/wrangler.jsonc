@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "steemgames-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-28",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "do2earn",
+      "database_id": "e5db9a0a-d516-4cbe-a942-c286c7d5b291"
+    }
+  ]
+}
