@@ -176,13 +176,14 @@ async function processGame(db, game) {
     pages += 1;
 
     if (mode === "incremental") {
-      const boundaryIndex = page.findIndex(post => post.created <= baseline);
+      const baselineTime = Date.parse(baseline.replace(" ", "T") + (baseline.includes("T") ? "" : "Z"));
+      const boundaryIndex = page.findIndex(post => Date.parse(post.created + "Z") <= baselineTime);
       const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
       await savePage(db, game.id, newPosts);
       scanned += newPosts.length;
 
       if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
-        if (page[0]?.created && page[0].created > baseline) baseline = page[0].created;
+        if (page[0]?.created && Date.parse(page[0].created + "Z") > baselineTime) baseline = page[0].created;
         cursorAuthor = null;
         cursorPermlink = null;
         completed = true;
