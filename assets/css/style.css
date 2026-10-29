@@ -193,3 +193,36 @@ main.page > #games.sg-directory-card .sg-directory{
   .sg-info-button{padding:5px 8px;font-size:.78rem}
 }
 @media(max-width:360px){.sg-game-logo-cell{width:136px;min-width:136px}.sg-game-logo{width:128px;height:128px}}
+
+
+/* Shared page shell refinements (2026-10-29). */
+.topbar{justify-content:flex-start;gap:12px;padding:8px 5px;min-height:54px}
+#menuButton{order:0;flex:0 0 42px}
+#mainMenu{left:5px;right:auto;top:58px}
+.header-assets-component{display:flex;align-items:center;justify-content:flex-end;flex:1;min-width:0}
+main.page{width:calc(100% - 10px);max-width:none;margin-left:5px;margin-right:5px}
+main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-left:0;margin-right:0}
+.sg-intro-brand h1{font-family:Impact,Haettenschweiler,"Arial Black",fantasy,sans-serif;font-weight:900;line-height:1;white-space:nowrap}
+.sg-intro-brand h1 span{display:inline}
+.sg-intro-brand{gap:clamp(6px,1.5vw,18px)}
+.sg-intro-logo{width:clamp(50px,12vw,128px);height:clamp(50px,12vw,128px)}
+#games .sg-directory-heading{margin-bottom:12px}
+#games .sg-directory-title-space{display:none}
+#footerComponent{width:100%;display:block}
+.sg-footer-card{width:calc(100% - 10px);margin-left:5px;margin-right:5px}
+@media(max-width:600px){
+  .topbar{padding:7px 5px;gap:7px}
+  #menuButton{width:38px;height:38px;flex-basis:38px}
+  #mainMenu{left:5px;top:52px}
+  main.page{width:calc(100% - 10px);margin-left:5px;margin-right:5px}
+  .sg-intro-brand{gap:6px}
+  .sg-intro-brand h1{font-size:clamp(1.75rem,8.5vw,3.25rem);letter-spacing:-.06em}
+  .sg-intro-logo{width:clamp(46px,12vw,72px);height:clamp(46px,12vw,72px)}
+  main.page>.sg-intro-card{padding:14px 8px}
+  main.page>#games.sg-directory-card{padding:12px 6px}
+  .sg-footer-card{padding:13px 7px;font-size:.88rem}
+}
+@media(max-width:360px){
+  .sg-intro-brand h1{font-size:1.65rem;letter-spacing:-.065em}
+  .sg-intro-logo{width:44px;height:44px}
+}
