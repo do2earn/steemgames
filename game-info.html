@@ -66,19 +66,19 @@
       <div class="edit-game-fields">
         <label for="editGameName">Game Name</label><input id="editGameName" required maxlength="100">
         <label for="editGameLogo">Game Logo (filename or URL)</label><input id="editGameLogo">
-        <label for="editGamePoints">⭐ Points (read only)</label><input id="editGamePoints" readonly>
-        <label for="editGamePosts">📄 Posts (read only)</label><input id="editGamePosts" readonly>
-        <label for="editGameVotes">Votes (read only)</label><input id="editGameVotes" readonly>
-        <label for="editGameUsers">Users (read only)</label><input id="editGameUsers" readonly>
+        <label for="editGamePoints">⭐ Points</label><input id="editGamePoints" type="number" min="0" step="0.1" required>
+        <label for="editGamePosts">📄 Posts Numbers</label><input id="editGamePosts" type="number" min="0" step="1" required>
+        <label for="editGameVotes">Votes</label><input id="editGameVotes" type="number" min="0" step="1" required>
+        <label for="editGameUsers">Users</label><input id="editGameUsers" type="number" min="0" step="1" required>
         <label for="editGameTag">Dedicated Tag</label><input id="editGameTag" required maxlength="100">
         <label for="editGameDeveloper">Developer (username)</label><input id="editGameDeveloper" maxlength="100">
         <label for="editGameGenres">Genres</label><input id="editGameGenres" maxlength="500">
         <label for="editGameWebsite">Website URL</label><input id="editGameWebsite" type="url" maxlength="1000">
         <label for="editGameAbout">About</label><textarea id="editGameAbout" rows="5" maxlength="10000"></textarea>
         <label for="editGameActive">Status</label><select id="editGameActive"><option value="1">Active</option><option value="0">Inactive</option></select>
-        <label for="editGameCreated">Created At (read only)</label><input id="editGameCreated" readonly>
+        <label for="editGameCreated">Created At</label><input id="editGameCreated" type="text">
         <label for="editGameUpdated">Updated At (read only)</label><input id="editGameUpdated" readonly>
-        <label for="editGameSynced">Stats Synced At (read only)</label><input id="editGameSynced" readonly>
+        <label for="editGameSynced">Stats Synced At</label><input id="editGameSynced" type="text">
       </div>
       <p id="editGameFeedback" class="status" role="status" aria-live="polite"></p>
       <div class="sg-game-info-actions">
@@ -172,9 +172,9 @@
         document.getElementById('logoutButton')?.addEventListener('click', () => setTimeout(syncEditVisibility, 0));
         const editDialog = document.getElementById('editGameDialog');
         const editFields = {
-          game_name: 'editGameName', game_logo: 'editGameLogo', tag: 'editGameTag',
+          game_name: 'editGameName', game_logo: 'editGameLogo', points: 'editGamePoints', posts: 'editGamePosts', votes: 'editGameVotes', users: 'editGameUsers', tag: 'editGameTag',
           developer: 'editGameDeveloper', genres: 'editGameGenres', website_url: 'editGameWebsite',
-          about: 'editGameAbout', is_active: 'editGameActive'
+          about: 'editGameAbout', is_active: 'editGameActive', created_at: 'editGameCreated', stats_synced_at: 'editGameSynced'
         };
         const setField = (id, value) => { document.getElementById(id).value = value ?? ''; };
         const fillEditForm = game => {
@@ -210,6 +210,8 @@
           fields.tag = String(fields.tag || '').replace(/^#/, '').trim();
           fields.developer = String(fields.developer || '').replace(/^@/, '').trim();
           fields.is_active = Number(fields.is_active);
+          fields.points = Number(fields.points); fields.posts = Number(fields.posts); fields.votes = Number(fields.votes); fields.users = Number(fields.users);
+          fields.created_at = fields.created_at.trim() || null; fields.stats_synced_at = fields.stats_synced_at.trim() || null;
           const timestamp = Date.now(), nonce = crypto.randomUUID();
           const payloadHex = [...new TextEncoder().encode(JSON.stringify(fields))].map(b => b.toString(16).padStart(2, '0')).join('');
           const message = 'Steem Games Admin Edit\nAccount: do2earn\nGame ID: ' + Number(currentGame.id) + '\nTimestamp: ' + timestamp + '\nNonce: ' + nonce + '\nPayload: ' + payloadHex;
