@@ -106,6 +106,31 @@
         .sg-intro-brand h1 { letter-spacing: -.06em; }
         .sg-intro-messages { width: 100%; }
       }
+
+      /* Mobile layout: keep the complete intro card readable without horizontal overflow. */
+      @media (max-width: 420px) {
+        .sg-intro-card { padding: 14px 10px; border-radius: 16px; }
+        .sg-intro-brand { gap: 6px; }
+        .sg-intro-logo { width: 44px; height: 44px; }
+        .sg-intro-brand h1 { font-size: clamp(1.5rem, 7.2vw, 2rem); letter-spacing: -.06em; }
+        .sg-intro-tagline { margin-top: 10px; font-size: clamp(.8rem, 3.7vw, 1rem); letter-spacing: .05em; }
+        .sg-intro-messages { box-sizing: border-box; width: 100%; margin-top: 14px; padding: 10px 8px; gap: 12px; font-size: 14px; }
+        .sg-intro-messages p { column-gap: 3px; row-gap: 0; line-height: 1.4; }
+        .sg-token-steem { gap: 3px; }
+        .sg-token img, .sg-intro-messages .d2e-inline-logo { width: 18px; height: 18px; flex-basis: 18px; }
+        .sg-intro-stats { gap: 6px; margin-top: 10px; }
+        .sg-intro-stat { padding: 8px 4px; border-radius: 10px; }
+        .sg-intro-stat strong { font-size: clamp(1.1rem, 5vw, 1.5rem); }
+        .sg-intro-stat span { font-size: .75rem; }
+      }
+      @media (max-width: 360px) {
+        .sg-intro-card { padding-right: 8px; padding-left: 8px; }
+        .sg-intro-logo { width: 38px; height: 38px; }
+        .sg-intro-brand h1 { font-size: 1.45rem; }
+        .sg-intro-messages { padding: 8px 6px; font-size: 13px; }
+        .sg-intro-stats { gap: 4px; }
+        .sg-intro-stat { padding: 7px 2px; }
+      }
   </style>
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
