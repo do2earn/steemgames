@@ -263,3 +263,14 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 .sg-content-card a{color:var(--blue);font-weight:800;text-decoration:none}
 .sg-content-card a:hover{text-decoration:underline}
 @media(max-width:600px){.menu{right:10px;top:58px}.menu .menu-brand img{width:40px;height:40px}.sg-content-card{margin:12px 0;padding:16px 12px}}
+
+/* Dedicated FAQ and About pages. */
+.sg-static-page{padding-top:28px;padding-bottom:28px;min-height:55vh}
+.sg-static-page .sg-content-card{margin:0;padding:clamp(20px,4vw,36px)}
+.sg-static-page .sg-content-card h1{margin:0 0 20px;font-size:clamp(1.7rem,5vw,2.35rem);letter-spacing:-.035em}
+.sg-static-page .sg-content-card h2{margin:24px 0 8px;font-size:clamp(1.2rem,3vw,1.5rem)}
+.sg-static-page .sg-content-card>p{line-height:1.75}
+.sg-static-page .sg-content-card details:first-of-type{border-top:1px solid var(--line)}
+.sg-page-home-link{margin-top:26px!important}
+.sg-page-home-link .button{display:inline-flex;width:auto}
+@media(max-width:600px){.sg-static-page{padding-top:16px;padding-bottom:18px}.sg-static-page .sg-content-card{padding:18px 13px}}
