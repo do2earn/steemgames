@@ -5,7 +5,7 @@ const state={username:null,games:[],pendingVoteGame:null};
 const SESSION_KEY='steemGamesAuthSession';
 function readSession(){try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')?.username||null}catch{return null}}
 function clearSession(){try{sessionStorage.removeItem(SESSION_KEY)}catch{}state.username=null;renderAuth()}
-function renderAuth(){const logged=Boolean(state.username);const login=$('menuLoginButton'),logout=$('logoutButton');if(login)login.hidden=logged;if(logout)logout.hidden=!logged;refreshHeaderAssets()}
+function renderAuth(){const logged=Boolean(state.username);const login=$('menuLoginButton'),logout=$('logoutButton'),admin=$('adminToolsSection');if(login)login.hidden=logged;if(logout)logout.hidden=!logged;if(admin)admin.hidden=state.username!=='do2earn';refreshHeaderAssets()}
 function openLogin(){if(!$('loginDialog').open)$('loginDialog').showModal();updateMethod()}
 function updateMethod(){const posting=$('loginMethod').value==='postingKey';$('postingKeyFields').hidden=!posting;$('postingKeyInput').required=posting;$('postingKeyInput').disabled=!posting;$('loginFeedback').textContent=''}
 function esc(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}

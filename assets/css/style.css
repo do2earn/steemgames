@@ -292,3 +292,10 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 .d2e-inline-logo{display:inline-block;width:1.25em;height:1.25em;object-fit:contain;vertical-align:middle;flex:0 0 auto}
 .sg-intro-messages .d2e-inline-logo{width:25px;height:25px}
 @media(max-width:420px){.sg-intro-messages .d2e-inline-logo{width:22px;height:22px}}
+
+
+/* Admin-only tools in the hamburger menu. */
+.menu .admin-tools-section{margin:8px 2px 2px;padding:7px;border:1px solid var(--line);border-radius:12px;background:#fbfcfe}
+.menu .admin-tools-section[hidden]{display:none!important}
+.menu .admin-tools-heading{display:flex;align-items:center;gap:7px;padding:8px 10px 6px;color:var(--muted);font-size:.82rem;font-weight:850;letter-spacing:.04em}
+.menu .admin-tools-section a{border-radius:8px}
