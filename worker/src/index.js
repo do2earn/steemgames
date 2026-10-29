@@ -68,6 +68,20 @@ export default {
     }
 
     try {
+      if (url.pathname === "/api/account") {
+        const username = String(url.searchParams.get("username") || "").trim();
+        if (!/^[a-z][a-z0-9.-]{2,31}$/i.test(username)) {
+          return json(request, { success: false, error: "INVALID_USERNAME" }, 400);
+        }
+        const account = await env.DB.prepare(
+          "SELECT Username, COALESCE(D2E, 0) AS D2E FROM accounts WHERE lower(Username) = lower(?) LIMIT 1"
+        ).bind(username).first();
+        return json(request, {
+          success: true,
+          account: account || { Username: username, D2E: 0 }
+        });
+      }
+
       if (url.pathname === "/api/games") {
         await ensureGameLogoFilenames(env.DB);
         const includeInactive = url.searchParams.get("include_inactive") === "1";
