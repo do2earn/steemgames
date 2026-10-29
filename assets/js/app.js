@@ -1,4 +1,4 @@
-import {verifyPostingKey,verifyKeychainLogin} from './steem-auth.js';
+import {verifyPostingKey,verifyKeychainLogin} from './steem-auth.js?v=20261030-1';
 const API_BASE=window.STEEM_GAMES_API_URL||'';
 const $=id=>document.getElementById(id);
 const state={username:null,games:[],pendingVoteGame:null,postingPrivateKey:null};
