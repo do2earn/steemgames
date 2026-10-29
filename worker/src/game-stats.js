@@ -8,8 +8,6 @@
 const STEEMWORLD_BASE = "https://sds0.steemworld.org";
 const PAGE_SIZE = 1000;
 const PAGE_OVERLAP = 5;
-const PAGES_PER_GAME_PER_RUN = 1;
-const REFRESH_HOURS = 6;
 const LOCK_MINUTES = 20;
 const STATE_CURSOR_VERSION = "steemworld-offset-v2";
 
@@ -219,27 +217,6 @@ function utcMillis(value) {
 
 async function processGame(db, game) {
   const state = await getState(db, game.id);
-  const syncRow = await db.prepare(
-    "SELECT stats_synced_at FROM steemgames WHERE id = ?"
-  ).bind(game.id).first();
-  const syncAge = syncRow?.stats_synced_at
-    ? await db.prepare(
-        "SELECT (julianday('now') - julianday(?)) * 24 AS hours"
-      ).bind(syncRow.stats_synced_at).first()
-    : null;
-
-  if (
-    state.mode === "incremental" &&
-    !state.cursor_author &&
-    Number(syncAge?.hours ?? 999999) < REFRESH_HOURS
-  ) {
-    // Touch the state row so a fresh game rotates to the back of the queue.
-    await db.prepare(
-      "UPDATE steemgames_stats_state SET updated_at = datetime('now') WHERE game_id = ?"
-    ).bind(game.id).run();
-    return { gameId: game.id, skipped: true, reason: "FRESH" };
-  }
-
   let mode = state.mode;
   let offset = Math.max(0, Number(state.cursor_author || 0));
   let baseline = state.baseline_created;
@@ -248,10 +225,9 @@ async function processGame(db, game) {
   let page = [];
   let pages = 0;
 
-  // Process only one 1,000-post page for the selected game per hourly run.
-  // This caps feed requests and daily D1 writes while preserving the saved
-  // offset and overlap so historical backfill can resume without restarting.
-  for (let pageIndex = 0; pageIndex < PAGES_PER_GAME_PER_RUN; pageIndex += 1) {
+  // Process one 1,000-post page per game on every hourly run.
+  // Saved offsets and overlap make historical backfill resumable.
+  for (let pageIndex = 0; pageIndex < 1; pageIndex += 1) {
     page = await getPage(game.tag, offset);
     pages += 1;
     if (mode === "incremental") {
@@ -316,48 +292,46 @@ export async function refreshDueGameStats(db) {
   if (!token) return { skipped: true, reason: "SYNC_LOCKED" };
 
   try {
-    // Rotate through games by the oldest state update. Only one game is
-    // processed per run, preventing 15 games from writing to D1 every hour.
+    // Check every active game on each hourly run. Each game advances by
+    // at most one page, preserving resumable backfill and limiting API load.
     const result = await db.prepare(`
-      SELECT g.id, g.game_name, g.tag
-      FROM steemgames AS g
-      LEFT JOIN steemgames_stats_state AS s ON s.game_id = g.id
-      WHERE g.is_active = 1
-      ORDER BY COALESCE(s.updated_at, '1970-01-01 00:00:00') ASC, g.id ASC
-      LIMIT 1
+      SELECT id, game_name, tag
+      FROM steemgames
+      WHERE is_active = 1
+      ORDER BY id ASC
     `).all();
 
-    const game = result.results?.[0];
-    if (!game) return { skipped: true, reason: "NO_ACTIVE_GAMES" };
+    const games = result.results || [];
+    if (!games.length) return { skipped: true, reason: "NO_ACTIVE_GAMES" };
 
-    try {
-      const item = { success: true, ...(await processGame(db, game)) };
-      return {
-        skipped: false,
-        games: 1,
-        updated: item.success && !item.skipped ? 1 : 0,
-        failed: item.success ? 0 : 1,
-        results: [item]
-      };
-    } catch (error) {
-      console.error("Steem Games statistics sync failed", {
-        gameId: game.id,
-        gameName: game.game_name,
-        message: error instanceof Error ? error.message : String(error)
-      });
-      return {
-        skipped: false,
-        games: 1,
-        updated: 0,
-        failed: 1,
-        results: [{
+    const results = [];
+    for (const game of games) {
+      try {
+        results.push({ success: true, ...(await processGame(db, game)) });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("Steem Games statistics sync failed", {
+          gameId: game.id,
+          gameName: game.game_name,
+          message
+        });
+        results.push({
           success: false,
           gameId: game.id,
           gameName: game.game_name,
-          error: error instanceof Error ? error.message : String(error)
-        }]
-      };
+          error: message
+        });
+      }
     }
+
+    return {
+      skipped: false,
+      games: games.length,
+      updated: results.filter(item => item.success && !item.skipped).length,
+      skippedGames: results.filter(item => item.skipped).length,
+      failed: results.filter(item => !item.success).length,
+      results
+    };
   } finally {
     await releaseLock(db, token);
   }
