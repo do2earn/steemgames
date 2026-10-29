@@ -96,11 +96,12 @@
       }
       .sg-intro-stat strong {
         color: var(--sg-blue);
-        font-size: clamp(1.4rem, 4vw, 2rem);
+        font-size: clamp(1.75rem, 4.5vw, 2.35rem);
+        font-weight: 900;
         line-height: 1.2;
         font-variant-numeric: tabular-nums;
       }
-      .sg-intro-stat span { color: #667085; font-size: .9rem; }
+      .sg-intro-stat span { color: #667085; font-size: 1rem; font-weight: 700; }
       @media (max-width: 420px) {
         .sg-intro-brand { gap: 8px; }
         .sg-intro-brand h1 { letter-spacing: -.06em; }
@@ -120,8 +121,8 @@
         .sg-token img, .sg-intro-messages .d2e-inline-logo { width: 18px; height: 18px; flex-basis: 18px; }
         .sg-intro-stats { gap: 6px; margin-top: 10px; }
         .sg-intro-stat { padding: 8px 4px; border-radius: 10px; }
-        .sg-intro-stat strong { font-size: clamp(1.1rem, 5vw, 1.5rem); }
-        .sg-intro-stat span { font-size: .75rem; }
+        .sg-intro-stat strong { font-size: clamp(1.35rem, 5.5vw, 1.7rem); font-weight: 900; }
+        .sg-intro-stat span { font-size: .85rem; font-weight: 700; }
       }
       @media (max-width: 360px) {
         .sg-intro-card { padding-right: 8px; padding-left: 8px; }
@@ -130,6 +131,8 @@
         .sg-intro-messages { padding: 8px 6px; font-size: 13px; }
         .sg-intro-stats { gap: 4px; }
         .sg-intro-stat { padding: 7px 2px; }
+        .sg-intro-stat strong { font-size: 1.25rem; }
+        .sg-intro-stat span { font-size: .8rem; }
       }
   </style>
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
