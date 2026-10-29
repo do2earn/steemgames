@@ -8,7 +8,7 @@ const ALLOWED_ORIGINS = new Set([
 function corsHeaders(request) {
   const origin = request.headers.get("Origin") || "";
   const headers = {
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
@@ -60,7 +60,7 @@ export default {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
-    if (request.method !== "GET") {
+    if (!["GET", "POST"].includes(request.method)) {
       return json(request, { success: false, error: "METHOD_NOT_ALLOWED" }, 405);
     }
     if (!env.DB) {
@@ -68,6 +68,47 @@ export default {
     }
 
     try {
+      if (url.pathname === "/api/admin/game" && request.method === "POST") {
+        let body;
+        try { body = await request.json(); } catch { return json(request, { success: false, error: "INVALID_JSON" }, 400); }
+        const { username, gameId, fields, message, signature } = body || {};
+        if (String(username || "").toLowerCase() !== "do2earn" || !Number.isInteger(Number(gameId)) ||
+            !fields || typeof fields !== "object" || typeof message !== "string" || typeof signature !== "string") {
+          return json(request, { success: false, error: "INVALID_ADMIN_REQUEST" }, 400);
+        }
+        const match = message.match(/^Steem Games Admin Edit\\nAccount: do2earn\\nGame ID: (\\d+)\\nTimestamp: (\\d+)\\nNonce: ([a-f0-9-]{16,})\\nPayload: ([a-f0-9]+)$/i);
+        if (!match || Number(match[1]) !== Number(gameId) || Math.abs(Date.now() - Number(match[2])) > 5 * 60 * 1000) {
+          return json(request, { success: false, error: "INVALID_OR_EXPIRED_SIGNATURE_MESSAGE" }, 400);
+        }
+        const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(message));
+        const hash = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+        const rpcBody = JSON.stringify({ jsonrpc: "2.0", method: "database_api.verify_signatures", params: { hash, signatures: [signature], required_owner: [], required_active: [], required_posting: ["do2earn"], required_other: [] }, id: 1 });
+        let verified = false;
+        for (const endpoint of ["https://api.steemit.com", "https://api.justyy.com", "https://steemd.steemworld.org"]) {
+          try {
+            const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: rpcBody, signal: AbortSignal.timeout(7000) });
+            const result = await response.json();
+            if (result?.result?.valid === true) { verified = true; break; }
+          } catch {}
+        }
+        if (!verified) return json(request, { success: false, error: "ADMIN_SIGNATURE_INVALID" }, 403);
+        const payload = JSON.stringify(fields);
+        const payloadHex = [...new TextEncoder().encode(payload)].map(b => b.toString(16).padStart(2, "0")).join("");
+        if (payloadHex !== match[4].toLowerCase()) return json(request, { success: false, error: "SIGNED_PAYLOAD_MISMATCH" }, 400);
+        const allowed = ["game_name", "game_logo", "tag", "developer", "genres", "about", "website_url", "is_active"];
+        const updates = allowed.filter(key => Object.prototype.hasOwnProperty.call(fields, key));
+        if (!updates.length || updates.some(key => typeof fields[key] !== "string" && key !== "is_active") ||
+            ("is_active" in fields && ![0, 1, "0", "1"].includes(fields.is_active))) {
+          return json(request, { success: false, error: "INVALID_GAME_FIELDS" }, 400);
+        }
+        const sets = updates.map(key => key + " = ?").join(", ");
+        const values = updates.map(key => key === "is_active" ? Number(fields[key]) : String(fields[key] ?? "").trim());
+        const result = await env.DB.prepare("UPDATE steemgames SET " + sets + ", updated_at = datetime('now') WHERE id = ?").bind(...values, Number(gameId)).run();
+        if (!result.meta?.changes) return json(request, { success: false, error: "GAME_NOT_FOUND" }, 404);
+        const game = await env.DB.prepare("SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, created_at, updated_at, stats_synced_at FROM steemgames WHERE id = ?").bind(Number(gameId)).first();
+        return json(request, { success: true, game });
+      }
+
       if (url.pathname === "/api/account") {
         const username = String(url.searchParams.get("username") || "").trim();
         if (!/^[a-z][a-z0-9.-]{2,31}$/i.test(username)) {
