@@ -163,7 +163,7 @@
         const syncEditVisibility = () => {
           try {
             const session = JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null');
-            editButton.hidden = String(session?.username || '').toLowerCase() !== 'do2earn';
+            editButton.hidden = String(session?.username || '').toLowerCase() !== 'do2earn' || typeof window.steemGamesAdminSignMessage !== 'function';
           } catch { editButton.hidden = true; }
         };
         syncEditVisibility();
