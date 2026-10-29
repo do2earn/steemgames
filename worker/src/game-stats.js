@@ -274,6 +274,30 @@ async function processGame(db, game) {
     offset: completed ? null : offset,
     baseline_created: baseline
   });
+  // Drug Wars has a manually verified baseline. Keep that baseline visible
+  // while the full author/permlink index is rebuilt from offset zero.
+  // Once backfill completes, updateAggregate replaces it with exact indexed totals.
+  if (game.id === 14 && mode === "backfill" && !completed) {
+    const current = await db.prepare(
+      "SELECT posts, users, votes, points FROM steemgames WHERE id = ?"
+    ).bind(game.id).first();
+    return {
+      gameId: game.id,
+      gameName: game.game_name,
+      mode,
+      pages,
+      offset,
+      scanned,
+      completed,
+      baselinePending: true,
+      posts: Number(current?.posts || 0),
+      users: Number(current?.users || 0),
+      votes: Number(current?.votes || 0),
+      calculatedPoints: Number(current?.points || 0),
+      points: Number(current?.points || 0)
+    };
+  }
+
   const totals = await updateAggregate(db, game.id, completed);
   return {
     gameId: game.id,
