@@ -101,16 +101,19 @@
 <body>
   <header class="topbar">
     <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
-    <nav id="mainMenu" class="menu" hidden>
-      <a href="#games">🎮 Games Directory</a>
-      <button id="menuLoginButton" type="button">🔐 Login</button>
-      <button id="logoutButton" type="button" hidden>Logout</button>
+    <nav id="mainMenu" class="menu" aria-label="Main menu" hidden>
+      <a class="menu-brand" href="#home" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo"><span>Steem Games</span></a>
+      <a href="#home">🏠 <span>Home</span></a>
+      <a href="#faq">❓ <span>FAQ</span></a>
+      <a href="#about">ℹ️ <span>About</span></a>
+      <button id="menuLoginButton" type="button"><span class="menu-auth-icon" aria-hidden="true">⇥</span><span>Login</span></button>
+      <button id="logoutButton" type="button" hidden><span class="menu-auth-icon" aria-hidden="true">⇤</span><span>Logout</span></button>
     </nav>
     <div id="headerAssetsComponent" class="header-assets-component"></div>
   </header>
 
   <main class="page">
-    <section class="sg-intro-card" aria-labelledby="sg-intro-title">
+    <section id="home" class="sg-intro-card" aria-labelledby="sg-intro-title">
       <div class="sg-intro-brand">
         <img
           class="sg-intro-logo"
@@ -149,6 +152,20 @@
 
     <section id="games" class="section sg-directory-card" aria-label="Steem Games directory">
       <div id="steemgamesComponent" class="sg-component-loading" role="status">Loading Steem Games directory…</div>
+    </section>
+
+    <section id="faq" class="sg-content-card" aria-labelledby="sg-faq-title">
+      <h2 id="sg-faq-title">❓ Frequently Asked Questions</h2>
+      <details><summary>What is Steem Games?</summary><p>Steem Games is a directory for discovering games built on the Steem blockchain.</p></details>
+      <details><summary>Do I need to log in to browse games?</summary><p>No. The directory is public. Log in only when an account action, such as voting, requires it.</p></details>
+      <details><summary>What is D2E?</summary><p>D2E is the Do2Earn reward token used in the Steem Games ecosystem.</p></details>
+      <details><summary>How do I log in?</summary><p>Use Steem Keychain or your Steem Posting Key. The Posting Key is the default method, and it is not saved by this site.</p></details>
+    </section>
+
+    <section id="about" class="sg-content-card" aria-labelledby="sg-about-title">
+      <h2 id="sg-about-title">ℹ️ About Steem Games</h2>
+      <p>Steem Games helps the community discover, explore, and support games built on the Steem blockchain. Browse game information, compare activity points, and vote for your favorite games.</p>
+      <p>Created by <a href="https://do2earn.dev" target="_blank" rel="noopener noreferrer">Do2Earn</a>.</p>
     </section>
 
     
