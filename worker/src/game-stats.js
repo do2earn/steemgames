@@ -218,18 +218,6 @@ function utcMillis(value) {
 async function processGame(db, game) {
   const state = await getState(db, game.id);
 
-  // Drug Wars can use an explicitly maintained SG Points Checker snapshot.
-  // A manual state must never enter backfill/incremental aggregation.
-  if (state.mode === "manual") {
-    return {
-      gameId: game.id,
-      gameName: game.game_name,
-      mode: "manual",
-      skipped: true,
-      reason: "MANUAL_STATS_OVERRIDE"
-    };
-  }
-
   let mode = state.mode;
   let offset = Math.max(0, Number(state.cursor_author || 0));
   let baseline = state.baseline_created;
