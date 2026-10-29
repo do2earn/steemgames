@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SG Points Checker | Steem Games</title>
+<link rel="stylesheet" href="assets/css/style.css?v=20261029-2">
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172033;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:0}.card{width:calc(100% - 10px);max-width:980px;margin:8px 5px;background:#fff;border:1px solid #dce3ed;border-radius:18px;padding:clamp(16px,4vw,26px);box-shadow:0 8px 28px #1720330b}h1{margin:0 0 6px;font-size:clamp(25px,5vw,36px)}.muted,.small{color:#64748b}.controls{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0}label{font-weight:700;display:block;margin-bottom:6px}select{width:100%;min-height:48px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;background:white;color:#172033;font:inherit} .buttons{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:12px 17px;font-size:15px;font-weight:700;cursor:pointer;background:#2563eb;color:white}button.secondary{background:#475569}button.green{background:#15803d}button:disabled{opacity:.5;cursor:wait}.status{padding:12px 14px;background:#f1f5f9;border-radius:10px;margin:16px 0;overflow-wrap:anywhere}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:16px 0}.tile{background:#f8fafc;padding:12px;border-radius:10px}.tile strong{display:block;font-size:clamp(20px,4vw,28px);overflow-wrap:anywhere}.table-wrap{overflow-x:auto;margin-top:18px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e2e8f0}th{background:#f8fafc;font-size:13px;color:#475569}td.num{text-align:right;font-variant-numeric:tabular-nums}.tag{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:7px;padding:2px 8px;font-weight:700}.progress{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden}.progress>div{height:100%;width:0;background:#2563eb;transition:width .15s}.small{font-size:13px}.error{color:#b91c1c}.ok{color:#166534}@media(min-width:650px){.controls{grid-template-columns:1fr 1fr}}
+</style>
+<style>
+.sg-checker-header{display:flex;align-items:center;justify-content:flex-end;min-height:54px;padding:8px 5px;background:#fff;border-bottom:1px solid #e5e9f0}
+.sg-checker-header #headerAssetsComponent{display:flex;align-items:center;flex:1;min-width:0}
+@media(min-width:1000px){.card{margin-left:auto;margin-right:auto;width:calc(100% - 10px)}}
+</style>
+</head>
+<body>
+<header class="sg-checker-header"><a href="./" style="font-weight:800;text-decoration:none;color:#2563eb;margin-right:auto">← Steem Games</a><div id="headerAssetsComponent"></div></header>
+<main class="card">
+<h1>SG Points Checker</h1>
+<p class="muted">Manually scan a game's dedicated Steem tag, count unique posts and authors, include its current SG directory votes, and calculate its points. This checker never writes to the database.</p>
+<div class="controls">
+  <div>
+    <label for="game">Game / dedicated tag</label>
+    <select id="game" disabled><option>Loading games from SG database…</option></select>
+  </div>
+  <div>
+    <label for="mode">Scan mode</label>
+    <select id="mode"><option value="selected">Selected game only</option><option value="all">All games in database</option></select>
+  </div>
+</div>
+<div class="buttons">
+  <button id="start" disabled>Start scan</button>
+  <button id="stop" class="secondary" disabled>Stop scan</button>
+  <button id="reload" class="green">Reload game list</button>
+</div>
+<div class="summary">
+  <div class="tile"><span class="small">Games checked</span><strong id="gamesDone">0 / 0</strong></div>
+  <div class="tile"><span class="small">Unique posts (current game)</span><strong id="count">—</strong></div>
+  <div class="tile"><span class="small">Unique authors (current game)</span><strong id="authors">—</strong></div>
+  <div class="tile"><span class="small">SG directory votes</span><strong id="votes">—</strong></div>
+  <div class="tile"><span class="small">Calculated points</span><strong id="points">—</strong></div>
+  <div class="tile"><span class="small">Pages read (current game)</span><strong id="pages">0</strong></div>
+</div>
+<div class="progress"><div id="bar"></div></div>
+<div id="status" class="status" role="status">Loading game tags from the database…</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Game</th><th>Tag</th><th class="num">Posts</th><th class="num">Users</th><th class="num">Votes</th><th class="num">Calculated Points</th><th class="num">Pages</th><th>Status</th></tr></thead>
+<tbody id="results"><tr><td colspan="8" class="muted">No scan results yet.</td></tr></tbody>
+</table>
+</div>
+<p class="small">Source: SteemWorld feeds API. Formula: Points = Posts + Users + (Votes × 0.1). Votes means valid votes on the game in the SG directory, loaded from the SG API; it does not mean the sum of votes on every individual Steem post. Each tag is scanned page by page until a page contains fewer than 1,000 rows. Post counts reflect SteemWorld indexing, not an independent full-node blockchain audit. Results are for manual verification only and never update the SG database.</p>
+<p class="small"><a href="https://sds0.steemworld.org/describeMethod/feeds_api.getPostsByTagCreated" target="_blank" rel="noopener">SteemWorld API documentation</a></p>
+</main>
+<div id="footerComponent"></div>
+<script>
+(async()=>{try{const [h,f]=await Promise.all([fetch('header-assets.html',{cache:'no-cache'}),fetch('footer.html',{cache:'no-cache'})]);if(h.ok)document.getElementById('headerAssetsComponent').innerHTML=await h.text();if(f.ok)document.getElementById('footerComponent').innerHTML=await f.text();const loginButton=document.getElementById('sgHeaderLoginButton');if(loginButton)loginButton.addEventListener('click',()=>{location.href='./?login=1'});let username=null;try{username=JSON.parse(sessionStorage.getItem('steemGamesAuthSession')||'null')?.username||null}catch{}const assets=document.getElementById('sgAssetsBar'),b=document.getElementById('sgD2EBalance'),l=document.getElementById('sgAssetAvatarLink'),a=document.getElementById('sgAssetAvatar');if(!username&&assets)assets.hidden=true;if(username&&b&&l&&a){if(assets)assets.hidden=false;const loginButton=document.getElementById('sgHeaderLoginButton');if(loginButton)loginButton.hidden=true;a.src='https://steemitimages.com/u/'+encodeURIComponent(username)+'/avatar';l.href='https://steemit.com/@'+encodeURIComponent(username);l.hidden=false;b.textContent='…';try{const r=await fetch('https://steemflags.do2earn.dev/api/account?username='+encodeURIComponent(username),{cache:'no-store'});const d=await r.json();b.textContent=d?.success&&d.account?Math.floor(Number(d.account.D2E)||0).toLocaleString():'—'}catch{b.textContent='—'}}}catch(e){console.warn('Shared header/footer unavailable',e)}})();
+
+(() => {
+  const GAMES_API = "https://steemgames.do2earn.workers.dev/api/games?include_inactive=1";
+  const FEED_API = "https://sds0.steemworld.org/feeds_api/getPostsByTagCreated/";
+  const LIMIT = 1000;
+  const $ = id => document.getElementById(id);
+  let games = [];
+  let controller = null;
+  let stopRequested = false;
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+
+  async function loadGames() {
+    $("reload").disabled = true;
+    $("game").disabled = true;
+    $("start").disabled = true;
+    $("status").textContent = "Loading game list and dedicated tags from the SG database…";
+    try {
+      const response = await fetch(GAMES_API, {cache:"no-store"});
+      if (!response.ok) throw new Error("SG API HTTP " + response.status);
+      const payload = await response.json();
+      if (!payload.success || !Array.isArray(payload.games)) throw new Error("Unexpected SG API response");
+      games = payload.games.filter(game => game.tag && String(game.tag).trim());
+      $("game").innerHTML = games.map((game, index) => '<option value="' + index + '">' + esc(game.game_name) + ' — #' + esc(String(game.tag).replace(/^#/, "")) + (Number(game.is_active) === 1 ? "" : " (inactive)") + '</option>').join("");
+      $("game").disabled = games.length === 0;
+      $("start").disabled = games.length === 0;
+      $("gamesDone").textContent = "0 / " + games.length;
+      $("status").textContent = games.length + " games with dedicated tags loaded from the database.";
+      if (!games.length) $("game").innerHTML = '<option value="">No games with tags found</option>';
+    } catch (error) {
+      $("status").innerHTML = '<span class="error">Could not load games: ' + esc(error.message) + '</span>';
+    } finally {
+      $("reload").disabled = false;
+    }
+  }
+
+  function resetCurrent() {
+    $("count").textContent = "—";
+    $("authors").textContent = "—";
+    $("votes").textContent = "—";
+    $("points").textContent = "—";
+    $("pages").textContent = "0";
+  }
+
+  function formatPoints(value) {
+    return Number(value || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1});
+  }
+
+  function upsertResult(game, posts, authors, votes, points, pages, status) {
+    const key = String(game.id ?? game.game_name);
+    let row = document.querySelector('tr[data-game="' + CSS.escape(key) + '"]');
+    if (!row) {
+      if ($("results").children.length === 1 && $("results").textContent.includes("No scan results yet")) $("results").innerHTML = "";
+      row = document.createElement("tr");
+      row.dataset.game = key;
+      $("results").appendChild(row);
+    }
+    row.innerHTML = '<td>' + esc(game.game_name) + '</td><td><span class="tag">#' + esc(String(game.tag).replace(/^#/, "")) + '</span></td><td class="num">' + (posts == null ? "—" : posts.toLocaleString()) + '</td><td class="num">' + (authors == null ? "—" : authors.toLocaleString()) + '</td><td class="num">' + (votes == null ? "—" : votes.toLocaleString()) + '</td><td class="num"><strong>' + (points == null ? "—" : esc(formatPoints(points))) + '</strong></td><td class="num">' + (pages == null ? "—" : pages.toLocaleString()) + '</td><td>' + esc(status) + '</td>';
+  }
+
+  async function scanGame(game, gameIndex, total) {
+    const seenPosts = new Set();
+    const seenAuthors = new Set();
+    const votes = Math.max(0, Number(game.votes) || 0);
+    let offset = 0;
+    let pages = 0;
+    const tag = String(game.tag).trim().replace(/^#/, "");
+    upsertResult(game, null, null, votes, null, 0, "Scanning…");
+    $("status").textContent = "Scanning " + game.game_name + " (#" + tag + "), game " + (gameIndex + 1) + " of " + total + "…";
+    resetCurrent();
+    while (true) {
+      if (stopRequested || !controller) throw new DOMException("Scan stopped", "AbortError");
+      const url = FEED_API + encodeURIComponent(tag) + "/null/0/" + LIMIT + "/" + offset;
+      const response = await fetch(url, {signal:controller.signal, cache:"no-store"});
+      if (!response.ok) throw new Error("SteemWorld HTTP " + response.status + " for #" + tag);
+      const payload = await response.json();
+      if (payload.code !== 0 || !payload.result || !Array.isArray(payload.result.rows)) throw new Error("Unexpected SteemWorld response for #" + tag);
+      const rows = payload.result.rows;
+      pages++;
+      for (const item of rows) {
+        if (!Array.isArray(item) || typeof item[6] !== "string" || typeof item[7] !== "string") continue;
+        seenPosts.add(item[6] + "/" + item[7]);
+        seenAuthors.add(item[6]);
+      }
+      $("count").textContent = seenPosts.size.toLocaleString();
+      $("authors").textContent = seenAuthors.size.toLocaleString();
+      const points = seenPosts.size + seenAuthors.size + (votes * 0.1);
+      $("votes").textContent = votes.toLocaleString();
+      $("points").textContent = formatPoints(points);
+      $("pages").textContent = pages.toLocaleString();
+      $("gamesDone").textContent = gameIndex + " / " + total;
+      $("bar").style.width = ((gameIndex + Math.min(0.95, rows.length < LIMIT ? 1 : 0.8) ) / total * 100) + "%";
+      upsertResult(game, seenPosts.size, seenAuthors.size, votes, points, pages, "Scanning…");
+      if (rows.length < LIMIT) break;
+      offset += rows.length;
+      await sleep(120);
+    }
+    const points = seenPosts.size + seenAuthors.size + (votes * 0.1);
+    upsertResult(game, seenPosts.size, seenAuthors.size, votes, points, pages, "Complete");
+    return {posts:seenPosts.size, authors:seenAuthors.size, votes, points, pages};
+  }
+
+  async function startScan() {
+    if (controller || !games.length) return;
+    controller = new AbortController();
+    stopRequested = false;
+    $("start").disabled = true;
+    $("stop").disabled = false;
+    $("reload").disabled = true;
+    const selected = games[Number($("game").value)];
+    const queue = $("mode").value === "all" ? games.slice() : (selected ? [selected] : []);
+    let completed = 0;
+    $("gamesDone").textContent = "0 / " + queue.length;
+    $("bar").style.width = "0%";
+    try {
+      for (let i = 0; i < queue.length; i++) {
+        if (stopRequested) break;
+        try {
+          await scanGame(queue[i], i, queue.length);
+          completed++;
+          $("gamesDone").textContent = completed + " / " + queue.length;
+          $("bar").style.width = (completed / queue.length * 100) + "%";
+        } catch (error) {
+          if (error.name === "AbortError") break;
+          upsertResult(queue[i], null, null, null, null, null, "Error: " + error.message);
+          $("status").textContent = "Error for " + queue[i].game_name + ": " + error.message + ". Continuing with the next game…";
+        }
+        if (i < queue.length - 1 && !stopRequested) await sleep(250);
+      }
+      if (stopRequested) $("status").textContent = "Scan stopped. Completed " + completed + " of " + queue.length + " games; partial results are retained in the table.";
+      else $("status").textContent = "Scan finished. " + completed + " of " + queue.length + " games completed successfully.";
+    } catch (error) {
+      $("status").textContent = "Scan failed: " + error.message;
+    } finally {
+      controller = null;
+      $("start").disabled = games.length === 0;
+      $("stop").disabled = true;
+      $("reload").disabled = false;
+    }
+  }
+
+  $("start").addEventListener("click", startScan);
+  $("stop").addEventListener("click", () => { stopRequested = true; if (controller) controller.abort(); });
+  $("reload").addEventListener("click", loadGames);
+  loadGames();
+})();
+</script>
+</body>
+</html>
