@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-29T10:56:21Z",
+  "generated_at": "2026-10-29T17:37:20Z",
   "window": {
-    "start": "2026-10-22T10:56:21Z",
-    "end": "2026-10-29T10:56:21Z",
+    "start": "2026-10-22T17:37:20Z",
+    "end": "2026-10-29T17:37:20Z",
     "days": 7
   },
   "api_endpoint": "https://api.steemit.com",
@@ -30,7 +30,7 @@
   ],
   "tag_stats": {
     "cur8": {
-      "post_count": 74,
+      "post_count": 73,
       "unique_authors": 22,
       "pages_fetched": 1,
       "reached_window_start": true,
@@ -38,7 +38,7 @@
       "status": "ok"
     },
     "drugwars-fight": {
-      "post_count": 90,
+      "post_count": 89,
       "unique_authors": 20,
       "pages_fetched": 1,
       "reached_window_start": true,
@@ -46,8 +46,8 @@
       "status": "ok"
     },
     "hari-raid": {
-      "post_count": 39,
-      "unique_authors": 16,
+      "post_count": 38,
+      "unique_authors": 15,
       "pages_fetched": 1,
       "reached_window_start": true,
       "page_limit_reached": false,
@@ -86,8 +86,8 @@
       "status": "ok"
     },
     "steem4snake": {
-      "post_count": 7,
-      "unique_authors": 2,
+      "post_count": 6,
+      "unique_authors": 1,
       "pages_fetched": 1,
       "reached_window_start": true,
       "page_limit_reached": false,
@@ -118,7 +118,7 @@
       "status": "ok"
     },
     "steemgame": {
-      "post_count": 136,
+      "post_count": 139,
       "unique_authors": 36,
       "pages_fetched": 2,
       "reached_window_start": true,
@@ -135,15 +135,15 @@
     },
     "steemhop": {
       "post_count": 80,
-      "unique_authors": 29,
+      "unique_authors": 30,
       "pages_fetched": 1,
       "reached_window_start": true,
       "page_limit_reached": false,
       "status": "ok"
     },
     "steemludo": {
-      "post_count": 64,
-      "unique_authors": 23,
+      "post_count": 69,
+      "unique_authors": 24,
       "pages_fetched": 1,
       "reached_window_start": true,
       "page_limit_reached": false,
@@ -166,8 +166,8 @@
         "steemludo"
       ],
       "game_url": "https://steemx.org/ludo/game",
-      "posts_found": 64,
-      "unique_authors": 23,
+      "posts_found": 69,
+      "unique_authors": 24,
       "authors": [
         "afifasanjida333",
         "afzalqamar",
@@ -175,6 +175,7 @@
         "alif82",
         "benton3",
         "iramafzal",
+        "janufaislam26",
         "labib2",
         "mamun123456",
         "mdsahin111",
@@ -195,6 +196,125 @@
       ],
       "posts": [
         {
+          "author": "tahirazaman",
+          "permlink": "today-i-am-playing-steemludo-game-dkavjr",
+          "title": "Today I am playing steemludo game",
+          "created": "2026-10-29T17:01:45Z",
+          "url": "https://steemit.com/@tahirazaman/today-i-am-playing-steemludo-game-dkavjr",
+          "matched_tag": "steemludo",
+          "tags": [
+            "steemludo",
+            "steemexclusive",
+            "pakistan",
+            "game",
+            "steemgame",
+            "steemfun",
+            "steemx.org"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "1.173 SBD",
+          "active_votes_count": 28,
+          "matched_tags": [
+            "steemludo"
+          ]
+        },
+        {
+          "author": "umme-mawa",
+          "permlink": "ushes-i-lost-my-battle-today-playing-with-the-bot",
+          "title": "I Lost My Battle Today Playing With the Bot",
+          "created": "2026-10-29T16:23:12Z",
+          "url": "https://steemit.com/@umme-mawa/ushes-i-lost-my-battle-today-playing-with-the-bot",
+          "matched_tag": "steemgame",
+          "tags": [
+            "hive-139765",
+            "steemgame",
+            "steemludo",
+            "steemexclusive",
+            "bangladesh",
+            "newcomer"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "0.466 SBD",
+          "active_votes_count": 70,
+          "matched_tags": [
+            "steemgame",
+            "steemludo"
+          ]
+        },
+        {
+          "author": "shimanto0",
+          "permlink": "playing-the-steem-ludo-game-day-12",
+          "title": "Playing the Steem Ludo game Day-12",
+          "created": "2026-10-29T16:13:09Z",
+          "url": "https://steemit.com/@shimanto0/playing-the-steem-ludo-game-day-12",
+          "matched_tag": "steemgame",
+          "tags": [
+            "hive-113640",
+            "steemgame",
+            "steemludo",
+            "gameplay",
+            "game",
+            "steemexclusive",
+            "cur8"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "1.240 SBD",
+          "active_votes_count": 29,
+          "matched_tags": [
+            "steemgame",
+            "steemludo"
+          ]
+        },
+        {
+          "author": "janufaislam26",
+          "permlink": "76nhcc-the-ludo-bot-won-the-game",
+          "title": "today palying steem ludu game and  won the game",
+          "created": "2026-10-29T16:02:24Z",
+          "url": "https://steemit.com/@janufaislam26/76nhcc-the-ludo-bot-won-the-game",
+          "matched_tag": "steemgame",
+          "tags": [
+            "steemgame",
+            "steemludo",
+            "steemexclusive",
+            "bangladesh",
+            "newcomer"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "1.810 SBD",
+          "active_votes_count": 106,
+          "matched_tags": [
+            "steemgame",
+            "steemludo"
+          ]
+        },
+        {
+          "author": "smrityshabrin",
+          "permlink": "6s4kaz-play-steemludo-game-with-robot",
+          "title": "Play Steemludo game with robot",
+          "created": "2026-10-29T11:25:48Z",
+          "url": "https://steemit.com/@smrityshabrin/6s4kaz-play-steemludo-game-with-robot",
+          "matched_tag": "steemgame",
+          "tags": [
+            "steemgame",
+            "steemludo",
+            "steemexclusive",
+            "bangladesh",
+            "newcomer"
+          ],
+          "net_votes": 0,
+          "children": 1,
+          "pending_payout_value": "1.811 SBD",
+          "active_votes_count": 98,
+          "matched_tags": [
+            "steemgame",
+            "steemludo"
+          ]
+        },
+        {
           "author": "toufiq777",
           "permlink": "7bxntn-steemludo-game-or-or-play-quick-match-win-this-game",
           "title": "SteemLudo Game || Play Quick Match, Win This game",
@@ -210,8 +330,8 @@
             "bangladesh"
           ],
           "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "1.209 SBD",
+          "children": 1,
+          "pending_payout_value": "1.215 SBD",
           "active_votes_count": 29,
           "matched_tags": [
             "steemgame",
@@ -1851,13 +1971,14 @@
       ],
       "game_url": "https://steemhop.org/",
       "posts_found": 80,
-      "unique_authors": 29,
+      "unique_authors": 30,
       "authors": [
         "afzalqamar",
         "alfazmalek",
         "benton3",
         "blockseater",
         "emranhasan",
+        "emuhasan",
         "fahimaislam",
         "fasoniya",
         "iramafzal",
@@ -1885,6 +2006,49 @@
       ],
       "posts": [
         {
+          "author": "steemhop.org",
+          "permlink": "steemhop-org-daily-statistics-report-28-10-2026",
+          "title": "Steemhop.org Daily Statistics Report 28-10-2026",
+          "created": "2026-10-29T16:07:54Z",
+          "url": "https://steemit.com/@steemhop.org/steemhop-org-daily-statistics-report-28-10-2026",
+          "matched_tag": "steemhop",
+          "tags": [
+            "steemhop",
+            "steemexclusive"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "3.801 SBD",
+          "active_votes_count": 23,
+          "matched_tags": [
+            "steemhop"
+          ]
+        },
+        {
+          "author": "emuhasan",
+          "permlink": "la-emocionante-experiencia-de-jugar-6gy3ee",
+          "title": "La emocionante experiencia de jugar.",
+          "created": "2026-10-29T15:15:03Z",
+          "url": "https://steemit.com/@emuhasan/la-emocionante-experiencia-de-jugar-6gy3ee",
+          "matched_tag": "steemgame",
+          "tags": [
+            "steemgame",
+            "steemhop",
+            "steemexclusive",
+            "bangladesh",
+            "steem",
+            "krsuccess"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "0.015 SBD",
+          "active_votes_count": 7,
+          "matched_tags": [
+            "steemgame",
+            "steemhop"
+          ]
+        },
+        {
           "author": "mahmudraha21",
           "permlink": "4dtwe1-juegos-de-steemhop-jugando-otro-dia",
           "title": "Juegos de Steemhop Jugando Otro Día",
@@ -1899,8 +2063,8 @@
           ],
           "net_votes": 0,
           "children": 1,
-          "pending_payout_value": "1.751 SBD",
-          "active_votes_count": 9,
+          "pending_payout_value": "1.761 SBD",
+          "active_votes_count": 10,
           "matched_tags": [
             "steemhop"
           ]
@@ -1922,8 +2086,8 @@
           ],
           "net_votes": 0,
           "children": 1,
-          "pending_payout_value": "1.758 SBD",
-          "active_votes_count": 11,
+          "pending_payout_value": "1.770 SBD",
+          "active_votes_count": 12,
           "matched_tags": [
             "steemhop"
           ]
@@ -1988,8 +2152,8 @@
             "krsuccess"
           ],
           "net_votes": 0,
-          "children": 1,
-          "pending_payout_value": "0.607 SBD",
+          "children": 2,
+          "pending_payout_value": "0.608 SBD",
           "active_votes_count": 14,
           "matched_tags": [
             "steemgame",
@@ -2135,8 +2299,8 @@
           ],
           "net_votes": 0,
           "children": 2,
-          "pending_payout_value": "5.784 SBD",
-          "active_votes_count": 27,
+          "pending_payout_value": "5.898 SBD",
+          "active_votes_count": 28,
           "matched_tags": [
             "steemhop"
           ]
@@ -3742,50 +3906,6 @@
             "steemhop",
             "steemludo"
           ]
-        },
-        {
-          "author": "emranhasan",
-          "permlink": "enjoying-steem-hop-gaming-session-b89427",
-          "title": "Enjoying Steem Hop Gaming Session.",
-          "created": "2026-10-22T14:46:51Z",
-          "url": "https://steemit.com/@emranhasan/enjoying-steem-hop-gaming-session-b89427",
-          "matched_tag": "steemgame",
-          "tags": [
-            "steemgame",
-            "steemhop",
-            "steemexclusive",
-            "bangladesh",
-            "steem",
-            "krsuccess"
-          ],
-          "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "0.501 SBD",
-          "active_votes_count": 7,
-          "matched_tags": [
-            "steemgame",
-            "steemhop"
-          ]
-        },
-        {
-          "author": "steemhop.org",
-          "permlink": "steemhop-org-daily-statistics-report-21-10-2026",
-          "title": "Steemhop.org Daily Statistics Report 21-10-2026",
-          "created": "2026-10-22T12:29:27Z",
-          "url": "https://steemit.com/@steemhop.org/steemhop-org-daily-statistics-report-21-10-2026",
-          "matched_tag": "steemhop",
-          "tags": [
-            "steemhop",
-            "steemexclusive",
-            "steemgaming"
-          ],
-          "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "7.720 SBD",
-          "active_votes_count": 17,
-          "matched_tags": [
-            "steemhop"
-          ]
         }
       ],
       "query_status": "ok"
@@ -3797,8 +3917,8 @@
         "hari-raid"
       ],
       "game_url": "https://hari-raid.h4lab.com/",
-      "posts_found": 39,
-      "unique_authors": 16,
+      "posts_found": 38,
+      "unique_authors": 15,
       "authors": [
         "ahp93",
         "banguri",
@@ -3808,7 +3928,6 @@
         "fasoniya",
         "irfan-islam",
         "jobayerb",
-        "jorgebgt",
         "lamiyahaque",
         "limon88",
         "mehuu",
@@ -3818,6 +3937,30 @@
         "tupo-mridha"
       ],
       "posts": [
+        {
+          "author": "irfan-islam",
+          "permlink": "una-nueva-y-emocionante-aventura-en-el-mundo-de-los-videojuegos",
+          "title": "Una nueva y emocionante aventura en el mundo de los videojuegos",
+          "created": "2026-10-29T12:57:42Z",
+          "url": "https://steemit.com/@irfan-islam/una-nueva-y-emocionante-aventura-en-el-mundo-de-los-videojuegos",
+          "matched_tag": "hari-raid",
+          "tags": [
+            "steemgame",
+            "hari-raid",
+            "steemexclusive",
+            "cotina",
+            "bangladesh",
+            "steem"
+          ],
+          "net_votes": 0,
+          "children": 1,
+          "pending_payout_value": "0.000 SBD",
+          "active_votes_count": 3,
+          "matched_tags": [
+            "hari-raid",
+            "steemgame"
+          ]
+        },
         {
           "author": "banguri",
           "permlink": "2026-10-29-hari-raid",
@@ -3833,8 +3976,8 @@
           ],
           "net_votes": 0,
           "children": 1,
-          "pending_payout_value": "6.829 SBD",
-          "active_votes_count": 30,
+          "pending_payout_value": "6.731 SBD",
+          "active_votes_count": 34,
           "matched_tags": [
             "hari-raid"
           ]
@@ -3876,8 +4019,8 @@
           ],
           "net_votes": 0,
           "children": 1,
-          "pending_payout_value": "1.168 SBD",
-          "active_votes_count": 8,
+          "pending_payout_value": "1.174 SBD",
+          "active_votes_count": 9,
           "matched_tags": [
             "hari-raid"
           ]
@@ -4155,9 +4298,9 @@
             "steem"
           ],
           "net_votes": 0,
-          "children": 1,
-          "pending_payout_value": "1.845 SBD",
-          "active_votes_count": 6,
+          "children": 2,
+          "pending_payout_value": "1.819 SBD",
+          "active_votes_count": 7,
           "matched_tags": [
             "hari-raid",
             "steemgame"
@@ -4667,48 +4810,6 @@
           "matched_tags": [
             "hari-raid"
           ]
-        },
-        {
-          "author": "jorgebgt",
-          "permlink": "my-move-in-hari-raid",
-          "title": " My move in HARI-RAID",
-          "created": "2026-10-22T15:02:36Z",
-          "url": "https://steemit.com/@jorgebgt/my-move-in-hari-raid",
-          "matched_tag": "hari-raid",
-          "tags": [
-            "krsuccess",
-            "hari-raid",
-            "game",
-            "h4lab"
-          ],
-          "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "0.081 SBD",
-          "active_votes_count": 15,
-          "matched_tags": [
-            "hari-raid"
-          ]
-        },
-        {
-          "author": "banguri",
-          "permlink": "2026-10-22-hari-raid",
-          "title": "2026년 10월 22일 스팀잇 일상 - HARI RAID 레전더리 카드 겟 -",
-          "created": "2026-10-22T13:25:18Z",
-          "url": "https://steemit.com/@banguri/2026-10-22-hari-raid",
-          "matched_tag": "hari-raid",
-          "tags": [
-            "kr",
-            "krsuccess",
-            "hari-raid",
-            "h4lab"
-          ],
-          "net_votes": 0,
-          "children": 1,
-          "pending_payout_value": "6.625 SBD",
-          "active_votes_count": 31,
-          "matched_tags": [
-            "hari-raid"
-          ]
         }
       ],
       "query_status": "ok"
@@ -4720,7 +4821,7 @@
         "cur8"
       ],
       "game_url": "https://games.cur8.fun/",
-      "posts_found": 74,
+      "posts_found": 73,
       "unique_authors": 22,
       "authors": [
         "a-abrar",
@@ -4748,6 +4849,28 @@
       ],
       "posts": [
         {
+          "author": "dexpartacus",
+          "permlink": "questa-banca-ti-paga-in-bitcoin-e-ti-regala-500usd",
+          "title": "Questa Banca ti paga in BITCOIN e ti regala 500$!",
+          "created": "2026-10-29T14:59:03Z",
+          "url": "https://steemit.com/@dexpartacus/questa-banca-ti-paga-in-bitcoin-e-ti-regala-500usd",
+          "matched_tag": "cur8",
+          "tags": [
+            "cur8",
+            "xapobank",
+            "banks",
+            "bitcoin",
+            "crypto"
+          ],
+          "net_votes": 0,
+          "children": 1,
+          "pending_payout_value": "0.302 SBD",
+          "active_votes_count": 15,
+          "matched_tags": [
+            "cur8"
+          ]
+        },
+        {
           "author": "micro.cur8",
           "permlink": "pings-20261029",
           "title": "Cur8 Pings · Oct 29, 2026",
@@ -4760,7 +4883,7 @@
             "pings"
           ],
           "net_votes": 0,
-          "children": 2,
+          "children": 4,
           "pending_payout_value": "0.000 SBD",
           "active_votes_count": 0,
           "matched_tags": [
@@ -4808,8 +4931,8 @@
           ],
           "net_votes": 0,
           "children": 1,
-          "pending_payout_value": "1.183 SBD",
-          "active_votes_count": 9,
+          "pending_payout_value": "1.195 SBD",
+          "active_votes_count": 11,
           "matched_tags": [
             "cur8"
           ]
@@ -4850,8 +4973,8 @@
           ],
           "net_votes": 0,
           "children": 2,
-          "pending_payout_value": "1.272 SBD",
-          "active_votes_count": 11,
+          "pending_payout_value": "1.563 SBD",
+          "active_votes_count": 12,
           "matched_tags": [
             "cur8"
           ]
@@ -6146,8 +6269,8 @@
           ],
           "net_votes": 0,
           "children": 1,
-          "pending_payout_value": "1.251 SBD",
-          "active_votes_count": 22,
+          "pending_payout_value": "1.256 SBD",
+          "active_votes_count": 23,
           "matched_tags": [
             "cur8"
           ]
@@ -6354,55 +6477,6 @@
             "cur8",
             "steemgame"
           ]
-        },
-        {
-          "author": "srabon11",
-          "permlink": "cur8-survivor-arena-nuw2m0",
-          "title": "Cur8 Survivor Arena",
-          "created": "2026-10-22T15:41:54Z",
-          "url": "https://steemit.com/@srabon11/cur8-survivor-arena-nuw2m0",
-          "matched_tag": "cur8",
-          "tags": [
-            "steemexclusive",
-            "steemgame",
-            "newcomer",
-            "cur8",
-            "bangladesh",
-            "game",
-            "play",
-            "gamer"
-          ],
-          "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "1.432 SBD",
-          "active_votes_count": 14,
-          "matched_tags": [
-            "cur8",
-            "steemgame"
-          ]
-        },
-        {
-          "author": "supsnehal",
-          "permlink": "my-gaming-journey-on-cur8-games-level-103-c0qfnn",
-          "title": "My Gaming Journey on Cur8 Games 🎮 Level 103",
-          "created": "2026-10-22T13:38:21Z",
-          "url": "https://steemit.com/@supsnehal/my-gaming-journey-on-cur8-games-level-103-c0qfnn",
-          "matched_tag": "cur8",
-          "tags": [
-            "hive-159863",
-            "cur8",
-            "games",
-            "steem",
-            "gaming",
-            "achievement"
-          ],
-          "net_votes": 0,
-          "children": 1,
-          "pending_payout_value": "0.487 SBD",
-          "active_votes_count": 17,
-          "matched_tags": [
-            "cur8"
-          ]
         }
       ],
       "query_status": "ok"
@@ -6555,8 +6629,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "0.681 SBD",
-          "active_votes_count": 29,
+          "pending_payout_value": "6.547 SBD",
+          "active_votes_count": 30,
           "matched_tags": [
             "memorygame"
           ]
@@ -6663,10 +6737,9 @@
         "steem4snake"
       ],
       "game_url": "https://steemone.com/games/",
-      "posts_found": 7,
-      "unique_authors": 2,
+      "posts_found": 6,
+      "unique_authors": 1,
       "authors": [
-        "donsultan",
         "rifat58"
       ],
       "posts": [
@@ -6689,8 +6762,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "0.000 SBD",
-          "active_votes_count": 0,
+          "pending_payout_value": "0.004 SBD",
+          "active_votes_count": 9,
           "matched_tags": [
             "steem4snake",
             "steemgame"
@@ -6715,8 +6788,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "2.206 SBD",
-          "active_votes_count": 2,
+          "pending_payout_value": "2.207 SBD",
+          "active_votes_count": 11,
           "matched_tags": [
             "steem4snake",
             "steemgame"
@@ -6741,8 +6814,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "0.000 SBD",
-          "active_votes_count": 0,
+          "pending_payout_value": "0.002 SBD",
+          "active_votes_count": 1,
           "matched_tags": [
             "steem4snake",
             "steemgame"
@@ -6767,8 +6840,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "2.190 SBD",
-          "active_votes_count": 10,
+          "pending_payout_value": "2.203 SBD",
+          "active_votes_count": 11,
           "matched_tags": [
             "steem4snake",
             "steemgame"
@@ -6792,8 +6865,8 @@
           ],
           "net_votes": 0,
           "children": 2,
-          "pending_payout_value": "0.001 SBD",
-          "active_votes_count": 10,
+          "pending_payout_value": "0.004 SBD",
+          "active_votes_count": 11,
           "matched_tags": [
             "steem4snake",
             "steemgame"
@@ -6817,33 +6890,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "2.196 SBD",
-          "active_votes_count": 10,
-          "matched_tags": [
-            "steem4snake",
-            "steemgame"
-          ]
-        },
-        {
-          "author": "donsultan",
-          "permlink": "steem4snake-or-season-02-legends-never-die-powered-by-friends-witness",
-          "title": "STEEM4SNAKE 🐍 | Season: 02 – Legends Never Die Powered by @friends.witness",
-          "created": "2026-10-22T11:44:54Z",
-          "url": "https://steemit.com/@donsultan/steem4snake-or-season-02-legends-never-die-powered-by-friends-witness",
-          "matched_tag": "steem4snake",
-          "tags": [
-            "steemgame",
-            "steem4snake",
-            "steemexclusive",
-            "nigeria",
-            "play4steem",
-            "gameplay",
-            "game"
-          ],
-          "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "2.279 SBD",
-          "active_votes_count": 13,
+          "pending_payout_value": "2.206 SBD",
+          "active_votes_count": 11,
           "matched_tags": [
             "steem4snake",
             "steemgame"
@@ -6867,6 +6915,29 @@
         "zohaib96"
       ],
       "posts": [
+        {
+          "author": "zohaib96",
+          "permlink": "playing-steem-heights-game-on-212c7185ed79b",
+          "title": "Playing Steem Heights Game on SteemPro – 29 Oct",
+          "created": "2026-10-29T13:52:18Z",
+          "url": "https://steemit.com/@zohaib96/playing-steem-heights-game-on-212c7185ed79b",
+          "matched_tag": "steemheights",
+          "tags": [
+            "steemheights",
+            "gaming",
+            "steempro",
+            "play2earn",
+            "pakistan",
+            "boc"
+          ],
+          "net_votes": 0,
+          "children": 0,
+          "pending_payout_value": "0.000 SBD",
+          "active_votes_count": 0,
+          "matched_tags": [
+            "steemheights"
+          ]
+        },
         {
           "author": "zohaib96",
           "permlink": "playing-steem-heights-game-on-6c400d9ad5068",
@@ -6932,8 +7003,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "0.000 SBD",
-          "active_votes_count": 0,
+          "pending_payout_value": "1.001 SBD",
+          "active_votes_count": 3,
           "matched_tags": [
             "steemheights"
           ]
@@ -7052,29 +7123,6 @@
           "matched_tags": [
             "steemheights"
           ]
-        },
-        {
-          "author": "zohaib96",
-          "permlink": "playing-steem-heights-game-on-cfe620ccd4e76",
-          "title": "Playing Steem Heights Game on SteemPro – 22 Oct",
-          "created": "2026-10-22T15:25:12Z",
-          "url": "https://steemit.com/@zohaib96/playing-steem-heights-game-on-cfe620ccd4e76",
-          "matched_tag": "steemheights",
-          "tags": [
-            "steemheights",
-            "gaming",
-            "steempro",
-            "play2earn",
-            "pakistan",
-            "boc"
-          ],
-          "net_votes": 0,
-          "children": 0,
-          "pending_payout_value": "0.000 SBD",
-          "active_votes_count": 0,
-          "matched_tags": [
-            "steemheights"
-          ]
         }
       ],
       "query_status": "ok"
@@ -7134,8 +7182,8 @@
           ],
           "net_votes": 0,
           "children": 0,
-          "pending_payout_value": "0.278 SBD",
-          "active_votes_count": 7,
+          "pending_payout_value": "0.284 SBD",
+          "active_votes_count": 8,
           "matched_tags": [
             "pixelcraft"
           ]
@@ -7322,7 +7370,7 @@
         "drugwars-fight"
       ],
       "game_url": null,
-      "posts_found": 90,
+      "posts_found": 89,
       "unique_authors": 20,
       "authors": [
         "alpha-omega",
@@ -9212,27 +9260,6 @@
           "children": 1,
           "pending_payout_value": "0.046 SBD",
           "active_votes_count": 3,
-          "matched_tags": [
-            "drugwars-fight"
-          ]
-        },
-        {
-          "author": "circlebubble",
-          "permlink": "4idm1y-check-my-latest-fight-circlebubble-vs-the-goverment",
-          "title": "Check my latest fight ! circlebubble vs The Goverment",
-          "created": "2026-10-22T15:16:00Z",
-          "url": "https://steemit.com/@circlebubble/4idm1y-check-my-latest-fight-circlebubble-vs-the-goverment",
-          "matched_tag": "drugwars-fight",
-          "tags": [
-            "drugwars-fight",
-            "gaming",
-            "fight",
-            "dw"
-          ],
-          "net_votes": 0,
-          "children": 1,
-          "pending_payout_value": "0.166 SBD",
-          "active_votes_count": 4,
           "matched_tags": [
             "drugwars-fight"
           ]
