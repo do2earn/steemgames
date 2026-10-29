@@ -102,14 +102,21 @@ export default {
         const payload = JSON.stringify(fields);
         const payloadHex = [...new TextEncoder().encode(payload)].map(b => b.toString(16).padStart(2, "0")).join("");
         if (payloadHex !== signedPayloadHex.toLowerCase()) return json(request, { success: false, error: "SIGNED_PAYLOAD_MISMATCH" }, 400);
-        const allowed = ["game_name", "game_logo", "tag", "developer", "genres", "about", "website_url", "is_active"];
+        const allowed = ["game_name", "game_logo", "points", "posts", "votes", "users", "tag", "developer", "genres", "about", "website_url", "is_active", "created_at", "stats_synced_at"];
         const updates = allowed.filter(key => Object.prototype.hasOwnProperty.call(fields, key));
-        if (!updates.length || updates.some(key => typeof fields[key] !== "string" && key !== "is_active") ||
-            ("is_active" in fields && ![0, 1, "0", "1"].includes(fields.is_active))) {
+        const numericFields = ["points", "posts", "votes", "users"];
+        if (!updates.length ||
+            updates.some(key => numericFields.includes(key) ? !Number.isFinite(Number(fields[key])) || Number(fields[key]) < 0 :
+              key === "is_active" ? ![0, 1, "0", "1"].includes(fields[key]) :
+              ["created_at", "stats_synced_at"].includes(key) ? fields[key] !== null && typeof fields[key] !== "string" :
+              typeof fields[key] !== "string") ||
+            ("points" in fields && !Number.isFinite(Number(fields.points)))) {
           return json(request, { success: false, error: "INVALID_GAME_FIELDS" }, 400);
         }
         const sets = updates.map(key => key + " = ?").join(", ");
-        const values = updates.map(key => key === "is_active" ? Number(fields[key]) : String(fields[key] ?? "").trim());
+        const values = updates.map(key => numericFields.includes(key) ? Number(fields[key]) :
+          key === "is_active" ? Number(fields[key]) :
+          ["created_at", "stats_synced_at"].includes(key) ? (fields[key] || null) : String(fields[key] ?? "").trim());
         const result = await env.DB.prepare("UPDATE steemgames SET " + sets + ", updated_at = datetime('now') WHERE id = ?").bind(...values, Number(gameId)).run();
         if (!result.meta?.changes) return json(request, { success: false, error: "GAME_NOT_FOUND" }, 404);
         const game = await env.DB.prepare("SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, created_at, updated_at, stats_synced_at FROM steemgames WHERE id = ?").bind(Number(gameId)).first();
