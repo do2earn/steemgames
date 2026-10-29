@@ -76,7 +76,7 @@ export default {
             !fields || typeof fields !== "object" || typeof message !== "string" || typeof signature !== "string") {
           return json(request, { success: false, error: "INVALID_ADMIN_REQUEST" }, 400);
         }
-        const match = message.match(/^Steem Games Admin Edit\\nAccount: do2earn\\nGame ID: (\\d+)\\nTimestamp: (\\d+)\\nNonce: ([a-f0-9-]{16,})\\nPayload: ([a-f0-9]+)$/i);
+        const match = message.match(/^Steem Games Admin Edit\nAccount: do2earn\nGame ID: (\\d+)\nTimestamp: (\\d+)\nNonce: ([a-f0-9-]{16,})\nPayload: ([a-f0-9]+)$/i);
         if (!match || Number(match[1]) !== Number(gameId) || Math.abs(Date.now() - Number(match[2])) > 5 * 60 * 1000) {
           return json(request, { success: false, error: "INVALID_OR_EXPIRED_SIGNATURE_MESSAGE" }, 400);
         }
