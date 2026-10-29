@@ -8,7 +8,7 @@
   <meta name="application-name" content="Steem Games">
   <meta name="robots" content="index,follow">
   <title>Steem Games | Steem Blockchain Game Directory</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20261028-5">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261029-1">
   <style>
     .sg-intro-card {
         --sg-ink: #172033;
@@ -40,11 +40,12 @@
         margin: 0;
         color: #f0b323;
         font-family: Impact, Haettenschweiler, "Arial Black", fantasy, sans-serif;
-        font-size: clamp(2.2rem, 9vw, 128px);
+        font-size: clamp(2rem, 9vw, 128px);
         font-weight: 900;
         line-height: 1;
-        letter-spacing: -.045em;
-        text-shadow: 2px 3px 0 #8b5e13, 0 5px 16px rgba(240, 179, 35, .18);
+        letter-spacing: -.055em;
+        text-shadow: 1px 2px 0 rgba(25,35,55,.25);
+        white-space: nowrap;
       }
       .sg-intro-tagline {
         margin: 14px 0 0;
@@ -94,23 +95,18 @@
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261028-5"></script>
+  <script type="module" src="assets/js/app.js?v=20261029-1"></script>
 
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="./" aria-label="Steem Games home">
-      <img src="assets/images/steemgames-logo.png" alt="" onerror="this.hidden=true">
-      <span>STEEM <b>GAMES</b></span>
-    </a>
     <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
     <nav id="mainMenu" class="menu" hidden>
       <a href="#games">🎮 Games Directory</a>
-      <a href="#rankings">🏆 Rankings</a>
-      <a href="#about">ℹ️ About</a>
       <button id="menuLoginButton" type="button">🔐 Login</button>
       <button id="logoutButton" type="button" hidden>Logout</button>
     </nav>
+    <div id="headerAssetsComponent" class="header-assets-component"></div>
   </header>
 
   <main class="page">
@@ -124,7 +120,7 @@
           height="128"
           onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/do2earn/steemgames/88b0388ea6a4b90aaae63be6586a9b43e8f1ffb2/assets/images/steemgames_logo.png';"
         >
-        <h1 id="sg-intro-title">Steem Games</h1>
+        <h1 id="sg-intro-title"><span style="color:#ef4444">S</span><span style="color:#f59e0b">t</span><span style="color:#22c55e">e</span><span style="color:#06b6d4">e</span><span style="color:#3b82f6">m</span> <span style="color:#ec4899">G</span><span style="color:#f97316">a</span><span style="color:#14b8a6">m</span><span style="color:#6366f1">e</span><span style="color:#eab308">s</span></h1>
       </div>
     
       <p class="sg-intro-tagline">• Vote • Play • Earn •</p>
@@ -155,19 +151,10 @@
       <div id="steemgamesComponent" class="sg-component-loading" role="status">Loading Steem Games directory…</div>
     </section>
 
-    <section id="rankings" class="section">
-      <div class="section-heading"><div><p class="eyebrow">COMMUNITY PICKS</p><h2>Top Games</h2></div></div>
-      <div id="rankingsList" class="rankings-list"><p class="muted">Rankings will appear when game data is available.</p></div>
-    </section>
-
-    <section id="about" class="about section">
-      <p class="eyebrow">ABOUT THE PROJECT</p>
-      <h2>One home for Steem games</h2>
-      <p>Steem Games is a community directory for discovering games, exploring their details, and supporting them with daily votes.</p>
-    </section>
+    
   </main>
 
-  <footer class="footer"><a href="https://do2earn.dev" target="_blank" rel="noopener noreferrer">Do2Earn</a><span>Steem Games</span></footer>
+  <div id="footerComponent"></div>
 
   <dialog id="loginDialog" class="login-dialog" aria-labelledby="loginTitle">
     <form id="loginForm" class="login-form">
