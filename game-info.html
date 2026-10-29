@@ -65,6 +65,7 @@
     .sg-game-info-actions a, .sg-game-info-actions button { display:inline-flex; align-items:center; justify-content:center; min-width:105px; padding:11px 18px; border:0; border-radius:9px; color:#fff; font:inherit; font-weight:800; text-decoration:none; cursor:pointer; }
     .sg-game-play { background:#16a34a; } .sg-game-vote { background:#2563eb; }
     .sg-game-publish { background:#16a34a; } .sg-game-share { background:#eab308; color:#172033 !important; }
+    .sg-game-edit { background:#6b7280; }
     .sg-game-info-divider { border:0; border-top:1px solid #d8dee8; margin:22px 0; }
     .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; }
     .sg-game-developer { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
@@ -105,21 +106,36 @@
           <h1 class="sg-game-info-title">${esc(name)}</h1>
           <hr class="sg-game-info-divider">
           <div class="sg-game-info-actions">
-            ${website ? '<a class="sg-game-play" href="' + esc(website) + '" target="_blank" rel="noopener noreferrer">▶ Play</a>' : '<a class="sg-game-play" href="#" aria-disabled="true" style="opacity:.55;pointer-events:none">▶ Play</a>'}
-            <a class="sg-game-vote" href="index.html#games">Vote</a>
-            <a class="sg-game-publish" href="${esc(publishUrl)}" target="_blank" rel="noopener noreferrer">Publish</a>
-            <button class="sg-game-share" id="shareGameButton" type="button">Share</button>
+            ${website ? '<a class="sg-game-play" href="' + esc(website) + '" target="_blank" rel="noopener noreferrer">▶️ Play</a>' : '<a class="sg-game-play" href="#" aria-disabled="true" style="opacity:.55;pointer-events:none">▶️ Play</a>'}
+            <a class="sg-game-vote" href="index.html#games">✅ Vote</a>
+            <a class="sg-game-publish" href="${esc(publishUrl)}" target="_blank" rel="noopener noreferrer">📝 Publish</a>
+            <button class="sg-game-share" id="shareGameButton" type="button">⬆️ Share</button>
+            <button class="sg-game-edit" id="editGameButton" type="button" hidden>⚙️ Edit</button>
           </div>
           <hr class="sg-game-info-divider">
           <div class="sg-game-info-stats">
-            <div><strong>Points:</strong> ${Math.round(Number(game.points) || 0).toLocaleString()}</div>
-            <div><strong>Posts:</strong> ${Math.round(Number(game.posts) || 0).toLocaleString()}</div>
-            <div class="sg-game-developer"><strong>Developer:</strong> ${developer && profile ? '<img src="https://steemitimages.com/u/' + encodeURIComponent(developer) + '/avatar" alt="" onerror="this.style.display=\'none\'"><a href="' + esc(profile) + '" target="_blank" rel="noopener noreferrer">@' + esc(developer) + '</a>' : '<span>Not specified</span>'}</div>
+            <div><strong>⭐ Points:</strong> ${Math.round(Number(game.points) || 0).toLocaleString()}</div>
+            <div><strong>📄 Posts Numbers:</strong> ${Math.round(Number(game.posts) || 0).toLocaleString()}</div>
+            <div><strong>#️⃣ Dedicated Tag:</strong> #${esc(tag)}</div>
+            <div class="sg-game-developer"><strong>👩‍💻 Developer:</strong> ${developer && profile ? '<img src="https://steemitimages.com/u/' + encodeURIComponent(developer) + '/avatar" alt="" onerror="this.style.display=\'none\'"><a href="' + esc(profile) + '" target="_blank" rel="noopener noreferrer">@' + esc(developer) + '</a>' : '<span>Not specified</span>'}</div>
           </div>
           <hr class="sg-game-info-divider">
           <h2 style="text-align:left;margin:0 0 10px">About</h2>
           <div class="sg-game-about">${esc(about)}</div>
         `;
+        const editButton = document.getElementById('editGameButton');
+        const syncEditVisibility = () => {
+          try {
+            const session = JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null');
+            editButton.hidden = String(session?.username || '').toLowerCase() !== 'do2earn';
+          } catch { editButton.hidden = true; }
+        };
+        syncEditVisibility();
+        document.getElementById('loginDialog')?.addEventListener('close', syncEditVisibility);
+        document.getElementById('logoutButton')?.addEventListener('click', () => setTimeout(syncEditVisibility, 0));
+        editButton.addEventListener('click', () => {
+          window.location.href = 'index.html#adminToolsSection';
+        });
         document.getElementById('shareGameButton').addEventListener('click', async () => {
           const shareData = { title: name + ' | Steem Games', text: 'Explore ' + name + ' on Steem Games', url: location.href };
           try {
