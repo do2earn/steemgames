@@ -10,7 +10,6 @@
   <meta name="robots" content="index,follow">
   <link rel="stylesheet" href="assets/css/style.css?v=20261029-10">
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
   <script type="module" src="assets/js/app.js?v=20261029-6"></script>
 </head>
@@ -204,7 +203,7 @@
           if (!currentGame || String(currentGame.id) === '') return;
           const username = (() => { try { return JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null')?.username || ''; } catch { return ''; } })().toLowerCase();
           if (username !== 'do2earn') { feedback.textContent = 'Only @do2earn can edit game information.'; return; }
-          if (!globalThis.steem_keychain?.requestSignBuffer) { feedback.textContent = 'For secure saving, install and unlock Steem Keychain, then log in with Keychain and try again.'; return; }
+          if (typeof window.steemGamesAdminSignMessage !== 'function') { feedback.textContent = 'Please log in as @do2earn using the Steem Posting Key method. Your key is used only in browser memory; no Keychain approval is required.'; return; }
           const fields = {};
           for (const [key, id] of Object.entries(editFields)) fields[key] = document.getElementById(id).value;
           fields.tag = String(fields.tag || '').replace(/^#/, '').trim();
@@ -215,14 +214,9 @@
           const timestamp = Date.now(), nonce = crypto.randomUUID();
           const payloadHex = [...new TextEncoder().encode(JSON.stringify(fields))].map(b => b.toString(16).padStart(2, '0')).join('');
           const message = 'Steem Games Admin Edit\nAccount: do2earn\nGame ID: ' + Number(currentGame.id) + '\nTimestamp: ' + timestamp + '\nNonce: ' + nonce + '\nPayload: ' + payloadHex;
-          saveButton.disabled = true; feedback.textContent = 'Requesting @do2earn signature…';
+          saveButton.disabled = true; feedback.textContent = 'Verifying @do2earn login and saving changes…';
           try {
-            const signature = await new Promise((resolve, reject) => {
-              globalThis.steem_keychain.requestSignBuffer('do2earn', message, 'Posting', response => {
-                if (response?.success && response?.result) resolve(response.result);
-                else reject(new Error(response?.message || 'Signature request was cancelled.'));
-              });
-            });
+            const signature = await window.steemGamesAdminSignMessage('do2earn', message);
             feedback.textContent = 'Saving changes…';
             const response = await fetch(API_BASE + '/api/admin/game', {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
