@@ -275,3 +275,14 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 .sg-page-home-link{margin-top:26px!important}
 .sg-page-home-link .button{display:inline-flex;width:auto}
 @media(max-width:600px){.sg-static-page{padding-top:16px;padding-bottom:18px}.sg-static-page .sg-content-card{padding:18px 13px}}
+
+
+/* Homepage spacing and larger Steem Games branding (2026-10-29). */
+.menu .menu-brand img{width:144px;height:144px}
+.sg-intro-brand h1{font-size:clamp(3rem,12vw,150px)!important}
+.page>.sg-intro-card{margin-top:5px!important}
+@media(max-width:600px){
+ .menu .menu-brand img{width:128px;height:128px}
+ .sg-intro-brand h1{font-size:clamp(2.2rem,10.5vw,4rem)!important;letter-spacing:-.06em!important}
+}
+@media(max-width:360px){.sg-intro-brand h1{font-size:2.1rem!important}}
