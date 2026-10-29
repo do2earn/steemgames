@@ -1,22 +1,32 @@
-<!-- Shared top-right account assets for Steem Games pages. -->
-<div class="sg-assets-bar" id="sgAssetsBar" aria-label="Account assets">
-  <a class="sg-asset-avatar" id="sgAssetAvatarLink" href="#" aria-label="Steem profile" hidden>
-    <img id="sgAssetAvatar" alt="Steem user avatar" src="" width="34" height="34">
-  </a>
-  <a class="sg-asset-wallet" href="https://steemflags.do2earn.dev/wallet.html" aria-label="Open wallet in Steem Flags" title="My Wallet in Steem Flags">👛</a>
-  <div class="sg-asset-balance" aria-label="D2E balance">
-    <img src="https://raw.githubusercontent.com/do2earn/steemflags/main/assets/d2e_asset_logo1.png" alt="D2E" width="18" height="18">
-    <span>D2E</span>
-    <strong id="sgD2EBalance">—</strong>
+<!-- Shared account header. Assets are visible only after login. -->
+<div class="sg-header-account" id="sgHeaderAccount">
+  <button class="sg-header-login" id="sgHeaderLoginButton" type="button">Login</button>
+  <div class="sg-assets-bar" id="sgAssetsBar" aria-label="Account assets" hidden>
+    <a class="sg-asset-avatar" id="sgAssetAvatarLink" href="#" aria-label="Steem profile" title="Steem profile">
+      <img id="sgAssetAvatar" alt="Steem user avatar" src="" width="34" height="34">
+    </a>
+    <a class="sg-asset-wallet" href="https://steemflags.do2earn.dev/wallet.html" aria-label="Open wallet in Steem Flags" title="My Wallet in Steem Flags">
+      <svg viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M3.5 6.5A2.5 2.5 0 0 1 6 4h11.5A2.5 2.5 0 0 1 20 6.5v1H8.5A2.5 2.5 0 0 0 6 10v4.5A2.5 2.5 0 0 0 8.5 17H20v1a2.5 2.5 0 0 1-2.5 2.5H6A2.5 2.5 0 0 1 3.5 18V6.5Z"/><path d="M8.5 9.5H20a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H8.5A1.5 1.5 0 0 1 7 15v-4a1.5 1.5 0 0 1 1.5-1.5Z"/><circle cx="17" cy="13" r="1"/></svg>
+    </a>
+    <div class="sg-asset-balance" aria-label="D2E balance">
+      <img src="https://raw.githubusercontent.com/do2earn/steemflags/main/assets/d2e_asset_logo1.png" alt="D2E" width="18" height="18">
+      <span>D2E</span>
+      <strong id="sgD2EBalance">—</strong>
+    </div>
   </div>
 </div>
 <style>
-.sg-assets-bar{display:flex;align-items:center;justify-content:flex-end;gap:clamp(8px,1.5vw,16px);min-width:0;margin-left:auto}
-.sg-assets-bar a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
-.sg-asset-avatar img{width:34px;height:34px;object-fit:cover;border-radius:50%;border:1px solid #e5e9f0}
-.sg-asset-wallet{font-size:23px;width:36px;height:36px;border-radius:10px}
-.sg-asset-balance{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.88rem}
+.sg-header-account{display:flex;align-items:center;justify-content:flex-end;min-width:0;margin-left:auto}
+.sg-header-login{display:inline-flex;align-items:center;justify-content:center;padding:5px 12px;min-height:30px;border:1px solid #d7deea;border-radius:8px;background:#fff;color:#172033;font:700 .82rem/1.2 Arial,sans-serif;cursor:pointer}
+.sg-header-login:hover{background:#f5f7fb}
+.sg-assets-bar{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:flex-start;gap:clamp(8px,1.5vw,16px);min-width:0}
+.sg-assets-bar[hidden],.sg-header-login[hidden]{display:none!important}
+.sg-assets-bar a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;flex:0 0 auto}
+.sg-asset-avatar img{width:34px;height:34px;object-fit:cover;border-radius:50%;border:2px solid #d9e1ee;background:#f5f7fb;display:block}
+.sg-asset-wallet{width:34px;height:34px;color:#172033}
+.sg-asset-wallet svg{width:30px;height:30px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sg-asset-balance{display:flex;flex-direction:row;direction:rtl;align-items:center;gap:5px;white-space:nowrap;font-size:.88rem}
 .sg-asset-balance img{width:18px;height:18px;object-fit:contain}
 .sg-asset-balance strong{font-size:1rem;font-variant-numeric:tabular-nums}
-@media(max-width:420px){.sg-assets-bar{gap:5px}.sg-asset-avatar img{width:30px;height:30px}.sg-asset-wallet{width:30px;height:32px;font-size:21px}.sg-asset-balance{gap:3px;font-size:.78rem}.sg-asset-balance img{width:16px;height:16px}.sg-asset-balance strong{font-size:.86rem}}
+@media(max-width:420px){.sg-assets-bar{gap:6px}.sg-asset-avatar img{width:30px;height:30px}.sg-asset-wallet{width:30px;height:30px}.sg-asset-wallet svg{width:27px;height:27px}.sg-asset-balance{gap:3px;font-size:.78rem}.sg-asset-balance img{width:16px;height:16px}.sg-asset-balance strong{font-size:.86rem}.sg-header-login{padding:4px 10px;min-height:28px}}
 </style>
