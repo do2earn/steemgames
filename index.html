@@ -56,29 +56,33 @@
       }
       .sg-intro-messages {
         display: grid;
-        gap: 9px;
-        margin: clamp(24px, 4vw, 38px) auto 0;
+        gap: 6px;
+        margin: clamp(18px, 3vw, 28px) auto 0;
         width: fit-content;
         max-width: 100%;
-        padding: 14px 18px;
+        padding: 10px 12px;
         border: 1px solid #e5e9f0;
         border-radius: 14px;
         background: #f5f7fb;
         text-align: left;
-        font-size: clamp(.9rem, 2.4vw, 1.05rem);
+        font-size: clamp(.52rem, 2.4vw, 1.05rem);
       }
-      .sg-intro-messages p { margin: 0; }
-      .sg-intro-messages p { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-      .sg-token { display:inline-flex; align-items:center; gap:4px; vertical-align:middle; white-space:nowrap; }
+      .sg-intro-messages p { margin: 0; display:flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
+      .sg-token { display:inline-flex; align-items:center; gap:0; vertical-align:middle; white-space:nowrap; }
       .sg-token img { display:block; width:25px; height:25px; object-fit:contain; flex:0 0 25px; }
       .sg-token strong { font-size:.95em; }
-      @media(max-width:420px){ .sg-token img{width:22px;height:22px;flex-basis:22px;} }
+      @media(max-width:420px){
+        .sg-token img{width:18px;height:18px;flex-basis:18px;}
+        .sg-intro-messages .d2e-inline-logo{width:18px;height:18px;}
+        .sg-intro-messages{padding:8px 6px;font-size:clamp(.48rem,2.4vw,.64rem);}
+        .sg-intro-messages p{gap:2px;}
+      }
 
       .sg-intro-stats {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: clamp(8px, 2vw, 20px);
-        margin: clamp(26px, 4vw, 40px) auto 0;
+        margin: clamp(10px, 1.5vw, 16px) auto 0;
         max-width: 760px;
       }
       .sg-intro-stat {
