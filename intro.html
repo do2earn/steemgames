@@ -16,8 +16,8 @@
 
   <div class="sg-intro-messages">
     <p>✅ Vote the Steem Games &amp; Earn D2E</p>
-    <p>🎮 Play the Steem Games &amp; Earn $STEEM</p>
-    <p>📝 Publish the Gameplay Content &amp; Earn $Steem</p>
+    <p>🎮 Play the Steem Games &amp; Earn <span class="sg-token sg-token-steem" aria-label="STEEM token"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25"><strong>$STEEM</strong></span></p>
+    <p>📝 Publish the Gameplay Content &amp; Earn <span class="sg-token sg-token-steem" aria-label="STEEM token"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25"><strong>$STEEM</strong></span></p>
   </div>
 
   <div class="sg-intro-stats" aria-label="Steem Games statistics" aria-live="polite">
@@ -91,6 +91,9 @@
     font-size: clamp(.9rem, 2.4vw, 1.05rem);
   }
   .sg-intro-messages p { margin: 0; }
+  .sg-token { display:inline-flex; align-items:center; gap:4px; vertical-align:middle; white-space:nowrap; }
+  .sg-token img { display:block; width:25px; height:25px; object-fit:contain; flex:0 0 25px; }
+  @media(max-width:420px){ .sg-token img{width:22px;height:22px;flex-basis:22px;} }
   .sg-intro-stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
