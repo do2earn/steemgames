@@ -76,8 +76,15 @@ export default {
             !fields || typeof fields !== "object" || typeof message !== "string" || typeof signature !== "string") {
           return json(request, { success: false, error: "INVALID_ADMIN_REQUEST" }, 400);
         }
-        const match = message.match(/^Steem Games Admin Edit\nAccount: do2earn\nGame ID: (\\d+)\nTimestamp: (\\d+)\nNonce: ([a-f0-9-]{16,})\nPayload: ([a-f0-9]+)$/i);
-        if (!match || Number(match[1]) !== Number(gameId) || Math.abs(Date.now() - Number(match[2])) > 5 * 60 * 1000) {
+        const messageLines = message.split("\n");
+        const timestamp = Number(messageLines[3]?.replace("Timestamp: ", ""));
+        const signedGameId = Number(messageLines[2]?.replace("Game ID: ", ""));
+        const nonce = messageLines[4]?.replace("Nonce: ", "");
+        const signedPayloadHex = messageLines[5]?.replace("Payload: ", "");
+        if (messageLines.length !== 6 || messageLines[0] !== "Steem Games Admin Edit" ||
+            messageLines[1] !== "Account: do2earn" || signedGameId !== Number(gameId) ||
+            !Number.isFinite(timestamp) || Math.abs(Date.now() - timestamp) > 5 * 60 * 1000 ||
+            !/^[a-f0-9-]{16,}$/i.test(nonce || "") || !/^[a-f0-9]+$/i.test(signedPayloadHex || "")) {
           return json(request, { success: false, error: "INVALID_OR_EXPIRED_SIGNATURE_MESSAGE" }, 400);
         }
         const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(message));
@@ -94,7 +101,7 @@ export default {
         if (!verified) return json(request, { success: false, error: "ADMIN_SIGNATURE_INVALID" }, 403);
         const payload = JSON.stringify(fields);
         const payloadHex = [...new TextEncoder().encode(payload)].map(b => b.toString(16).padStart(2, "0")).join("");
-        if (payloadHex !== match[4].toLowerCase()) return json(request, { success: false, error: "SIGNED_PAYLOAD_MISMATCH" }, 400);
+        if (payloadHex !== signedPayloadHex.toLowerCase()) return json(request, { success: false, error: "SIGNED_PAYLOAD_MISMATCH" }, 400);
         const allowed = ["game_name", "game_logo", "tag", "developer", "genres", "about", "website_url", "is_active"];
         const updates = allowed.filter(key => Object.prototype.hasOwnProperty.call(fields, key));
         if (!updates.length || updates.some(key => typeof fields[key] !== "string" && key !== "is_active") ||
