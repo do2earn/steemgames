@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Game information, links, statistics and developer details for Steem blockchain games.">
+  <title>Game Info | Steem Games</title>
+  <meta name="application-name" content="Steem Games">
+  <meta name="robots" content="index,follow">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261029-10">
+  <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
+  <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
+  <script type="module" src="assets/js/app.js?v=20261029-6"></script>
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav id="mainMenu" class="menu" aria-label="Main menu" hidden>
+      <a class="menu-brand" href="index.html" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo"></a>
+      <a href="index.html">🏠 <span>Home</span></a>
+      <a href="faq.html">❓ <span>FAQ</span></a>
+      <a href="about.html">ℹ️ <span>About</span></a>
+      <button id="menuLoginButton" type="button"><span class="menu-auth-icon" aria-hidden="true">🔐</span><span>Login</span></button>
+      <button id="logoutButton" type="button" hidden><span class="menu-auth-icon" aria-hidden="true">🚪</span><span>Logout</span></button>
+    </nav>
+    <div id="headerAssetsComponent" class="header-assets-component"></div>
+  </header>
+  <main class="page sg-static-page">
+    <section id="gameInfoCard" class="sg-content-card sg-game-info-card" aria-live="polite">
+      <p class="muted" id="gameInfoStatus">Loading game information…</p>
+    </section>
+  </main>
+  <div id="footerComponent"></div>
+  <dialog id="loginDialog" class="login-dialog" aria-labelledby="loginTitle">
+    <form id="loginForm" class="login-form">
+      <button class="dialog-close" type="button" id="closeLogin" aria-label="Close login">×</button>
+      <p class="eyebrow">ACCOUNT</p>
+      <h2 id="loginTitle">Login to Steem Games</h2>
+      <p class="muted">The directory is public. Login is only needed for actions such as voting.</p>
+      <label for="loginMethod">Login Method</label>
+      <select id="loginMethod" name="loginMethod">
+        <option value="keychain">Steem Keychain</option>
+        <option value="postingKey" selected>Steem Posting Key</option>
+      </select>
+      <label for="usernameInput">Steem Username</label>
+      <input id="usernameInput" name="username" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9.-]{3,32}" required>
+      <div id="postingKeyFields">
+        <label for="postingKeyInput">Posting Key</label>
+        <input id="postingKeyInput" name="postingKey" type="password" autocomplete="off" spellcheck="false">
+        <small>Your Posting Key is checked and never saved.</small>
+      </div>
+      <button id="loginButton" class="button primary" type="submit">Login</button>
+      <p id="loginFeedback" class="status" role="status" aria-live="polite"></p>
+      <a class="signup" href="https://signup.steemit.com/" target="_blank" rel="noopener noreferrer">Don't have a Steem account? Create one.</a>
+    </form>
+  </dialog>
+
+  <style>
+    .sg-game-info-card { text-align:center; }
+    .sg-game-info-logo { display:block; width:clamp(120px, 32vw, 220px); height:clamp(120px, 32vw, 220px); object-fit:contain; margin:0 auto 16px; }
+    .sg-game-info-title { margin:0 auto 18px; font-size:clamp(1.7rem,5vw,2.5rem); line-height:1.2; overflow-wrap:anywhere; }
+    .sg-game-info-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0; }
+    .sg-game-info-actions a, .sg-game-info-actions button { display:inline-flex; align-items:center; justify-content:center; min-width:105px; padding:11px 18px; border:0; border-radius:9px; color:#fff; font:inherit; font-weight:800; text-decoration:none; cursor:pointer; }
+    .sg-game-play { background:#16a34a; } .sg-game-vote { background:#2563eb; }
+    .sg-game-publish { background:#16a34a; } .sg-game-share { background:#eab308; color:#172033 !important; }
+    .sg-game-info-divider { border:0; border-top:1px solid #d8dee8; margin:22px 0; }
+    .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; }
+    .sg-game-developer { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .sg-game-developer img { width:38px; height:38px; border-radius:50%; object-fit:cover; }
+    .sg-game-developer a { font-weight:800; text-decoration:none; }
+    .sg-game-about { text-align:left; overflow-wrap:anywhere; line-height:1.7; white-space:pre-line; }
+  </style>
+  <script>
+    (() => {
+      const API_BASE = window.STEEM_GAMES_API_URL || 'https://steemgames.do2earn.workers.dev';
+      const card = document.getElementById('gameInfoCard');
+      const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const params = new URLSearchParams(location.search);
+      const requestedName = (params.get('game') || '').trim();
+      if (!requestedName) {
+        card.innerHTML = '<p role="status">No game was specified. Open this page as <code>game-info.html?game=Game%20Name</code>.</p>';
+        return;
+      }
+      const assetUrl = value => {
+        const raw = String(value || '').trim();
+        if (!raw) return 'assets/images/game-placeholder.svg';
+        if (/^(https?:|data:image\/)/i.test(raw) || raw.startsWith('/')) return raw;
+        if (raw.includes('/')) return raw;
+        return 'assets/games-logos/' + raw;
+      };
+      const render = game => {
+        const name = String(game.game_name || requestedName);
+        const developer = String(game.developer || '').replace(/^@/, '').trim();
+        const logo = assetUrl(game.game_logo);
+        const website = String(game.website_url || '').trim();
+        const tag = String(game.tag || 'steem-games').replace(/^#/, '').trim();
+        const about = String(game.about || 'No description is available yet.');
+        const profile = developer ? 'https://steempro.com/@' + encodeURIComponent(developer) : '';
+        const publishUrl = 'https://steemit.com/submit.html?tags=' + encodeURIComponent(tag);
+        document.title = name + ' | Steem Games';
+        card.innerHTML = `
+          <img class="sg-game-info-logo" src="${esc(logo)}" alt="${esc(name)} logo" onerror="this.onerror=null;this.src='assets/images/game-placeholder.svg'">
+          <h1 class="sg-game-info-title">${esc(name)}</h1>
+          <hr class="sg-game-info-divider">
+          <div class="sg-game-info-actions">
+            ${website ? '<a class="sg-game-play" href="' + esc(website) + '" target="_blank" rel="noopener noreferrer">▶ Play</a>' : '<a class="sg-game-play" href="#" aria-disabled="true" style="opacity:.55;pointer-events:none">▶ Play</a>'}
+            <a class="sg-game-vote" href="index.html#games">Vote</a>
+            <a class="sg-game-publish" href="${esc(publishUrl)}" target="_blank" rel="noopener noreferrer">Publish</a>
+            <button class="sg-game-share" id="shareGameButton" type="button">Share</button>
+          </div>
+          <hr class="sg-game-info-divider">
+          <div class="sg-game-info-stats">
+            <div><strong>Points:</strong> ${Math.round(Number(game.points) || 0).toLocaleString()}</div>
+            <div><strong>Posts:</strong> ${Math.round(Number(game.posts) || 0).toLocaleString()}</div>
+            <div class="sg-game-developer"><strong>Developer:</strong> ${developer && profile ? '<img src="https://steemitimages.com/u/' + encodeURIComponent(developer) + '/avatar" alt="" onerror="this.style.display=\'none\'"><a href="' + esc(profile) + '" target="_blank" rel="noopener noreferrer">@' + esc(developer) + '</a>' : '<span>Not specified</span>'}</div>
+          </div>
+          <hr class="sg-game-info-divider">
+          <h2 style="text-align:left;margin:0 0 10px">About</h2>
+          <div class="sg-game-about">${esc(about)}</div>
+        `;
+        document.getElementById('shareGameButton').addEventListener('click', async () => {
+          const shareData = { title: name + ' | Steem Games', text: 'Explore ' + name + ' on Steem Games', url: location.href };
+          try {
+            if (navigator.share) await navigator.share(shareData);
+            else if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(location.href);
+              const button = document.getElementById('shareGameButton');
+              button.textContent = 'Link Copied!';
+              setTimeout(() => { if (button.isConnected) button.textContent = 'Share'; }, 1800);
+            } else window.prompt('Copy this game link:', location.href);
+          } catch (error) {
+            if (error && error.name !== 'AbortError') window.prompt('Copy this game link:', location.href);
+          }
+        });
+      };
+      (async () => {
+        try {
+          const response = await fetch(API_BASE + '/api/games', { cache: 'no-store' });
+          if (!response.ok) throw new Error('API_' + response.status);
+          const data = await response.json();
+          if (!data.success || !Array.isArray(data.games)) throw new Error('INVALID_API_RESPONSE');
+          const game = data.games.find(item => String(item.game_name || '').toLowerCase() === requestedName.toLowerCase());
+          if (!game) {
+            card.innerHTML = '<p role="status">Game not found: <strong>' + esc(requestedName) + '</strong></p><p><a href="index.html#games">Back to games</a></p>';
+            return;
+          }
+          render(game);
+        } catch (error) {
+          console.error('Unable to load game information:', error);
+          card.innerHTML = '<p role="status">Unable to load game information. Please try again later.</p><p><a href="index.html#games">Back to games</a></p>';
+        }
+      })();
+    })();
+  </script>
+
+</body>
+</html>
