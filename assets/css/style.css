@@ -250,11 +250,12 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 
 /* Hamburger menu brand, navigation, and informational sections. */
 .menu{z-index:40}
-.menu .menu-brand{display:flex;align-items:center;gap:11px;margin-bottom:7px;padding:12px;border-bottom:1px solid var(--line);border-radius:9px;color:var(--ink);font-weight:900;font-size:1.05rem}
+.menu .menu-brand{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:7px;padding:12px;border-bottom:1px solid var(--line);border-radius:9px;color:var(--ink);font-weight:900;font-size:1.05rem}
 .menu .menu-brand:hover{background:var(--soft)}
-.menu .menu-brand img{width:46px;height:46px;object-fit:contain;flex:0 0 auto}
+.menu .menu-brand img{display:block;width:72px;height:72px;object-fit:contain;flex:0 0 auto}
 .menu .menu-auth-icon{display:inline-flex;align-items:center;justify-content:center;width:24px;margin-right:7px;font-size:1.05rem}
 .menu a:not(.menu-brand),.menu button{display:flex;align-items:center;gap:7px;min-height:44px}
+.menu [hidden]{display:none!important}
 .sg-content-card{margin:18px 0;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
 .sg-content-card h2{margin:0 0 16px;font-size:clamp(1.35rem,4vw,1.8rem)}
 .sg-content-card details{padding:13px 0;border-top:1px solid var(--line)}
@@ -262,7 +263,7 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 .sg-content-card details p,.sg-content-card>p{margin:9px 0 0;color:var(--muted)}
 .sg-content-card a{color:var(--blue);font-weight:800;text-decoration:none}
 .sg-content-card a:hover{text-decoration:underline}
-@media(max-width:600px){.menu{right:10px;top:58px}.menu .menu-brand img{width:40px;height:40px}.sg-content-card{margin:12px 0;padding:16px 12px}}
+@media(max-width:600px){.menu{right:10px;top:58px}.menu .menu-brand img{width:64px;height:64px}.sg-content-card{margin:12px 0;padding:16px 12px}}
 
 /* Dedicated FAQ and About pages. */
 .sg-static-page{padding-top:28px;padding-bottom:28px;min-height:55vh}
