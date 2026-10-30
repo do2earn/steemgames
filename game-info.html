@@ -178,6 +178,20 @@
         document.getElementById('loginDialog')?.addEventListener('close', syncEditVisibility);
         document.getElementById('logoutButton')?.addEventListener('click', () => setTimeout(syncEditVisibility, 0));
         const editDialog = document.getElementById('editGameDialog');
+        const loginDialog = document.getElementById('loginDialog');
+        let pendingAdminReauth = false;
+        window.addEventListener('steemGamesAuthChanged', () => {
+          if (!pendingAdminReauth || typeof window.steemGamesAdminSignMessage !== 'function') return;
+          pendingAdminReauth = false;
+          editDialog.showModal();
+          document.getElementById('editGameFeedback').textContent = 'Posting Key verified. Your changes are still here; press Save again.';
+        });
+        loginDialog?.addEventListener('close', () => {
+          if (!pendingAdminReauth || typeof window.steemGamesAdminSignMessage === 'function') return;
+          pendingAdminReauth = false;
+          if (!editDialog.open) editDialog.showModal();
+          document.getElementById('editGameFeedback').textContent = 'Login was cancelled. Please log in with the @do2earn Posting Key before saving.';
+        });
         const editFields = {
           game_name: 'editGameName', game_logo: 'editGameLogo', tag: 'editGameTag',
           developer: 'editGameDeveloper', website_url: 'editGameWebsite',
@@ -218,15 +232,24 @@
           if (!currentGame || String(currentGame.id) === '') return;
           const username = (() => { try { return JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null')?.username || ''; } catch { return ''; } })().toLowerCase();
           if (username !== 'do2earn') { feedback.textContent = 'Only @do2earn can edit game information.'; return; }
-          if (typeof window.steemGamesAdminSignMessage !== 'function') { feedback.textContent = 'Please log in as @do2earn using the Steem Posting Key method. Your key is used only in browser memory; no Keychain approval is required.'; return; }
+          if (typeof window.steemGamesAdminSignMessage !== 'function') {
+            pendingAdminReauth = true;
+            const loginMethod = document.getElementById('loginMethod');
+            const usernameInput = document.getElementById('usernameInput');
+            loginMethod.value = 'postingKey';
+            loginMethod.dispatchEvent(new Event('change'));
+            usernameInput.value = 'do2earn';
+            document.getElementById('loginFeedback').textContent = 'Your previous login did not carry the Posting Key to this page. Re-enter the @do2earn Posting Key to continue editing.';
+            editDialog.close();
+            if (!loginDialog.open) loginDialog.showModal();
+            return;
+          }
           const fields = {};
           for (const [key, id] of Object.entries(editFields)) fields[key] = document.getElementById(id).value;
           fields.genres = [...document.querySelectorAll('input[name="gameGenre"]:checked')].map(input => input.value).join(' | ');
           fields.tag = String(fields.tag || '').replace(/^#/, '').trim();
           fields.developer = String(fields.developer || '').replace(/^@/, '').trim();
           fields.is_active = Number(fields.is_active);
-          fields.points = Number(fields.points); fields.posts = Number(fields.posts); fields.votes = Number(fields.votes); fields.users = Number(fields.users);
-          fields.created_at = fields.created_at.trim() || null; fields.stats_synced_at = fields.stats_synced_at.trim() || null;
           const timestamp = Date.now(), nonce = crypto.randomUUID();
           const payloadHex = [...new TextEncoder().encode(JSON.stringify(fields))].map(b => b.toString(16).padStart(2, '0')).join('');
           const message = 'Steem Games Admin Edit\nAccount: do2earn\nGame ID: ' + Number(currentGame.id) + '\nTimestamp: ' + timestamp + '\nNonce: ' + nonce + '\nPayload: ' + payloadHex;
