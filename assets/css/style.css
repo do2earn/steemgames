@@ -299,3 +299,12 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 .menu .admin-tools-section[hidden]{display:none!important}
 .menu .admin-tools-heading{display:flex;align-items:center;gap:7px;padding:8px 10px 6px;color:var(--muted);font-size:.82rem;font-weight:850;letter-spacing:.04em}
 .menu .admin-tools-section a{border-radius:8px}
+
+/* Preserve the intrinsic aspect ratio of every game logo in the homepage directory table. */
+.sg-game-logo{
+  width:auto!important;
+  height:auto!important;
+  max-width:128px!important;
+  max-height:128px!important;
+  object-fit:contain;
+}
