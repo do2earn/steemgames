@@ -105,6 +105,8 @@
     .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; }
     .sg-game-developer { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
     .sg-game-developer img { width:38px; height:38px; border-radius:50%; object-fit:cover; }
+    .sg-game-genres { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+    .sg-game-genre { display:inline-flex; align-items:center; padding:3px 9px; border-radius:7px; background:#e0f2fe; color:#075985; font:inherit; font-size:inherit; font-weight:600; line-height:1.5; }
     .sg-game-developer a { font-weight:800; text-decoration:none; }
     .sg-game-about { text-align:left; overflow-wrap:anywhere; line-height:1.7; white-space:pre-line; }
   </style>
@@ -131,6 +133,8 @@
         currentGame = game;
         const name = String(game.game_name || requestedName);
         const developer = String(game.developer || '').replace(/^@/, '').trim();
+        const genres = (Array.isArray(game.genres) ? game.genres : String(game.genres || '').split(/[|,;]/))
+          .map(genre => String(genre || '').trim()).filter(Boolean);
         const logo = assetUrl(game.game_logo);
         const website = String(game.website_url || '').trim();
         const tag = String(game.tag || 'steem-games').replace(/^#/, '').trim();
@@ -155,6 +159,7 @@
             <div><strong>📄 Posts Numbers:</strong> ${Math.round(Number(game.posts) || 0).toLocaleString()}</div>
             <div><strong>#️⃣ Dedicated Tag:</strong> #${esc(tag)}</div>
             <div class="sg-game-developer"><strong>👩‍💻 Developer:</strong> ${developer && profile ? '<img src="https://steemitimages.com/u/' + encodeURIComponent(developer) + '/avatar" alt="" onerror="this.style.display=\'none\'"><a href="' + esc(profile) + '" target="_blank" rel="noopener noreferrer">@' + esc(developer) + '</a>' : '<span>Not specified</span>'}</div>
+            ${genres.length ? '<div class="sg-game-genres"><strong>🗂️ Genres:</strong>' + genres.map(genre => '<span class="sg-game-genre">' + esc(genre) + '</span>').join('') + '</div>' : ''}
           </div>
           <hr class="sg-game-info-divider">
           <h2 style="text-align:left;margin:0 0 10px">About</h2>
