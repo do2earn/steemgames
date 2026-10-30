@@ -80,16 +80,16 @@
     </form>
   </dialog>
   <style>
-    .sg-game-info-card { text-align:center; }
-    .sg-game-info-logo { display:block; width:clamp(225px, 60vw, 412.5px); height:clamp(225px, 60vw, 412.5px); object-fit:contain; margin:0 auto 16px; }
-    .sg-game-info-title { margin:0 auto 18px; font-size:clamp(1.7rem,5vw,2.5rem); line-height:1.2; overflow-wrap:anywhere; }
-    .sg-game-info-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0; }
+    .sg-game-info-card { text-align:center; min-width:0; }
+    .sg-game-info-logo { display:block; width:min(100%, 412.5px); height:auto; aspect-ratio:1; object-fit:contain; margin:0 auto 6px; }
+    .sg-static-page .sg-game-info-card h1.sg-game-info-title { margin:0 auto 14px; font-size:2em; line-height:1.2; letter-spacing:normal; overflow-wrap:anywhere; }
+    .sg-game-info-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:18px 0; }
     .sg-game-info-actions a, .sg-game-info-actions button { display:inline-flex; align-items:center; justify-content:center; min-width:105px; padding:11px 18px; border:0; border-radius:9px; color:#fff; font:inherit; font-weight:800; text-decoration:none; cursor:pointer; }
     .sg-game-play { background:#16a34a; } .sg-game-vote { background:#2563eb; }
     .sg-game-publish { background:#16a34a; } .sg-game-share { background:#eab308; color:#172033 !important; }
     .sg-game-edit { background:#6b7280; }
     .sg-game-info-actions button[hidden] { display:none !important; }
-    #editGameDialog { width:min(620px, calc(100% - 24px)); max-height:90vh; overflow:auto; border:0; border-radius:16px; padding:24px; }
+    #editGameDialog { width:min(620px, calc(100% - 24px)); max-height:90dvh; overflow:auto; border:0; border-radius:16px; padding:24px; }
     #editGameDialog::backdrop { background:rgba(15,23,42,.62); }
     .edit-game-fields { display:grid; gap:8px; text-align:left; }
     .edit-game-fields input, .edit-game-fields textarea, .edit-game-fields select { width:100%; box-sizing:border-box; padding:11px; border:1px solid #cbd5e1; border-radius:8px; font:inherit; }
@@ -97,14 +97,32 @@
     .edit-game-genres { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:8px 12px; max-height:260px; overflow:auto; padding:10px; border:1px solid #cbd5e1; border-radius:9px; text-align:left; }
     .edit-game-genre-option { display:flex; align-items:center; gap:7px; font-weight:500; }
     .edit-game-genre-option input { width:17px; height:17px; margin:0; accent-color:#2563eb; }
-    .sg-game-info-divider { border:0; border-top:1px solid #d8dee8; margin:22px 0; }
-    .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; }
+    .sg-game-info-divider { border:0; border-top:1px solid #d8dee8; margin:18px 0; }
+    .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; min-width:0; }
+    .sg-game-info-stats > div { min-width:0; overflow-wrap:anywhere; }
     .sg-game-developer { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
     .sg-game-developer img { width:38px; height:38px; border-radius:50%; object-fit:cover; }
     .sg-game-genres { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
     .sg-game-genre { display:inline-flex; align-items:center; padding:3px 9px; border-radius:7px; background:#e0f2fe; color:#075985; font:inherit; font-size:inherit; font-weight:600; line-height:1.5; }
     .sg-game-developer a { font-weight:800; text-decoration:none; }
     .sg-game-about { text-align:left; overflow-wrap:anywhere; line-height:1.7; white-space:pre-line; }
+    @media (max-width:600px) {
+      .sg-static-page { width:calc(100% - 20px); padding-top:10px; padding-bottom:14px; }
+      .sg-static-page .sg-game-info-card { padding:16px 12px; border-radius:14px; }
+      .sg-game-info-logo { width:min(100%, 360px); margin-bottom:4px; }
+      .sg-static-page .sg-game-info-card h1.sg-game-info-title { font-size:2em; margin-bottom:12px; }
+      .sg-game-info-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:16px 0; }
+      .sg-game-info-actions a, .sg-game-info-actions button { min-width:0; width:100%; padding:11px 8px; font-size:.92rem; }
+      .sg-game-info-divider { margin:16px 0; }
+      .sg-game-info-stats { gap:10px; font-size:1rem; }
+      #editGameDialog { padding:18px 14px; }
+      .edit-game-genres { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    }
+    @media (max-width:360px) {
+      .sg-static-page .sg-game-info-card { padding:14px 10px; }
+      .sg-game-info-actions a, .sg-game-info-actions button { font-size:.86rem; }
+      .sg-game-genres { gap:6px; }
+    }
   </style>
   <script>
     (() => {
