@@ -202,13 +202,10 @@
           renderGenreCheckboxes(selectedGenres);
           document.getElementById('editGameFeedback').textContent = '';
         };
-        editButton.addEventListener('click', () => {
+        editButton.addEventListener('click', async () => {
           if (!currentGame || editButton.hidden) return;
+          await genresReady;
           fillEditForm(currentGame);
-          genresReady.then(() => {
-            const selectedGenres = (Array.isArray(currentGame.genres) ? currentGame.genres : String(currentGame.genres || '').split(/[|,;]/)).map(value => String(value).trim()).filter(Boolean);
-            renderGenreCheckboxes(selectedGenres);
-          });
           editDialog.showModal();
         });
         const closeEditor = () => editDialog.close();
