@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="assets/css/style.css?v=20261029-10">
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261030-1"></script>
+  <script type="module" src="assets/js/app.js?v=20261030-2"></script>
 </head>
 <body>
   <header class="topbar">
@@ -164,10 +164,11 @@
         const syncEditVisibility = () => {
           try {
             const session = JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null');
-            editButton.hidden = String(session?.username || '').toLowerCase() !== 'do2earn' || typeof window.steemGamesAdminSignMessage !== 'function';
+            editButton.hidden = String(session?.username || '').toLowerCase() !== 'do2earn';
           } catch { editButton.hidden = true; }
         };
         syncEditVisibility();
+        window.addEventListener('steemGamesAuthChanged', syncEditVisibility);
         document.getElementById('loginDialog')?.addEventListener('close', syncEditVisibility);
         document.getElementById('logoutButton')?.addEventListener('click', () => setTimeout(syncEditVisibility, 0));
         const editDialog = document.getElementById('editGameDialog');
