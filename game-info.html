@@ -81,7 +81,7 @@
   </dialog>
   <style>
     .sg-game-info-card { text-align:center; min-width:0; }
-    .sg-game-info-logo { display:block; width:min(100%, 412.5px); height:auto; aspect-ratio:1; object-fit:contain; margin:0 auto 6px; }
+    .sg-game-info-logo { display:block; width:auto; max-width:100%; height:auto; max-height:412.5px; object-fit:contain; margin:0 auto 6px; }
     .sg-static-page .sg-game-info-card h1.sg-game-info-title { margin:0 auto 14px; font-size:2em; line-height:1.2; letter-spacing:normal; overflow-wrap:anywhere; }
     .sg-game-info-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:18px 0; }
     .sg-game-info-actions a, .sg-game-info-actions button { display:inline-flex; align-items:center; justify-content:center; min-width:105px; padding:11px 18px; border:0; border-radius:9px; color:#fff; font:inherit; font-weight:800; text-decoration:none; cursor:pointer; }
@@ -109,7 +109,7 @@
     @media (max-width:600px) {
       .sg-static-page { width:calc(100% - 20px); padding-top:10px; padding-bottom:14px; }
       .sg-static-page .sg-game-info-card { padding:16px 12px; border-radius:14px; }
-      .sg-game-info-logo { width:min(100%, 360px); margin-bottom:4px; }
+      .sg-game-info-logo { max-height:360px; margin-bottom:4px; }
       .sg-static-page .sg-game-info-card h1.sg-game-info-title { font-size:2em; margin-bottom:12px; }
       .sg-game-info-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:16px 0; }
       .sg-game-info-actions a, .sg-game-info-actions button { min-width:0; width:100%; padding:11px 8px; font-size:.92rem; }
