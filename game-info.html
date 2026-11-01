@@ -156,7 +156,7 @@
         .then(response => { if (!response.ok) throw new Error("GENRES_LOAD_FAILED"); return response.json(); })
         .then(data => { availableGenres = Array.isArray(data.genres) ? data.genres : []; })
         .catch(error => { console.error("Unable to load game genres:", error); availableGenres = []; });
-      const markPageReady = () => { document.documentElement.dataset.sgPageReady = 'true'; window.dispatchEvent(new Event('sgPageReady')); };
+      const markPageReady = () => { document.documentElement.dataset.sgPageContentReady = 'true'; window.dispatchEvent(new Event('sgPageContentReady')); };
       if (!requestedName) {
         card.innerHTML = '<p role="status">No game was specified. Open this page as <code>game-info.html?game=Game%20Name</code>.</p>';
         markPageReady();
