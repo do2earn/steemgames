@@ -128,19 +128,13 @@ async function updateAggregate(db, gameId, markSynced) {
   const points = posts + users + votes * 0.1;
   const pointsIncreased = points > Number(previous?.points || 0);
 
-  // Posts/users/votes stay current, but points are a high-water mark:
-  // never lower the leaderboard score when a later snapshot is smaller.
   await db.prepare(`
     UPDATE steemgames
-       SET posts = ?, users = ?,
-           points = CASE
-             WHEN ? > COALESCE(points, 0) THEN ?
-             ELSE points
-           END,
+       SET posts = ?, users = ?, points = ?,
            stats_synced_at = CASE WHEN ? = 1 THEN datetime('now') ELSE stats_synced_at END,
            updated_at = datetime('now')
      WHERE id = ? AND is_active = 1
-  `).bind(posts, users, points, points, markSynced ? 1 : 0, gameId).run();
+  `).bind(posts, users, points, markSynced ? 1 : 0, gameId).run();
 
   if (pointsIncreased) {
     await db.prepare(`
