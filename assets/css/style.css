@@ -346,5 +346,9 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 .sg-vote-button:disabled,.sg-vote-button.is-voted,button.sg-game-vote:disabled,button.sg-game-vote.is-voted{background:#9ca3af!important;border-color:#9ca3af!important;color:#fff!important;opacity:1!important;cursor:not-allowed!important;box-shadow:none!important;filter:grayscale(.15)}
 .sg-vote-button:disabled:hover,button.sg-game-vote:disabled:hover{background:#9ca3af!important}
 
-/* Daily voted state: grey button and grey check mark */
-.sg-vote-button:disabled,.sg-vote-button.is-voted,.sg-game-vote:disabled,.sg-game-vote.is-voted{background:#9ca3af!important;border-color:#9ca3af!important;color:#fff!important;cursor:not-allowed;opacity:1}.sg-vote-button:disabled::first-letter,.sg-vote-button.is-voted::first-letter,.sg-game-vote:disabled::first-letter,.sg-game-vote.is-voted::first-letter{color:#6b7280!important}
+/* Consistent vote check: white when available, grey after the daily vote. */
+.sg-vote-button,.sg-game-vote{display:inline-flex;align-items:center;justify-content:center;gap:.42em}
+.sg-vote-check{display:inline-block;width:.42em;height:.72em;flex:0 0 auto;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin:-.16em .08em .12em 0}
+.sg-vote-button:disabled .sg-vote-check,.sg-vote-button.is-voted .sg-vote-check,.sg-game-vote:disabled .sg-vote-check,.sg-game-vote.is-voted .sg-vote-check{border-color:#6b7280}
+.sg-vote-label{display:inline-block}
+
