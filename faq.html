@@ -35,7 +35,17 @@
       <details><summary>What is <img class="d2e-inline-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/0372a858e30d134523d9e2127918fbfe5532c150/assets/images/d2e_asset_logo1.png" alt="D2E logo" width="25" height="25">D2E?</summary><p><img class="d2e-inline-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/0372a858e30d134523d9e2127918fbfe5532c150/assets/images/d2e_asset_logo1.png" alt="D2E logo" width="25" height="25">D2E is the Do2Earn reward token used in the Steem Games ecosystem. Your available <img class="d2e-inline-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/0372a858e30d134523d9e2127918fbfe5532c150/assets/images/d2e_asset_logo1.png" alt="D2E logo" width="25" height="25">D2E balance is shown in the header after you log in.</p></details>
       <details><summary>How do I log in?</summary><p>You can log in with Steem Keychain or your Steem Posting Key. Posting Key is the default method. The key is verified in the browser and is not saved by this site.</p></details>
       <details><summary>Why is my <img class="d2e-inline-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/0372a858e30d134523d9e2127918fbfe5532c150/assets/images/d2e_asset_logo1.png" alt="D2E logo" width="25" height="25">D2E balance not showing?</summary><p>Refresh the page and check your connection. If the balance still does not appear, the account balance service may be temporarily unavailable.</p></details>
-      <details><summary>How are game points calculated?</summary><p>Points are based on game activity in the Steem ecosystem. The directory displays rounded point totals for easier comparison.</p></details>
+      <details>
+        <summary>How are game points calculated on the Steem Games website?</summary>
+        <p>Each game's points are calculated from its activity on the Steem blockchain using the following formula:</p>
+        <p><strong>Formula:</strong> <code>Points = Posts + Users + (Votes × 0.1)</code></p>
+        <ul>
+          <li><strong>Posts:</strong> The total number of posts published with the game's dedicated Steem tag.</li>
+          <li><strong>Users:</strong> The number of unique authors who have published posts using that game's dedicated tag.</li>
+          <li><strong>Votes:</strong> The total number of votes received by posts published with the game's dedicated tag.</li>
+        </ul>
+        <p>Each post adds 1 point, each unique author adds 1 point, and every 10 votes add 1 point. Games are ranked using their exact calculated scores, while the points shown in the directory are rounded to whole numbers for easier comparison.</p>
+      </details>
       <p class="sg-page-home-link"><a class="button primary" href="index.html">🏠 Back to Home</a></p>
     </section>
   </main>
