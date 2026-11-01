@@ -1,16 +1,14 @@
-/* Keep the preloader visible until the page-specific content is ready. */
+/* Keep the circular preloader visible until the page-specific content is ready. */
 (() => {
   const overlay = document.getElementById('sg-preloader');
   if (!overlay) return;
-  const fill = overlay.querySelector('.sg-preloader-progress-fill');
-  const percent = overlay.querySelector('.sg-preloader-percent');
-  const bar = overlay.querySelector('[role="progressbar"]');
+  const progressCircle = overlay.querySelector('.sg-preloader-ring-progress');
+  const progressRing = overlay.querySelector('.sg-preloader-ring');
   let value = 0, finished = false, timer, safetyTimer;
   const paint = next => {
     value = Math.max(value, Math.min(100, Math.round(next)));
-    if (fill) fill.style.width = value + '%';
-    if (percent) percent.textContent = value + '%';
-    if (bar) bar.setAttribute('aria-valuenow', String(value));
+    if (progressCircle) progressCircle.style.strokeDashoffset = String(100 - value);
+    if (progressRing) progressRing.setAttribute('aria-valuenow', String(value));
   };
   const advance = () => {
     if (finished || value >= 92) return;
@@ -25,19 +23,15 @@
     paint(100);
     window.setTimeout(() => {
       overlay.classList.add('is-hidden');
-      window.setTimeout(() => overlay.remove(), 450);
+      window.setTimeout(() => overlay.remove(), 650);
     }, 180);
   };
-  if (document.documentElement.dataset.sgPageReady === 'true') {
-    hide();
-  } else {
-    paint(3);
+  if (document.documentElement.dataset.sgPageReady === 'true') hide();
+  else {
+    paint(1);
     timer = window.setTimeout(advance, 160);
-    window.addEventListener('sgPageReady', hide, { once: true });
-    window.addEventListener('pageshow', event => {
-      if (event.persisted) hide();
-    }, { once: true });
-    // Final fallback if a third-party resource or page script never responds.
+    window.addEventListener('sgPageReady', hide, { once:true });
+    window.addEventListener('pageshow', event => { if (event.persisted) hide(); }, { once:true });
     safetyTimer = window.setTimeout(hide, 30000);
   }
 })();
