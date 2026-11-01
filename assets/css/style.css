@@ -339,3 +339,5 @@ main.page>.sg-intro-card,main.page>#games.sg-directory-card{width:100%;margin-le
 @media(max-width:600px){
   .sg-info-button{min-height:30px;padding:5px 8px;font-size:.75rem}
 }
+
+.d2e-rewards-dialog{width:min(390px,calc(100vw - 28px));padding:0;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 90px rgba(15,23,42,.28);text-align:center}.d2e-rewards-dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(3px)}.d2e-rewards-content{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 24px 24px}.d2e-rewards-content h2{margin:0 32px 2px;font-size:1.45rem}.d2e-rewards-logo{display:block;width:clamp(88px,25vw,112px);height:clamp(88px,25vw,112px);object-fit:contain;margin:2px auto}.d2e-rewards-content p{margin:0;color:var(--ink);font-size:1rem;font-weight:700;line-height:1.55}.d2e-rewards-content .button{width:100%;margin-top:4px}.d2e-rewards-content .dialog-close{right:12px;top:12px}
