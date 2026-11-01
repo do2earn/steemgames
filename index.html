@@ -9,6 +9,7 @@
   <meta name="robots" content="index,follow">
   <title>Steem Games | Steem Blockchain Game Directory</title>
   <link rel="stylesheet" href="assets/css/style.css?v=20261030-12">
+  <link rel="stylesheet" href="assets/css/preloader.css?v=20261101-1">
   <style>
     .sg-intro-card {
         --sg-ink: #172033;
@@ -138,10 +139,28 @@
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261030-1"></script>
+  <script type="module" src="assets/js/app.js?v=20261030-1">
+  <script src="assets/js/preloader.js?v=20261101-1" defer></script></script>
 
 </head>
 <body>
+
+  <div id="sg-preloader" class="sg-preloader" role="status" aria-live="polite" aria-label="Loading Steem Games">
+    <div class="sg-preloader-content">
+      <div class="sg-preloader-logo-wrap">
+        <span class="sg-preloader-orbit" aria-hidden="true"></span>
+        <img class="sg-preloader-logo" src="assets/images/steemgames_logo.webp" alt="Steem Games" width="180" height="180"
+          onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/images/steemgames_logo.png';}">
+      </div>
+      <div class="sg-preloader-title">STEEM GAMES</div>
+      <div class="sg-preloader-caption">Loading your game universe</div>
+      <div class="sg-preloader-progress" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span class="sg-preloader-progress-fill"></span>
+      </div>
+      <div class="sg-preloader-percent">0%</div>
+    </div>
+  </div>
+
   <header class="topbar">
     <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
     <nav id="mainMenu" class="menu" aria-label="Main menu" hidden>
