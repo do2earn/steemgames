@@ -8,11 +8,11 @@
   <title>Game Info | Steem Games</title>
   <meta name="application-name" content="Steem Games">
   <meta name="robots" content="index,follow">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261029-10">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261101-3">
   <link rel="stylesheet" href="assets/css/preloader.css?v=20261101-2">
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261101-2"></script>
+  <script type="module" src="assets/js/app.js?v=20261101-3"></script>
   <script src="assets/js/preloader.js?v=20261101-4" defer></script>
 </head>
 <body>
@@ -75,7 +75,10 @@
     </form>
   </dialog>
 
-  <dialog id="editGameDialog" class="login-dialog" aria-labelledby="editGameTitle">
+  
+<dialog id="voteDialog" class="vote-dialog" aria-labelledby="voteTitle"><form method="dialog" class="vote-form"><button class="dialog-close" type="button" id="closeVote" aria-label="Close vote dialog">×</button><h2 id="voteTitle">Vote for this game</h2><p id="voteMessage">Sign in to vote once for this game each UTC day and receive a random reward of 1–5 D2E.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button id="voteLoginButton" class="button primary" type="button">Login to Vote</button></div></form></dialog>
+<dialog id="d2eRewardsDialog" class="d2e-rewards-dialog" aria-labelledby="d2eRewardsTitle"><div class="d2e-rewards-content"><button id="closeD2ERewards" class="dialog-close" type="button" aria-label="Close rewards">×</button><h2 id="d2eRewardsTitle">D2E Rewards</h2><img class="d2e-rewards-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/e171de408ee986846bf5518b8d47a0a765f3c59c/assets/images/d2e_asset_logo1.png" alt="Official D2E logo" width="112" height="112"><p id="d2eRewardMessage" role="status" aria-live="polite">You received a random D2E reward for voting!</p><button id="confirmD2ERewards" class="button primary" type="button">OK</button></div></dialog>
+<dialog id="editGameDialog" class="login-dialog" aria-labelledby="editGameTitle">
     <form id="editGameForm" class="login-form">
       <button class="dialog-close" type="button" id="closeEditGame" aria-label="Close editor">×</button>
       <p class="eyebrow">ADMIN TOOLS</p>
@@ -190,7 +193,7 @@
           <hr class="sg-game-info-divider">
           <div class="sg-game-info-actions">
             ${website ? '<a class="sg-game-play" href="' + esc(website) + '" target="_blank" rel="noopener noreferrer">▶️ Play</a>' : '<a class="sg-game-play" href="#" aria-disabled="true" style="opacity:.55;pointer-events:none">▶️ Play</a>'}
-            <a class="sg-game-vote" href="index.html#games">✅ Vote</a>
+            <button class="sg-game-vote" type="button" data-vote-game="${Number(game.id)}">✅ Vote</button>
             <a class="sg-game-publish" href="${esc(publishUrl)}" target="_blank" rel="noopener noreferrer">📝 Publish</a>
             <button class="sg-game-share" id="shareGameButton" type="button">⬆️ Share</button>
             <button class="sg-game-edit" id="editGameButton" type="button" hidden>⚙️ Edit</button>
