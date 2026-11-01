@@ -33,12 +33,12 @@ jobs:
           PY
       - name: Commit optimized asset
         run: |
-          if git diff --quiet -- assets/images/steemgames_logo.webp; then
+          git add assets/images/steemgames_logo.webp
+          if git diff --cached --quiet; then
             echo "Optimized logo is already up to date."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/images/steemgames_logo.webp
           git commit -m "Add optimized WebP logo for preloader"
           git push
