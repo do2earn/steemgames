@@ -267,7 +267,11 @@
         // Include aggregate statistics in the page-ready signal.
         window.sgIntroStatsReady = (async () => {
           try {
-            const response = await fetch(apiBase + '/api/stats', { cache: 'no-store' });
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), 20000);
+            let response;
+            try { response = await fetch(apiBase + '/api/stats', { cache: 'no-store', signal: controller.signal }); }
+            finally { window.clearTimeout(timeout); }
             if (!response.ok) throw new Error('Stats endpoint unavailable');
             const data = await response.json();
             const stats = data.stats || data;
