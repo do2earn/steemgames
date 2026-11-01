@@ -87,7 +87,7 @@ export default {
         const results=await env.DB.batch([
           env.DB.prepare("INSERT OR IGNORE INTO accounts (Username,D2E) VALUES (?,0)").bind(username),
           env.DB.prepare("INSERT OR IGNORE INTO steemgames_votes (game_id,username,vote_date) SELECT id,?,date('now') FROM steemgames WHERE id=? AND is_active=1").bind(username,gameId),
-          env.DB.prepare("UPDATE steemgames SET votes=COALESCE(votes,0)+1, points=MAX(COALESCE(points,0),COALESCE(posts,0)+COALESCE(users,0)+(COALESCE(votes,0)+1)*0.1), updated_at=datetime('now') WHERE id=? AND is_active=1 AND changes()=1").bind(gameId),
+          env.DB.prepare("UPDATE steemgames SET votes=COALESCE(votes,0)+1, points=COALESCE(posts,0)+COALESCE(users,0)+(COALESCE(votes,0)+1)*0.1, updated_at=datetime('now') WHERE id=? AND is_active=1 AND changes()=1").bind(gameId),
           env.DB.prepare("UPDATE accounts SET D2E=COALESCE(D2E,0)+? WHERE lower(Username)=lower(?) AND changes()=1").bind(reward,username),
           env.DB.prepare("SELECT Username,COALESCE(D2E,0) AS D2E FROM accounts WHERE lower(Username)=lower(?) LIMIT 1").bind(username),
           env.DB.prepare("SELECT id,game_name,votes,points FROM steemgames WHERE id=?").bind(gameId)
