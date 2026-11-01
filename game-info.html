@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="assets/css/preloader.css?v=20261101-1">
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261030-4"></script>
-  <script src="assets/js/preloader.js?v=20261101-2" defer></script>
+  <script type="module" src="assets/js/app.js?v=20261101-2"></script>
+  <script src="assets/js/preloader.js?v=20261101-3" defer></script>
 </head>
 <body>
 
@@ -156,8 +156,10 @@
         .then(response => { if (!response.ok) throw new Error("GENRES_LOAD_FAILED"); return response.json(); })
         .then(data => { availableGenres = Array.isArray(data.genres) ? data.genres : []; })
         .catch(error => { console.error("Unable to load game genres:", error); availableGenres = []; });
+      const markPageReady = () => { document.documentElement.dataset.sgPageReady = 'true'; window.dispatchEvent(new Event('sgPageReady')); };
       if (!requestedName) {
         card.innerHTML = '<p role="status">No game was specified. Open this page as <code>game-info.html?game=Game%20Name</code>.</p>';
+        markPageReady();
         return;
       }
       const assetUrl = value => {
@@ -335,9 +337,13 @@
             return;
           }
           render(game);
+          const logo = card.querySelector('.sg-game-info-logo');
+          if (logo && !logo.complete) await new Promise(resolve => { logo.addEventListener('load', resolve, { once: true }); logo.addEventListener('error', resolve, { once: true }); window.setTimeout(resolve, 2500); });
         } catch (error) {
           console.error('Unable to load game information:', error);
           card.innerHTML = '<p role="status">Unable to load game information. Please try again later.</p><p><a href="index.html#games">Back to games</a></p>';
+        } finally {
+          markPageReady();
         }
       })();
     })();
