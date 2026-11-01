@@ -77,6 +77,15 @@ export default {
     }
 
     try {
+
+      if (url.pathname === "/api/vote-status" && request.method === "GET") {
+        const username = String(url.searchParams.get("username") || "").trim().toLowerCase();
+        if (!/^[a-z][a-z0-9.-]{2,31}$/i.test(username)) return json(request, { success: false, error: "INVALID_USERNAME" }, 400);
+        await ensureVoteHistoryTable(env.DB);
+        const result = await env.DB.prepare("SELECT game_id FROM steemgames_votes WHERE lower(username) = lower(?) AND vote_date = date('now')").bind(username).all();
+        return json(request, { success: true, utc_date: new Date().toISOString().slice(0, 10), game_ids: (result.results || []).map(row => Number(row.game_id)) });
+      }
+
       if (url.pathname === "/api/vote" && request.method === "POST") {
         let body; try { body = await request.json(); } catch { return json(request, { success:false,error:"INVALID_JSON" },400); }
         const username=String(body?.username||"").trim().toLowerCase(), gameId=Number(body?.gameId), message=body?.message, signature=body?.signature;
