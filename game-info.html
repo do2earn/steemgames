@@ -120,6 +120,8 @@
     .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; min-width:0; }
     .sg-game-info-stats > div { min-width:0; overflow-wrap:anywhere; }
     .sg-game-developer { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .sg-game-tag-link { color:#2563eb; font-weight:700; text-decoration:none; text-underline-offset:3px; }
+    .sg-game-tag-link:hover { color:#1d4ed8; text-decoration:underline; }
     .sg-game-developer img { width:38px; height:38px; border-radius:50%; object-fit:cover; }
     .sg-game-genres { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
     .sg-game-genre { display:inline-flex; align-items:center; padding:3px 9px; border-radius:7px; background:#e0f2fe; color:#075985; font:inherit; font-size:inherit; font-weight:600; line-height:1.5; }
@@ -197,7 +199,7 @@
           <div class="sg-game-info-stats">
             <div><strong>⭐ Points:</strong> ${Math.round(Number(game.points) || 0).toLocaleString()}</div>
             <div><strong>📄 Posts Numbers:</strong> ${Math.round(Number(game.posts) || 0).toLocaleString()}</div>
-            <div><strong>#️⃣ Dedicated Tag:</strong> #${esc(tag)}</div>
+            <div><strong>#️⃣ Dedicated Tag:</strong> <a class="sg-game-tag-link" href="https://steemx.org/created/${encodeURIComponent(tag)}" target="_blank" rel="noopener noreferrer">#${esc(tag)}</a></div>
             <div class="sg-game-developer"><strong>👩‍💻 Developer:</strong> ${developer && profile ? '<img src="https://steemitimages.com/u/' + encodeURIComponent(developer) + '/avatar" alt="" onerror="this.style.display=\'none\'"><a href="' + esc(profile) + '" target="_blank" rel="noopener noreferrer">@' + esc(developer) + '</a>' : '<span>Not specified</span>'}</div>
             ${genres.length ? '<div class="sg-game-genres"><strong>🗂️ Genres:</strong>' + genres.map(genre => '<span class="sg-game-genre">' + esc(genre) + '</span>').join('') + '</div>' : ''}
           </div>
