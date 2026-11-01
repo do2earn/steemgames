@@ -139,8 +139,8 @@
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261030-1"></script>
-  <script src="assets/js/preloader.js?v=20261101-2" defer></script>
+  <script type="module" src="assets/js/app.js?v=20261101-2"></script>
+  <script src="assets/js/preloader.js?v=20261101-3" defer></script>
 
 </head>
 <body>
@@ -264,13 +264,12 @@
         const postsEl = document.getElementById('sgIntroPosts');
         if (!apiBase) return;
     
-        // Optional aggregate endpoint can provide authoritative totals.
-        fetch(apiBase + '/api/stats', { cache: 'no-store' })
-          .then(response => {
+        // Include aggregate statistics in the page-ready signal.
+        window.sgIntroStatsReady = (async () => {
+          try {
+            const response = await fetch(apiBase + '/api/stats', { cache: 'no-store' });
             if (!response.ok) throw new Error('Stats endpoint unavailable');
-            return response.json();
-          })
-          .then(data => {
+            const data = await response.json();
             const stats = data.stats || data;
             const games = Number(stats.games ?? stats.game_count);
             const players = Number(stats.players ?? stats.player_count);
@@ -278,10 +277,10 @@
             if (Number.isFinite(games)) gamesEl.textContent = games.toLocaleString();
             if (Number.isFinite(players)) playersEl.textContent = players.toLocaleString();
             if (Number.isFinite(posts)) postsEl.textContent = posts.toLocaleString();
-          })
-          .catch(() => {
-            // Keep the requested display values until a real stats endpoint is available.
-          });
+          } catch {
+            // Keep the fallback totals if aggregate statistics are unavailable.
+          }
+        })();
       })();
   </script>
 </body>
