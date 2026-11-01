@@ -54,6 +54,15 @@ async function ensureGameLogoFilenames(db) {
   }
 }
 
+async function verifyVoteSignature(username, gameId, message, signature) {
+ const lines=message.split("\n"), timestamp=Number(lines[3]?.replace("Timestamp: ","")), signedGameId=Number(lines[2]?.replace("Game ID: ","")), nonce=lines[4]?.replace("Nonce: ","");
+ if(lines.length!==5||lines[0]!=="Steem Games Vote"||lines[1]!=="Account: "+username||signedGameId!==Number(gameId)||!Number.isFinite(timestamp)||Math.abs(Date.now()-timestamp)>300000||!/^[a-f0-9-]{16,}$/i.test(nonce||""))return false;
+ const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(message)), hash=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
+ const rpcBody=JSON.stringify({jsonrpc:"2.0",method:"database_api.verify_signatures",params:{hash,signatures:[signature],required_owner:[],required_active:[],required_posting:[username],required_other:[]},id:1});
+ for(const endpoint of ["https://api.steemit.com","https://api.justyy.com","https://steemd.steemworld.org"]){try{const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:rpcBody,signal:AbortSignal.timeout(7000)});const result=await response.json();if(result?.result?.valid===true)return true}catch{}}
+ return false;
+}
+async function ensureVoteHistoryTable(db){await db.prepare("CREATE TABLE IF NOT EXISTS steemgames_votes (game_id INTEGER NOT NULL, username TEXT NOT NULL, vote_date TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now')), UNIQUE(game_id, username, vote_date))").run();}
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -68,6 +77,26 @@ export default {
     }
 
     try {
+      if (url.pathname === "/api/vote" && request.method === "POST") {
+        let body; try { body = await request.json(); } catch { return json(request, { success:false,error:"INVALID_JSON" },400); }
+        const username=String(body?.username||"").trim().toLowerCase(), gameId=Number(body?.gameId), message=body?.message, signature=body?.signature;
+        if(!/^[a-z][a-z0-9.-]{2,31}$/i.test(username)||!Number.isInteger(gameId)||gameId<1||typeof message!=="string"||typeof signature!=="string")return json(request,{success:false,error:"INVALID_VOTE_REQUEST"},400);
+        if(!await verifyVoteSignature(username,gameId,message,signature))return json(request,{success:false,error:"VOTE_SIGNATURE_INVALID"},403);
+        await ensureVoteHistoryTable(env.DB);
+        const reward=(crypto.getRandomValues(new Uint32Array(1))[0]%5)+1;
+        const results=await env.DB.batch([
+          env.DB.prepare("INSERT OR IGNORE INTO accounts (Username,D2E) VALUES (?,0)").bind(username),
+          env.DB.prepare("INSERT OR IGNORE INTO steemgames_votes (game_id,username,vote_date) SELECT id,?,date('now') FROM steemgames WHERE id=? AND is_active=1").bind(username,gameId),
+          env.DB.prepare("UPDATE steemgames SET votes=COALESCE(votes,0)+1, points=MAX(COALESCE(points,0),COALESCE(posts,0)+COALESCE(users,0)+(COALESCE(votes,0)+1)*0.1), updated_at=datetime('now') WHERE id=? AND is_active=1 AND changes()=1").bind(gameId),
+          env.DB.prepare("UPDATE accounts SET D2E=COALESCE(D2E,0)+? WHERE lower(Username)=lower(?) AND changes()=1").bind(reward,username),
+          env.DB.prepare("SELECT Username,COALESCE(D2E,0) AS D2E FROM accounts WHERE lower(Username)=lower(?) LIMIT 1").bind(username),
+          env.DB.prepare("SELECT id,game_name,votes,points FROM steemgames WHERE id=?").bind(gameId)
+        ]);
+        if(Number(results[1]?.meta?.changes||0)!==1)return json(request,{success:false,error:"ALREADY_VOTED_TODAY"},409);
+        if(Number(results[3]?.meta?.changes||0)!==1)return json(request,{success:false,error:"REWARD_CREDIT_FAILED"},500);
+        return json(request,{success:true,reward,account:results[4]?.results?.[0]||null,game:results[5]?.results?.[0]||null});
+      }
+
       if (url.pathname === "/api/admin/game" && request.method === "POST") {
         let body;
         try { body = await request.json(); } catch { return json(request, { success: false, error: "INVALID_JSON" }, 400); }
