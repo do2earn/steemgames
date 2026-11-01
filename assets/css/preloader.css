@@ -1,0 +1,45 @@
+/* Lightweight, responsive Steem Games page preloader. */
+.sg-preloader {
+  position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center;
+  padding: max(20px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
+  box-sizing: border-box; overflow: hidden;
+  background: radial-gradient(circle at 50% 42%, rgba(36,99,235,.20), transparent 34%),
+              radial-gradient(circle at 50% 100%, rgba(14,165,233,.10), transparent 48%), #0b1220;
+  color: #f8fafc; opacity: 1; visibility: visible;
+  transition: opacity .38s ease, visibility .38s ease;
+}
+.sg-preloader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.sg-preloader-content { width: min(100%,300px); display:flex; flex-direction:column; align-items:center; text-align:center; }
+.sg-preloader-logo-wrap { position:relative; display:grid; place-items:center; width:clamp(132px,38vw,190px); aspect-ratio:1; margin-bottom:20px; isolation:isolate; }
+.sg-preloader-logo-wrap::before { content:""; position:absolute; inset:13%; z-index:-1; border-radius:50%; background:rgba(37,99,235,.20); filter:blur(19px); animation:sg-preloader-glow 2.6s ease-in-out infinite; }
+.sg-preloader-orbit {
+  position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(from -90deg,#38bdf8,#2563eb 38%,rgba(148,163,184,.14) 38% 100%);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+  mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+  animation:sg-preloader-spin 1.7s linear infinite;
+}
+.sg-preloader-orbit::after { content:""; position:absolute; top:1px; left:50%; width:7px; height:7px; border-radius:50%; background:#e0f2fe; box-shadow:0 0 12px 3px rgba(56,189,248,.8); transform:translateX(-50%); }
+.sg-preloader-logo { display:block; width:72%; height:72%; object-fit:contain; filter:drop-shadow(0 5px 16px rgba(0,0,0,.28)); animation:sg-preloader-float 2.8s ease-in-out infinite; }
+.sg-preloader-title { color:#f8fafc; font:900 clamp(19px,5vw,25px)/1.1 system-ui,-apple-system,"Segoe UI",sans-serif; letter-spacing:.16em; text-shadow:0 2px 14px rgba(56,189,248,.24); }
+.sg-preloader-caption { margin-top:9px; color:#a9bad0; font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif; letter-spacing:.035em; }
+.sg-preloader-progress { position:relative; width:min(210px,72vw); height:5px; margin-top:27px; overflow:hidden; border-radius:20px; background:rgba(148,163,184,.22); }
+.sg-preloader-progress-fill { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#2563eb,#38bdf8); box-shadow:0 0 12px rgba(56,189,248,.55); transition:width .22s ease; }
+.sg-preloader-percent { min-width:38px; margin-top:9px; color:#dbeafe; font:700 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif; font-variant-numeric:tabular-nums; }
+@keyframes sg-preloader-spin { to { transform:rotate(360deg); } }
+@keyframes sg-preloader-float { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.015); } }
+@keyframes sg-preloader-glow { 0%,100% { opacity:.55; transform:scale(.92); } 50% { opacity:1; transform:scale(1.08); } }
+@media(max-width:480px) {
+  .sg-preloader-content { width:min(100%,260px); }
+  .sg-preloader-logo-wrap { width:clamp(118px,42vw,158px); margin-bottom:17px; }
+  .sg-preloader-title { letter-spacing:.12em; }
+  .sg-preloader-caption { font-size:12px; }
+  .sg-preloader-progress { margin-top:23px; }
+}
+@media(max-height:520px) and (orientation:landscape) {
+  .sg-preloader-logo-wrap { width:100px; margin-bottom:10px; }
+  .sg-preloader-progress { margin-top:14px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .sg-preloader,.sg-preloader * { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
