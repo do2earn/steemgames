@@ -119,24 +119,20 @@ async function updateAggregate(db, gameId, markSynced) {
     SELECT COUNT(*) AS posts, COUNT(DISTINCT author) AS users
     FROM steemgames_post_index WHERE game_id = ?
   `).bind(gameId).first();
-  const votesRow = await db.prepare(
-    "SELECT COUNT(*) AS votes FROM steemgames_votes WHERE game_id = ?"
+  const previous = await db.prepare(
+    "SELECT points, votes FROM steemgames WHERE id = ? AND is_active = 1"
   ).bind(gameId).first();
-
   const posts = Number(aggregate?.posts || 0);
   const users = Number(aggregate?.users || 0);
-  const votes = Number(votesRow?.votes || 0);
+  const votes = Number(previous?.votes || 0);
   const points = posts + users + votes * 0.1;
-  const previous = await db.prepare(
-    "SELECT points FROM steemgames WHERE id = ? AND is_active = 1"
-  ).bind(gameId).first();
   const pointsIncreased = points > Number(previous?.points || 0);
 
   // Posts/users/votes stay current, but points are a high-water mark:
   // never lower the leaderboard score when a later snapshot is smaller.
   await db.prepare(`
     UPDATE steemgames
-       SET posts = ?, users = ?, votes = ?,
+       SET posts = ?, users = ?,
            points = CASE
              WHEN ? > COALESCE(points, 0) THEN ?
              ELSE points
@@ -144,7 +140,7 @@ async function updateAggregate(db, gameId, markSynced) {
            stats_synced_at = CASE WHEN ? = 1 THEN datetime('now') ELSE stats_synced_at END,
            updated_at = datetime('now')
      WHERE id = ? AND is_active = 1
-  `).bind(posts, users, votes, points, points, markSynced ? 1 : 0, gameId).run();
+  `).bind(posts, users, points, points, markSynced ? 1 : 0, gameId).run();
 
   if (pointsIncreased) {
     await db.prepare(`
