@@ -118,8 +118,9 @@
       const tagCell = tag ? "<a href='" + tagUrl + "' target='_blank' rel='noopener noreferrer'>#" + esc(tag) + "</a>" : "—";
       const developerCell = developer ? "<a href='" + developerUrl + "' target='_blank' rel='noopener noreferrer'>@" + developer + "</a>" : esc(game.developer || "Not listed");
       const logoCell = "<a href='" + info + "' target='_blank' rel='noopener noreferrer'><img src='" + logo + "' width='120' height='84' alt='" + name + "'></a><br><strong>" + name + "</strong>";
-      const voteCell = '<a href="' + SITE_BASE + '/#steemgamesComponent" style="display:inline-block;padding:12px 28px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:16px;">🗳️ Vote</a>';
-      return "<tr><td align='center'><strong>#" + (index+1) + "</strong></td><td align='center'>" + logoCell + "<br>" + voteCell + "</td><td align='center'>" + fmt(game.points) + "</td><td align='center'>" + fmt(game.posts) + "</td><td align='center'>" + tagCell + "</td><td align='center'>" + developerCell + "</td></tr>";
+      const voteCell = '<a href="' + SITE_BASE + '/#steemgamesComponent" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 20px;margin-top:8px;background:#15803d;border:0;border-radius:10px;color:#fff;text-decoration:none;font-family:inherit;font-size:16px;font-weight:900;white-space:nowrap;">Vote <span aria-hidden="true" style="display:inline-block;width:7px;height:12px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin:-3px 2px 2px 0;"></span></a>';
+      const pointsCell = "<strong>" + fmt(game.points) + "</strong><br>" + voteCell;
+      return "<tr><td align='center'><strong>#" + (index+1) + "</strong></td><td align='center'>" + logoCell + "</td><td align='center'>" + pointsCell + "</td><td align='center'>" + fmt(game.posts) + "</td><td align='center'>" + tagCell + "</td><td align='center'>" + developerCell + "</td></tr>";
     }).join("\n");
     const gameTable = "<table width='100%' cellpadding='6' cellspacing='0' border='1' style='width:100%;border-collapse:collapse;table-layout:auto;font-size:13px'><thead><tr><th>Rank</th><th>Game</th><th>Points</th><th>Posts</th><th>Dedicated Tag</th><th>Developer</th></tr></thead><tbody>" + tableRows + "</tbody></table>";
 
@@ -153,7 +154,7 @@
       "",
       introSecond,
       "",
-      '<a href="' + SITE_BASE + '" style="display:inline-block;padding:12px 28px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:16px;">🎮 Explore Steem Games</a>',
+      '<a href="' + SITE_BASE + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:16px 32px;margin:8px 0;background:#2563eb;border:1px solid #1d4ed8;border-radius:14px;color:#fff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:900;line-height:1.2;box-shadow:0 4px 12px rgba(37,99,235,.22);"><img src="' + SITE_BASE + '/assets/images/steemgames_logo.webp" alt="Steem Games Logo" width="42" height="42" style="display:block;width:42px;height:42px;object-fit:contain;flex:0 0 42px;"><span>Explore <span style="color:#ef4444">S</span><span style="color:#f59e0b">t</span><span style="color:#22c55e">e</span><span style="color:#06b6d4">e</span><span style="color:#3b82f6">m</span> <span style="color:#ec4899">G</span><span style="color:#f97316">a</span><span style="color:#14b8a6">m</span><span style="color:#6366f1">e</span><span style="color:#eab308">s</span></span></a>',
       "",
       "# Steem Games Status",
       "",
@@ -165,11 +166,7 @@
       "",
       analysis[1],
       "",
-      "# Developers Beneficiaries",
-      "",
-      beneficiaryText,
-      "",
-      ...topDevelopers.map(name => "- **[@" + name + "](https://www.steemx.org/@" + encodeURIComponent(name) + ")**: 5%"),
+      "<table width='100%' cellpadding='16' cellspacing='0' border='0' style='width:100%;border:1px solid #e6c85c;border-radius:12px;border-collapse:separate;border-spacing:0;background:#fff9db;margin:10px 0 18px;'><tr><td style='background:#fff9db;border-radius:12px;padding:16px 18px;color:#3d3420;'><h2 style='margin:0 0 10px;color:#5b4812;font-size:20px;'>Developers Beneficiaries</h2><p style='margin:0 0 10px;'>" + esc(beneficiaryText) + "</p><ul style='margin:0;padding-left:22px;'>" + beneficiaryList + "</ul></td></tr></table>",
       "",
       "---",
       "",
