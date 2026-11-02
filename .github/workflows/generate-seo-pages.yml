@@ -1,0 +1,52 @@
+name: Generate SEO game pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/generate-seo-pages.mjs"
+      - "assets/js/app.js"
+      - ".github/workflows/generate-seo-pages.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seo-game-pages
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate static game pages
+        run: node scripts/senerate-seo-pages.mjs
+        env:
+          STEEM_GAMES_API_URL: https://steemgames.do2earn.workers.dev
+
+      - name: Commit generated pages when changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games sitemap.xml
+          if git diff --cached --quiet; then
+            echo "SEO pages are already up to date."
+            exit 0
+          fi
+          git commit -m "chore(seo): refresh static game pages and sitemap"
+          git push origin HEAD:main
