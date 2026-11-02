@@ -386,6 +386,11 @@
   }
 
   createBtn.addEventListener("click", async () => {
+    if (window.sgReportsIsAuthorized !== true) {
+      reportStatus.textContent = "Access denied. Log in as @do2earn to create reports.";
+      reportStatus.className = "status error";
+      return;
+    }
     createBtn.disabled = true;
     copyBtn.disabled = true;
     previewBtn.disabled = true;
