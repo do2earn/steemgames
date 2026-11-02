@@ -60,15 +60,10 @@ progress::-webkit-progress-bar{background:#e5e7eb}progress::-webkit-progress-val
 
 <section class="card" id="createReportCard">
 <div class="section-step"><span class="step-number">2</span><h2>Create Report</h2></div>
-<p class="hint">Choose a year, month, and week. The report will use only posts published within the selected date range. No post is published automatically.</p>
-<div class="period-grid" aria-label="Report period selection">
-  <div class="field"><label for="reportYear">Year</label><select id="reportYear"></select></div>
-  <div class="field"><label for="reportMonth">Month</label><select id="reportMonth"></select></div>
-  <div class="field"><label for="reportWeek">Week</label><select id="reportWeek"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select></div>
-</div>
-<p class="period-range" id="selectedPeriodRange" aria-live="polite">Select a reporting period.</p>
-<p class="small" id="selectedApiStatus" aria-live="polite">Steem API: the fastest responsive server will be selected automatically before report generation.</p>
-<div class="actions"><button class="btn primary" id="createReportBtn" type="button">📊 Create Report</button></div>
+<p class="hint">Generate today's report using the current active-game records in the Steem Games D1 database. Rankings, points, posts, dedicated tags, and developer accounts are loaded live from SG.</p>
+<p class="period-range" id="selectedPeriodRange" aria-live="polite">Report date: UTC · Automatically set to today.</p>
+<p class="small" id="selectedApiStatus" aria-live="polite">Source: https://steemgames.do2earn.workers.dev/api/games · Read-only database access.</p>
+<div class="actions"><button class="btn primary" id="createReportBtn" type="button">📊 Generate Daily Report</button></div>
 <div id="reportProgressWrap" class="progress-wrap" hidden>
 <div class="progress-heading"><span id="reportProgressLabel">Waiting to start…</span><strong id="reportProgressPercent">0%</strong></div>
 <progress id="reportProgress" max="100" value="0" aria-label="Report generation progress"></progress>
@@ -78,17 +73,17 @@ progress::-webkit-progress-bar{background:#e5e7eb}progress::-webkit-progress-val
 </section>
 
 <section class="card" id="reportEditorSection" hidden>
-<div class="section-step"><span class="step-number">3</span><h2>HTML Editor &amp; Preview</h2></div>
-<p class="hint">Edit the generated Steem-compatible HTML, then preview it before copying.</p>
+<div class="section-step"><span class="step-number">3</span><h2>Daily Report Editor &amp; Preview</h2></div>
+<p class="hint">Review and edit the report content and tags before publishing it manually from @do2earn.</p>
 <div class="field editor-field" style="margin-bottom:12px"><div class="editor-field-heading"><label for="reportTitleBox">Report Title</label><button class="mini-copy-btn" id="copyTitleBtn" type="button" aria-label="Copy report title" title="Copy title">⧉</button></div><input id="reportTitleBox" type="text" readonly aria-readonly="true" value="" aria-label="Generated report title"></div>
-<div class="editor-field-heading"><label for="reportHtmlEditor" class="editor-label">Report HTML</label><button class="mini-copy-btn" id="copyEditorBtn" type="button" aria-label="Copy report HTML" title="Copy HTML">⧉</button></div>
-<textarea id="reportHtmlEditor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Generated report HTML" placeholder="Your generated HTML will appear here…"></textarea>
-<div class="field editor-field" style="margin-top:10px"><div class="editor-field-heading"><label for="reportTagsBox">Game Tags (Copyable List)</label><button class="mini-copy-btn" id="copyTagsBtn" type="button" aria-label="Copy game tags" title="Copy tags">⧉</button></div><textarea id="reportTagsBox" rows="2" spellcheck="false" aria-label="Game tags used in the report"></textarea></div>
+<div class="editor-field-heading"><label for="reportHtmlEditor" class="editor-label">Report Content (HTML)</label><button class="mini-copy-btn" id="copyEditorBtn" type="button" aria-label="Copy report HTML" title="Copy HTML">⧉</button></div>
+<textarea id="reportHtmlEditor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Generated report HTML" placeholder="Generate the daily report to load the report content…"></textarea>
+<div class="field editor-field" style="margin-top:10px"><div class="editor-field-heading"><label for="reportTagsBox">Report Tags</label><button class="mini-copy-btn" id="copyTagsBtn" type="button" aria-label="Copy game tags" title="Copy tags">⧉</button></div><textarea id="reportTagsBox" rows="2" spellcheck="false" aria-label="Report tags: #steemgame, top eight dedicated game tags, and #steemflags"></textarea></div>
 <div class="actions editor-actions">
 <button class="btn primary" id="previewHtmlBtn" type="button" disabled>Preview</button>
 <button class="btn secondary" id="copyHtmlBtn" type="button" disabled>Copy HTML</button>
 </div>
-<div class="preview-heading"><strong>Preview</strong><span class="small">Sandboxed · scripts disabled</span></div>
+<div class="preview-heading"><strong>Complete HTML Preview</strong><span class="small">Sandboxed · scripts disabled</span></div>
 <iframe id="reportPreview" title="Generated report HTML preview" sandbox="" loading="lazy" hidden></iframe>
 </section>
 
@@ -103,7 +98,7 @@ import { verifyPostingKey, verifyKeychainLogin } from "../../assets/js/steem-aut
  window.sgReportsIsAuthorized=false;
  function setStatus(message,type="warn"){status.textContent=message;status.className="status "+type;}
  function readSGSession(){try{const shared=JSON.parse(localStorage.getItem("steemGamesSharedAuthSession")||"null");const username=String(shared?.username||"").trim().replace(/^@/,"").toLowerCase();return username==="do2earn"&&Number(shared?.expiresAt)>Date.now()?username:"";}catch(_){return "";}}
- async function loadDashboard(){const response=await fetch("data/games.json",{cache:"no-store"});if(!response.ok)throw Error("Could not load the game directory (HTTP "+response.status+").");const data=await response.json(),games=Array.isArray(data.games)?data.games:[],tags=new Set(games.flatMap(game=>Array.isArray(game.tags)?game.tags:[]).filter(Boolean));$("gameCount").textContent=String(games.length);$("tagCount").textContent=String(tags.size);}
+ async function loadDashboard(){const response=await fetch("https://steemgames.do2earn.workers.dev/api/games",{cache:"no-store"});if(!response.ok)throw Error("Could not load live SG database records (HTTP "+response.status+").");const data=await response.json(),games=Array.isArray(data.games)?data.games:[],tags=new Set(games.map(game=>String(game.tag||"").trim().toLowerCase()).filter(Boolean));$("gameCount").textContent=String(games.length);$("tagCount").textContent=String(tags.size);$("dashboardStatus").textContent="Connected to SG D1 database · "+(data.last_points_updated_at?"Last points update: "+data.last_points_updated_at:"points update time not recorded")+". Report generation is read-only.";}
  function setLoggedIn(){window.sgReportsIsAuthorized=true;loginCard.hidden=false;dashboard.hidden=false;$("keyField").hidden=true;$("loggedInAccount").hidden=false;$("username").hidden=true;logoutBtn.hidden=false;loginBtn.hidden=true;setStatus("Authentication verified for @do2earn.","ok");loadDashboard().catch(error=>{dashboard.hidden=true;window.sgReportsIsAuthorized=false;loginCard.hidden=false;logoutBtn.hidden=true;loginBtn.hidden=false;setStatus(error.message||"Could not load dashboard.","error");});}
  function setLoggedOut(message="Logged out. Only @do2earn can access this tool.",type="warn",clearShared=true){window.sgReportsIsAuthorized=false;try{sessionStorage.removeItem(SESSION_KEY);if(clearShared)localStorage.removeItem("steemGamesSharedAuthSession");}catch(_){}keyInput.value="";keyInput.hidden=false;$("keyField").hidden=methodSelect.value==="keychain";keyInput.disabled=methodSelect.value!=="postingKey";$("username").hidden=false;$("loggedInAccount").hidden=true;loginBtn.hidden=false;logoutBtn.hidden=true;loginCard.hidden=false;dashboard.hidden=true;setStatus(message,type);}
  function updateMethod(){const posting=methodSelect.value==="postingKey";$("keyField").hidden=!posting;keyInput.required=posting;keyInput.disabled=!posting;setStatus(posting?"Enter the @do2earn Posting Key, or choose Steem Keychain.":"Approve the login signature request in Steem Keychain.");}
