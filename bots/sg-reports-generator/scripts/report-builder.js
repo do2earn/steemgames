@@ -15,7 +15,6 @@
   const tagsBox = $("reportTagsBox");
   const copyBtn = $("copyEditorBtn");
   const previewBtn = $("previewHtmlBtn");
-  let latestGeneratedHtml = "";
 
   const INTRO = "Steem Games (SG) is a community hub and discovery platform dedicated to games built around the Steem blockchain. It brings active games together in one place, highlights their activity through a transparent points table, and gives players, developers, and gaming communities a shared space to discover projects and support the titles they enjoy. Visit Steem Games, explore the game directory, vote for your favourite games, try their gameplay, and share your experience through posts and guides so the whole Steem gaming ecosystem can grow together.";
 
@@ -49,7 +48,8 @@
     const file = String(game.game_logo || "").trim();
     if (!file) return SITE_BASE + "/assets/images/game-placeholder.svg";
     if (/^https?:\/\//i.test(file)) return file;
-    return SITE_BASE + "/assets/games-logos/" + file.replace(/^\/+/, "");
+    if (file.includes("/")) return SITE_BASE + "/" + file.replace(/^\/+/, "");
+    return SITE_BASE + "/assets/games-logos/" + file;
   }
 
   function buildStatusAnalysis(games, totals) {
@@ -216,7 +216,6 @@
       titleBox.value = report.title;
       editor.value = report.html;
       tagsBox.value = report.tags;
-      latestGeneratedHtml = report.html;
       $("reportEditorSection").hidden = false;
       copyBtn.disabled = false;
       previewBtn.disabled = false;
