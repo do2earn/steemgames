@@ -15,8 +15,6 @@
   const copyBtn = $("copyEditorBtn");
   const previewBtn = $("previewHtmlBtn");
 
-  const INTRO = "Steem Games (SG) is a community hub and discovery platform dedicated to games built around the Steem blockchain. It brings active games together in one place, highlights their activity through a transparent points table, and gives players, developers, and gaming communities a shared space to discover projects and support the titles they enjoy. Visit Steem Games, explore the game directory, vote for your favourite games, try their gameplay, and share your experience through posts and guides so the whole Steem gaming ecosystem can grow together.";
-
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[ch]));
@@ -117,12 +115,12 @@
       const developer = accountName(game.developer);
       const developerLabel = developer ? "@" + esc(developer) : esc(game.developer || "Not listed");
       return "<tr>" +
-        "<td style='text-align:center;font-weight:700'>" + (index+1) + "</td>" +
-        "<td style='text-align:center;min-width:100px'><a href='" + info + "' target='_blank' rel='noopener noreferrer' title='Open " + name + " on Steem Games'><img src='" + logo + "' alt='" + name + "' style='width:86px;max-height:66px;object-fit:contain;border:0;display:block;margin:0 auto'></a></td>" +
+        "<td style='text-align:center;font-weight:700;white-space:nowrap'>" + (index+1) + "</td>" +
+        "<td style='text-align:center;min-width:92px'><a href='" + info + "' target='_blank' rel='noopener noreferrer' title='Open " + name + " on Steem Games'><img src='" + logo + "' alt='" + name + "' style='width:76px;max-height:58px;object-fit:contain;border:0;display:block;margin:0 auto'></a></td>" +
         "<td style='text-align:center;white-space:nowrap'><strong>" + fmt(game.points) + "</strong><br><a href='" + SITE_BASE + "/#steemgamesComponent' target='_blank' rel='noopener noreferrer' style='display:inline-block;margin-top:5px;padding:4px 8px;background:#198754;color:#fff;text-decoration:none;border-radius:5px;font-size:12px;font-weight:bold'>✅ Vote</a></td>" +
-        "<td style='text-align:center'>" + fmt(game.posts) + "</td>" +
+        "<td style='text-align:center;white-space:nowrap'>" + fmt(game.posts) + "</td>" +
         "<td style='text-align:center;white-space:nowrap'>" + (tag ? "#" + esc(tag) : "—") + "</td>" +
-        "<td style='text-align:center;overflow-wrap:anywhere'>" + developerLabel + "</td>" +
+        "<td style='text-align:center;overflow-wrap:anywhere;min-width:100px'>" + developerLabel + "</td>" +
         "</tr>";
     }).join("");
 
@@ -146,25 +144,21 @@
       if (topTags.length === 8) break;
     }
     const tags = Array.from(new Set(["steemgame", ...topTags, "steemflags"]));
-    const analysis = buildStatParagraphs(ranked, totals);
-    const status = buildStatusAnalysis(ranked, totals);
     const title = "Steem Games | Daily Report | " + date;
-
+    const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
+    const intro = "استییم گیمز (" + sgLink + ") یک وبسایت دایرکتوری و مرجع برای بازی های شبکه بلاکچین استییم است. در وبسایت " + sgLink + " شما می توانید به اطلاعات همه این بازی‌ها دسترسی داشته باشید. بازی‌های جدید بر روی شبکه بلاکچین استییم را کشف کنید و هر روز به بازی های مورد علاقه تان رای دهید تا وضعیت امتیاز آن ها در وبسایت " + sgLink + " بهتر شوند. بازی‌های مورد علاقه تان را انجام دهید و با ساختن و انتشار محتوا درباره گیم پلی آنها بر روی سکوهای استییم، رمزارز $STEEM بیشتری بدست آورید‌. توسعه‌دهندگان بازی‌ها می‌توانند کاربران خود را دعوت کنند تا در وبسایت " + sgLink + " به بازی‌های آن‌ها رای دهند تا رتبه بازی‌ها بهتر شوند.";
     const html = [
-      "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px'>",
-      "<h1 style='color:#17365d;text-align:center'>🎮 " + esc(title) + "</h1>",
-      "<p style='text-align:center;color:#667085'>Daily snapshot from the Steem Games database · " + esc(date) + "</p>",
-      "<h2 style='color:#17365d'>Welcome to Steem Games</h2><p>" + INTRO + "</p>",
-      "<h2 style='color:#17365d'>Steem Games Status</h2><p><strong>@do2earn:</strong> " + esc(status) + "</p>",
-      "<div style='background:#f2f6fb;border:1px solid #dce5ef;border-radius:8px;padding:12px;margin:14px 0'><strong>Today's SG snapshot</strong><br>" + games.length + " active games · " + fmt(totals.posts) + " posts · " + fmt(totals.votes) + " votes · " + fmt(totals.points) + " combined points</div>",
-      "<h2 style='color:#17365d'>Steem Games Table</h2>",
-      "<table style='border-collapse:collapse;width:100%;font-size:13px;margin:12px 0'><thead><tr style='background:#eaf0f7'><th style='border:1px solid #cbd5e1;padding:8px'>Rank</th><th style='border:1px solid #cbd5e1;padding:8px'>Games Logo</th><th style='border:1px solid #cbd5e1;padding:8px'>Points</th><th style='border:1px solid #cbd5e1;padding:8px'>Posts</th><th style='border:1px solid #cbd5e1;padding:8px'>Dedicated Tag</th><th style='border:1px solid #cbd5e1;padding:8px'>Developer</th></tr></thead><tbody>" + rows + "</tbody></table>",
+      "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px;max-width:100%;overflow-wrap:anywhere'>",
+      "<h1 style='color:#17365d;text-align:center'>🎮 <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='color:inherit;text-decoration:none'>Steem Games</a> | Daily Report | " + esc(date) + "</h1>",
+      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:rtl'>" + intro + "</p>",
+      "<h2 style='color:#17365d'>" + sgLink + " Status</h2>",
+      "<div style='margin:16px 0'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#198754;color:#fff;padding:11px 19px;border-radius:8px;text-decoration:none;font-weight:bold;box-shadow:0 3px 8px #19875433'><img src='" + SITE_BASE + "/assets/images/steemgames_logo.webp' alt='' style='width:25px;height:25px;object-fit:contain;border:0'>Explore Steem Games</a></div>",
+      "<h2 style='color:#17365d'>" + sgLink + " Table</h2>",
+      "<div style='width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #cbd5e1;border-radius:7px;margin:12px 0'><table style='border-collapse:collapse;width:100%;min-width:650px;font-size:13px;margin:0;table-layout:auto'><thead><tr style='background:#eaf0f7'><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Rank</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Games Logo</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Points</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Posts</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Dedicated Tag</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Developer</th></tr></thead><tbody>" + rows + "</tbody></table></div>",
       "<p style='font-size:13px;color:#667085'>Points, posts, votes, and developer details are taken from the current active-game records in the Steem Games database. Games are ranked by Points (highest first). The green Vote links open the SG directory, where you can log in and vote for a game.</p>",
-      "<h2 style='color:#17365d'>Steem Games Table Analysis</h2><p>" + esc(analysis[0]) + "</p><p>" + esc(analysis[1]) + "</p>",
+      "<h2 style='color:#17365d'>" + sgLink + " Table Analysis</h2><p>" + esc(buildStatParagraphs(ranked, totals)[0]) + "</p><p>" + esc(buildStatParagraphs(ranked, totals)[1]) + "</p>",
       "<h2 style='color:#17365d'>Developers Beneficiaries</h2><p>" + esc(beneficiaryText) + "</p><ul>" + beneficiaryList + "</ul>",
-      "<h2 style='color:#17365d'>Join the Steem Gaming Community</h2><p>Visit <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>, vote for the games you love, explore their gameplay, and publish your own reviews, screenshots, walkthroughs, and tips. Developers: invite your communities to discover and support your game on SG.</p>",
-      "<p style='text-align:center;margin-top:24px'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-block;background:#198754;color:#fff;padding:10px 18px;border-radius:7px;text-decoration:none;font-weight:bold'>Explore Steem Games &amp; Vote</a></p>",
-      "<hr style='border:0;border-top:1px solid #dce5ef;margin:22px 0'><p style='font-size:12px;color:#7b8794;text-align:center'>Published by @do2earn · Steem Games Daily Report · " + esc(date) + "</p>",
+      "<hr style='border:0;border-top:1px solid #dce5ef;margin:22px 0'><p style='font-size:12px;color:#7b8794;text-align:center'>Published by @do2earn · " + sgLink + " Daily Report · " + esc(date) + "</p>",
       "</div>"
     ].join("\n");
 
@@ -192,7 +186,7 @@
       return;
     }
 
-    const documentHtml = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>body{margin:0;padding:18px;font:15px/1.6 Arial,sans-serif;color:#263445;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0;display:block;overflow-x:auto}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:middle}th{background:#eaf0f7}img{max-width:100%;height:auto}a{color:#175bb5}</style></head><body>" + content + "</body></html>";
+    const documentHtml = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>*{box-sizing:border-box}body{margin:0;padding:18px;font:15px/1.6 Arial,sans-serif;color:#263445;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;min-width:650px;font-size:13px;margin:0;table-layout:auto}th,td{border:1px solid #cbd5e1;padding:7px;text-align:center;vertical-align:middle;white-space:nowrap}th{background:#eaf0f7}img{max-width:100%;height:auto}a{color:#175bb5}</style></head><body>" + content + "</body></html>";
 
     previewTab.document.open();
     previewTab.document.write("<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Steem Games Report Preview</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#14243b;color:#fff;box-shadow:0 2px 10px #0002}.toolbar strong{font-size:14px}.toolbar button{border:0;border-radius:8px;padding:9px 15px;background:#fff;color:#14243b;font-weight:700;cursor:pointer}.report-frame{display:block;width:100%;height:calc(100vh - 54px);border:0;background:#fff}@media print{.toolbar{display:none}.report-frame{height:100vh}}</style></head><body><header class='toolbar'><strong>Steem Games · Report Preview</strong><button id='closePreview' type='button'>✕ Close Preview</button></header><iframe class='report-frame' id='reportFrame' title='Complete HTML report preview' sandbox=''></iframe></body></html>");
