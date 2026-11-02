@@ -153,7 +153,7 @@
       "",
       introSecond,
       "",
-      "<p><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-block;padding:10px 16px;background-color:#1769aa;color:#ffffff;text-decoration:none;font-weight:bold;border-radius:7px'>🎮 Explore Steem Games</a></p>",
+      "<p><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-block;padding:12px 24px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:15px'>🎮 Explore Steem Games</a></p>",
       "",
       "# Steem Games Status",
       "",
