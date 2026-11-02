@@ -118,7 +118,7 @@
       const tagCell = tag ? "<a href='" + tagUrl + "' target='_blank' rel='noopener noreferrer'>#" + esc(tag) + "</a>" : "—";
       const developerCell = developer ? "<a href='" + developerUrl + "' target='_blank' rel='noopener noreferrer'>@" + developer + "</a>" : esc(game.developer || "Not listed");
       const logoCell = "<a href='" + info + "' target='_blank' rel='noopener noreferrer'><img src='" + logo + "' width='120' height='84' alt='" + name + "'></a><br><strong>" + name + "</strong>";
-      const voteCell = "<a href='" + SITE_BASE + "/#steemgamesComponent' target='_blank' rel='noopener noreferrer' style='display:inline-block;padding:8px 16px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:13px'>✓ Vote</a>";
+      const voteCell = "<a href='" + SITE_BASE + "/#steemgamesComponent' style='display:inline-block;padding:12px 28px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:16px;'>✓ Vote</a>";
       return "<tr><td align='center'><strong>#" + (index+1) + "</strong></td><td align='center'>" + logoCell + "<br>" + voteCell + "</td><td align='center'>" + fmt(game.points) + "</td><td align='center'>" + fmt(game.posts) + "</td><td align='center'>" + tagCell + "</td><td align='center'>" + developerCell + "</td></tr>";
     }).join("\n");
     const gameTable = "<table width='100%' cellpadding='6' cellspacing='0' border='1' style='width:100%;border-collapse:collapse;table-layout:auto;font-size:13px'><thead><tr><th>Rank</th><th>Game</th><th>Points</th><th>Posts</th><th>Dedicated Tag</th><th>Developer</th></tr></thead><tbody>" + tableRows + "</tbody></table>";
@@ -153,7 +153,7 @@
       "",
       introSecond,
       "",
-      "<p><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-block;padding:12px 24px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:15px'>🎮 Explore Steem Games</a></p>",
+      "<a href='" + SITE_BASE + "' style='display:inline-block;padding:12px 28px;background-color:#39FF14;border:2px solid #123000;border-radius:12px;color:#102000;text-decoration:none;font-weight:bold;font-size:16px;'>🎮 Explore Steem Games</a>",
       "",
       "# Steem Games Status",
       "",
