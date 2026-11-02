@@ -35,7 +35,7 @@ jobs:
           node-version: "20"
 
       - name: Generate static game pages
-        run: node scripts/senerate-seo-pages.mjs
+        run: node scripts/generate-seo-pages.mjs
         env:
           STEEM_GAMES_API_URL: https://steemgames.do2earn.workers.dev
 
