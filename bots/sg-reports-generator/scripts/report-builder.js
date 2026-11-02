@@ -191,11 +191,18 @@
   }
 
   function markdownInline(value) {
-    return value
+    const safeTags = [];
+    const preserved = String(value).replace(/<a href='(https?:[^']+)' target='_blank' rel='noopener noreferrer'><img src='(https?:[^']+)' width='88' alt='([^']*)' style='[^']*'><\\/a>/g, match => {
+      const token = "__SAFE_HTML_" + safeTags.length + "__";
+      safeTags.push(match);
+      return token;
+    });
+    return preserved
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, "<img src=\"$2\" alt=\"$1\">")
-      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "<a href=\"$2\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "<a href=\"$2\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>")
+      .replace(/__SAFE_HTML_(\d+)__/g, (_, index) => safeTags[Number(index)]);
   }
 
   function markdownToHtml(markdown) {
@@ -289,8 +296,7 @@
     previewBtn.disabled = !editor.value.trim();
   });
   titleBox.addEventListener("input",() => {
-    if (!editor.value.trim()) return;
-    editor.value = editor.value.replace(/<h1[^>]*>.*?<\/h1>/, "<h1 style=\"color:#17365d;text-align:center\">🎮 " + esc(titleBox.value) + "</h1>");
+    // The report title is kept in its own field and is not inserted into the report body.
   });
   previewBtn.addEventListener("click",showPreview);
   $("copyTitleBtn").addEventListener("click",() => copyTextBox(titleBox,"Report title"));
