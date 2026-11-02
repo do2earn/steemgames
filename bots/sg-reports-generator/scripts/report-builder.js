@@ -148,12 +148,14 @@
     const tags = Array.from(new Set(["steemgame", ...topTags, "steemflags"]));
     const title = "Steem Games | Daily Report | " + date;
     const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
-    const intro = sgLink + " is a directory and information hub for games on the Steem blockchain. On " + sgLink + ", you can access information about all these games. Discover new games on the Steem blockchain and vote for your favourites every day to help improve their points on " + sgLink + ". Play the games you enjoy and earn more $STEEM by creating and publishing gameplay content about them on Steem platforms. Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
+    const introFirst = sgLink + " is a directory and information hub for games on the Steem blockchain. On " + sgLink + ", you can access information about all these games. Discover new games on the Steem blockchain and vote for your favourites every day to help improve their points on " + sgLink + ". Play the games you enjoy and earn more $STEEM by creating and publishing gameplay content about them on Steem platforms.";
+    const introSecond = "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
     const analysis = buildStatParagraphs(ranked, totals);
     const html = [
       "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px;max-width:100%;overflow-wrap:anywhere'>",
       "<h1 style='color:#17365d;text-align:center'>🎮 <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='color:inherit;text-decoration:none'>Steem Games</a> | Daily Report | " + esc(date) + "</h1>",
-      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:ltr'>" + intro + "</p>",
+      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:ltr;margin:0 0 14px'>" + introFirst + "</p>",
+      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:ltr;margin:0 0 22px'>" + introSecond + "</p>",
       "<div style='text-align:center;margin:24px 0 28px'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:13px;background:#198754;color:#fff;padding:16px 28px;border-radius:10px;text-decoration:none;font-size:20px;font-weight:800;box-shadow:0 4px 12px #19875444'><img src='" + SITE_BASE + "/assets/images/steemgames_logo.webp' alt='' style='width:38px;height:38px;object-fit:contain;border:0'>Explore Steem Games</a></div>",
       "<h2 style='color:#17365d'>" + sgLink + " Status</h2>",
       "<h2 style='color:#17365d'>" + sgLink + " Table</h2>",
