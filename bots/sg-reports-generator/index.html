@@ -3,27 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#14243b">
-<title>Steem Games Analyst | Do2Earn</title>
-<script>
-(function () {
-  "use strict";
-  const sources = [
-    "https://cdn.jsdelivr.net/npm/@steemit/steem-js@0.7.11/dist/steem.min.js",
-    "https://unpkg.com/@steemit/steem-js@0.7.11/dist/steem.min.js"
-  ];
-  function loadLibrary(index) {
-    const script = document.createElement("script");
-    script.src = sources[index];
-    script.async = true;
-    script.onerror = function () {
-      if (index + 1 < sources.length) loadLibrary(index + 1);
-    };
-    document.head.appendChild(script);
-  }
-  loadLibrary(0);
-})();
-</script>
+<meta name="theme-color" content="#ffffff">
+<title>SG Reports Generator | Steem Games</title>
+
 <style>
 :root{color-scheme:dark;--bg:#0b1422;--panel:#14243b;--line:#304765;--text:#eef5ff;--muted:#a9bad0;--accent:#65e6a6;--blue:#7bb8ff;--warn:#ffd27d}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(155deg,#12233b,#091321 72%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -31,21 +13,37 @@ main{width:min(850px,100%);margin:auto;padding:22px 15px 45px}.brand{display:fle
 .card{background:rgba(20,36,59,.97);border:1px solid var(--line);border-radius:16px;padding:17px;margin-bottom:13px;box-shadow:0 8px 24px #0002;min-width:0}.card h2{font-size:18px;line-height:1.3;margin:0 0 7px}.hint{color:var(--muted);font-size:14px;margin:0 0 13px}.section-step{display:flex;align-items:center;gap:9px;margin-bottom:12px}.step-number{display:grid;place-items:center;flex:0 0 29px;height:29px;border-radius:9px;background:#203b5b;color:var(--accent);font-size:13px;font-weight:800}.section-step h2{margin:0}.dashboard-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.dashboard-grid .stat{min-width:0}.dashboard-grid .stat strong{font-size:clamp(18px,3vw,24px);overflow-wrap:anywhere}.dashboard-grid .stat span{display:block;line-height:1.35}.game-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.game-tag{min-width:0;overflow-wrap:anywhere;line-height:1.35}.report-summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.report-summary .hint{margin:0}.progress-wrap{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#0d1b2e}.progress-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:8px}.progress-heading span{color:var(--muted);overflow-wrap:anywhere}.progress-heading strong{color:var(--accent);font-size:15px;white-space:nowrap}progress{display:block;width:100%;height:10px;border:0;border-radius:99px;overflow:hidden;appearance:none}progress::-webkit-progress-bar{background:#243a55;border-radius:99px}progress::-webkit-progress-value{background:var(--accent);border-radius:99px;transition:width .2s ease}progress::-moz-progress-bar{background:var(--accent);border-radius:99px}.editor-label{display:block;font-size:14px;color:#d7e5f7;margin-bottom:7px}.editor-field-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.editor-field-heading label{margin:0}.editor-field-heading .editor-label{margin:0}.mini-copy-btn{flex:0 0 auto;display:inline-grid;place-items:center;width:25px;height:25px;min-height:25px;padding:0;border:1px solid #47617f;border-radius:6px;background:#203b5b;color:#dceaff;font:700 14px/1 system-ui;cursor:pointer}.mini-copy-btn:hover{background:#2d4d70}.mini-copy-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.mini-copy-btn:disabled{opacity:.45;cursor:not-allowed}#reportHtmlEditor{display:block;width:100%;min-height:300px;resize:vertical;border:1px solid #47617f;border-radius:11px;background:#091522;color:#dceaff;padding:12px;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2;overflow-wrap:anywhere}#reportPreview{display:block;width:100%;height:520px;border:1px solid var(--line);border-radius:11px;background:#fff;margin-top:10px}.preview-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px}.preview-heading strong{font-size:14px}.editor-actions{margin-bottom:10px}.field label{display:block;font-size:14px;color:#d7e5f7;margin-bottom:6px}.field input,.field select,.field textarea{display:block;width:100%;min-width:0;min-height:46px;border:1px solid #47617f;border-radius:11px;background:#0d1b2e;color:var(--text);padding:10px 12px;font:inherit}.field input[type=password]{letter-spacing:.08em}.field input[readonly]{color:#cfe0f5}.field textarea{min-height:62px;resize:vertical;font-size:13px;line-height:1.4}.period-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 8px}.field select{appearance:auto}.period-range{margin:8px 0 0;color:var(--accent);font-size:13px;overflow-wrap:anywhere}#reportTitleBox{font-weight:700}#reportTagsBox{font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}
 .actions{display:flex;gap:10px;margin-top:14px}.btn{border:0;border-radius:11px;padding:12px 18px;min-height:46px;font:700 15px system-ui;cursor:pointer}.primary{background:var(--accent);color:#082519;flex:1}.secondary{background:#263d5b;color:var(--text)}.btn:disabled{opacity:.55;cursor:wait}.status{margin-top:12px;color:var(--muted);font-size:14px;min-height:22px}.error{color:#ffaaa8}.ok{color:var(--accent)}.warn{color:var(--warn)}.small{font-size:12px;color:var(--muted)}.badge{display:inline-block;padding:3px 8px;border-radius:99px;background:#203b5b;color:var(--blue);font-size:12px;font-weight:700}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:#102038}.stat strong{display:block;font-size:24px;color:var(--accent)}.stat span{font-size:12px;color:var(--muted)}.game-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.game-tag{padding:6px 9px;border:1px solid #36516f;border-radius:9px;font-size:13px;color:#dceaff;min-width:0;overflow-wrap:anywhere;line-height:1.35}.report-link{color:var(--blue);overflow-wrap:anywhere;font-weight:700}.footer{text-align:center;color:#879bb4;font-size:12px;margin-top:20px}
 [hidden]{display:none!important}@media(max-width:560px){main{padding:12px 9px 24px}.brand{gap:10px}.card{padding:12px;border-radius:13px;margin-bottom:10px}.period-grid{gap:6px}.period-grid .field label{font-size:12px}.period-grid .field select{padding:9px 6px;font-size:13px;min-height:44px}.actions{flex-direction:column}.btn{width:100%;min-height:44px}.secondary{width:100%}.stats,.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat{padding:10px}.stat strong{font-size:21px}.stat span{line-height:1.35}.game-list{grid-template-columns:1fr;gap:7px}#reportHtmlEditor{min-height:220px;font-size:11px;padding:10px}#reportPreview{height:360px}.progress-wrap{padding:10px}.progress-heading{font-size:12px}.brand{align-items:flex-start;margin-bottom:17px}.brand .logo{flex-basis:43px;height:43px;border-radius:12px;font-size:23px}.brand p{font-size:13px}.section-step{margin-bottom:10px}.section-step h2{font-size:17px}}
+
+/* Steem Games light theme */
+:root{color-scheme:light;--bg:#f5f7fb;--panel:#fff;--line:#e5e9f0;--text:#172033;--muted:#667085;--accent:#2563eb;--blue:#2563eb;--warn:#946200}
+body{background:#f5f7fb;color:#172033}.card{background:#fff;border-color:#e5e9f0;box-shadow:0 8px 24px rgba(18,32,60,.07)}
+.brand .logo,.step-number{background:#e8f1ff;color:#2563eb}.brand h1,.section-step h2,.card h2{color:#172033}
+.brand p,.hint,.small,.status,.stat span,.footer{color:#667085}.field label,.editor-label,.editor-field-heading label{color:#344054}
+.field input,.field select,.field textarea{background:#fff;border-color:#cbd5e1;color:#172033}.field input::placeholder,.field textarea::placeholder{color:#98a2b3}.field input[readonly]{color:#344054}
+#reportHtmlEditor{background:#fff;color:#172033;border-color:#cbd5e1}#reportPreview{border-color:#d0d5dd;background:#fff}
+.progress-wrap{background:#f8fafc;border-color:#e5e9f0}.progress-heading span{color:#667085}.progress-heading strong{color:#2563eb}
+progress::-webkit-progress-bar{background:#e5e7eb}progress::-webkit-progress-value{background:#2563eb}progress::-moz-progress-bar{background:#2563eb}
+.stat{background:#f8fafc;border-color:#e5e9f0}.stat strong{color:#2563eb}.game-tag{background:#f8fafc;border-color:#e5e9f0;color:#344054}
+.badge{background:#e8f1ff;color:#1d4ed8}.primary{background:#2563eb;color:#fff}.primary:hover{background:#1d4ed8}.secondary{background:#eef2f7;color:#344054;border:1px solid #d0d5dd}
+.mini-copy-btn{background:#eef2f7;border-color:#d0d5dd;color:#344054}.report-link{color:#2563eb}.status.error{color:#b42318}.status.ok{color:#157347}.status.warn{color:#946200}
+.login-method-note{margin:8px 0 0;color:#667085;font-size:12px}
+@media(max-width:560px){.brand h1{font-size:clamp(21px,5vw,28px)}}
 </style>
 </head>
 <body>
 <main>
-<header class="brand"><div class="logo" aria-hidden="true">📊</div><div><h1>Steem Games Analyst</h1><p>Do2Earn · Evidence-based analysis of gaming activity on Steem</p></div></header>
+<header class="brand"><div class="logo" aria-hidden="true">📊</div><div><h1>SG Reports Generator</h1><p>Steem Games · Evidence-based analysis of gaming activity on Steem</p></div></header>
 
 <section class="card" id="loginCard">
-<h2>🔐 Restricted login</h2>
-<p class="hint">This early version is intended exclusively for the Steem account <strong>@do2earn</strong>. The username is fixed and cannot be changed.</p>
-<div class="field"><label for="username">Steem username</label><input id="username" value="@do2earn" readonly aria-readonly="true" autocomplete="username"></div>
-<div id="loggedInAccount" hidden style="font-size:20px;font-weight:800;margin-top:12px;color:var(--accent)">@do2earn</div>
-<div class="field" id="keyField" style="margin-top:12px"><label for="postingKey">Posting Key</label><input id="postingKey" type="password" placeholder="Enter the Posting Key for @do2earn" autocomplete="current-password" autocapitalize="off" spellcheck="false" aria-describedby="loginStatus"></div>
+<h2>🔐 SG Admin Login</h2>
+<p class="hint">Use the same authentication methods as the Steem Games website. Access is restricted to <strong>@do2earn</strong>.</p>
+<div class="field"><label for="username">Steem username</label><input id="username" value="do2earn" readonly aria-readonly="true" autocomplete="username"></div>
+<div id="loggedInAccount" hidden style="font-size:20px;font-weight:800;margin-top:12px;color:#157347">@do2earn</div>
+<div class="field" style="margin-top:12px"><label for="loginMethod">Login Method</label><select id="loginMethod"><option value="postingKey" selected>Steem Posting Key</option><option value="keychain">Steem Keychain</option></select></div>
+<div class="field" id="keyField" style="margin-top:12px"><label for="postingKey">Posting Key</label><input id="postingKey" type="password" placeholder="Enter the Posting Key for @do2earn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="loginStatus"><p class="login-method-note">Your Posting Key is verified against the account's posting authority and is not stored.</p></div>
 <div class="actions"><button class="btn primary" id="loginBtn" type="button">🔒 Login</button><button class="btn secondary" id="logoutBtn" type="button" hidden>Logout</button></div>
-<div class="status warn" id="loginStatus" role="status" aria-live="polite">The key is checked against @do2earn's public posting authority. It is kept in memory only for this page session.</div>
-<p class="small">The key is not saved in browser storage, sent to a SGA server, or committed to GitHub. It is used only to verify account ownership; this app does not sign or broadcast transactions. Refreshing or closing the page ends the session.</p>
+<div class="status warn" id="loginStatus" role="status" aria-live="polite">Only @do2earn is authorized to access SG Reports Generator.</div>
+<p class="small">The shared SG authentication module verifies account ownership. The Posting Key is used only for verification and is cleared immediately.</p>
 </section>
 
 <div id="dashboard" hidden>
@@ -96,103 +94,21 @@ main{width:min(850px,100%);margin:auto;padding:22px 15px 45px}.brand{display:fle
 
 <p class="footer">Do2Earn · Steem Games Analyst · Access interface reserved for @do2earn</p>
 </main>
-<script>
+<script type="module">
+import { verifyPostingKey, verifyKeychainLogin } from "../../assets/js/steem-auth.js?v=20261102-1";
 (() => {
-  "use strict";
-  const ACCOUNT = "do2earn";
-  const API_URL = "https://api.steemit.com";
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const keyInput = document.getElementById("postingKey");
-  const status = document.getElementById("loginStatus");
-  const loginCard = document.getElementById("loginCard");
-  const dashboard = document.getElementById("dashboard");
-  let postingKeyInMemory = "";
-
-  async function rpc(method, params) {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({jsonrpc: "2.0", method, params, id: 1})
-    });
-    if (!response.ok) throw new Error("The Steem API returned HTTP " + response.status + ".");
-    const payload = await response.json();
-    if (payload.error) throw new Error(payload.error.message || "The Steem API rejected the request.");
-    return payload.result;
-  }
-
-  function setLoggedOut(message, isError = false) {
-    postingKeyInMemory = "";
-    keyInput.value = "";
-    keyInput.hidden = false;
-    document.getElementById("keyField").hidden = false;
-    document.getElementById("username").hidden = false;
-    document.getElementById("loggedInAccount").hidden = true;
-    loginBtn.hidden = false;
-    logoutBtn.hidden = true;
-    loginCard.hidden = false;
-    dashboard.hidden = true;
-    status.textContent = message;
-    status.className = "status " + (isError ? "error" : "warn");
-  }
-
-  async function loadDashboard() {
-    const response = await fetch("data/games.json", {cache: "no-store"});
-    if (!response.ok) throw new Error("Could not load data/games.json (HTTP " + response.status + ").");
-    const data = await response.json();
-    const games = Array.isArray(data.games) ? data.games : [];
-    const tags = new Set(games.flatMap(game => Array.isArray(game.tags) ? game.tags : []).filter(Boolean));
-    document.getElementById("gameCount").textContent = String(games.length);
-    document.getElementById("tagCount").textContent = String(tags.size);
-  }
-
-  loginBtn.addEventListener("click", async () => {
-    const key = keyInput.value.trim();
-    if (!key) {
-      status.textContent = "Please enter the Posting Key for @do2earn.";
-      status.className = "status error";
-      return;
-    }
-    if (!window.steem || !window.steem.auth || typeof window.steem.auth.wifToPublic !== "function") {
-      status.textContent = "The Steem key library did not load. Check your connection and refresh the page.";
-      status.className = "status error";
-      return;
-    }
-    loginBtn.disabled = true;
-    status.textContent = "Checking the key against @do2earn's posting authority…";
-    status.className = "status";
-    try {
-      const publicKey = window.steem.auth.wifToPublic(key).toString();
-      const accounts = await rpc("condenser_api.get_accounts", [[ACCOUNT]]);
-      const account = Array.isArray(accounts) ? accounts[0] : null;
-      if (!account) throw new Error("Steem account @do2earn could not be found.");
-      const posting = account.posting || {};
-      const authorized = (Array.isArray(posting.key_auths) ? posting.key_auths : [])
-        .some(entry => Array.isArray(entry) && entry[0] === publicKey);
-      if (!authorized) {
-        throw new Error("This key is not listed directly in @do2earn's posting authority. Make sure you entered the Posting Key, not the active or owner key.");
-      }
-      postingKeyInMemory = key;
-      keyInput.value = "";
-      keyInput.hidden = true;
-      document.getElementById("keyField").hidden = true;
-      document.getElementById("username").hidden = true;
-      document.getElementById("loggedInAccount").hidden = false;
-      loginBtn.hidden = true;
-      logoutBtn.hidden = false;
-      status.textContent = "Login verified for @do2earn. The key remains in memory only.";
-      status.className = "status ok";
-      await loadDashboard();
-      dashboard.hidden = false;
-    } catch (error) {
-      setLoggedOut(error && error.message ? error.message : "Login failed. Please check the key and try again.", true);
-    } finally {
-      loginBtn.disabled = false;
-    }
-  });
-
-  logoutBtn.addEventListener("click", () => setLoggedOut("Logged out. The Posting Key has been cleared from this page's memory."));
-  window.addEventListener("pagehide", () => { postingKeyInMemory = ""; });
+ "use strict";
+ const ACCOUNT="do2earn", SESSION_KEY="steemGamesAuthSession", $=id=>document.getElementById(id);
+ const loginBtn=$("loginBtn"),logoutBtn=$("logoutBtn"),keyInput=$("postingKey"),methodSelect=$("loginMethod"),status=$("loginStatus"),loginCard=$("loginCard"),dashboard=$("dashboard");
+ window.sgReportsIsAuthorized=false;
+ function setStatus(message,type="warn"){status.textContent=message;status.className="status "+type;}
+ function readSGSession(){try{return String(JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null")?.username||"").trim().replace(/^@/,"").toLowerCase();}catch(_){return "";}}
+ async function loadDashboard(){const response=await fetch("data/games.json",{cache:"no-store"});if(!response.ok)throw Error("Could not load the game directory (HTTP "+response.status+").");const data=await response.json(),games=Array.isArray(data.games)?data.games:[],tags=new Set(games.flatMap(game=>Array.isArray(game.tags)?game.tags:[]).filter(Boolean));$("gameCount").textContent=String(games.length);$("tagCount").textContent=String(tags.size);}
+ function setLoggedIn(){window.sgReportsIsAuthorized=true;loginCard.hidden=true;dashboard.hidden=false;$("loggedInAccount").hidden=false;$("username").hidden=true;logoutBtn.hidden=false;loginBtn.hidden=true;setStatus("Authentication verified for @do2earn.","ok");loadDashboard().catch(error=>{dashboard.hidden=true;window.sgReportsIsAuthorized=false;loginCard.hidden=false;logoutBtn.hidden=true;loginBtn.hidden=false;setStatus(error.message||"Could not load dashboard.","error");});}
+ function setLoggedOut(message="Logged out. Only @do2earn can access this tool.",type="warn"){window.sgReportsIsAuthorized=false;try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}keyInput.value="";keyInput.hidden=false;$("keyField").hidden=methodSelect.value==="keychain";keyInput.disabled=methodSelect.value!=="postingKey";$("username").hidden=false;$("loggedInAccount").hidden=true;loginBtn.hidden=false;logoutBtn.hidden=true;loginCard.hidden=false;dashboard.hidden=true;setStatus(message,type);}
+ function updateMethod(){const posting=methodSelect.value==="postingKey";$("keyField").hidden=!posting;keyInput.required=posting;keyInput.disabled=!posting;setStatus(posting?"Enter the @do2earn Posting Key, or choose Steem Keychain.":"Approve the login signature request in Steem Keychain.");}
+ async function login(){if(loginBtn.disabled)return;loginBtn.disabled=true;const method=methodSelect.value,key=keyInput.value.trim();if(method==="postingKey"&&!key){setStatus("Please enter the Posting Key for @do2earn.","error");loginBtn.disabled=false;return;}setStatus("Verifying @do2earn account ownership…");try{if(method==="keychain")await verifyKeychainLogin(ACCOUNT);else await verifyPostingKey(ACCOUNT,key);keyInput.value="";sessionStorage.setItem(SESSION_KEY,JSON.stringify({username:ACCOUNT}));setLoggedIn();}catch(error){const messages={POSTING_KEY_EMPTY:"Enter the Posting Key for @do2earn.",POSTING_KEY_FORMAT:"The Posting Key format is invalid.",POSTING_KEY_UNAUTHORIZED:"This key does not match @do2earn's Posting authority.",KEYCHAIN_NOT_INSTALLED:"Steem Keychain is not available in this browser.",KEYCHAIN_API_UNAVAILABLE:"Steem Keychain API is unavailable.",KEYCHAIN_LOGIN_REJECTED:"The Keychain login request was rejected or cancelled.",KEYCHAIN_SIGNATURE_INVALID:"The Keychain signature could not be verified.",ACCOUNT_NOT_FOUND:"Steem account @do2earn could not be found.",STEEM_RPC_UNAVAILABLE:"Unable to reach Steem API servers. Please try again.",AUTH_TIMEOUT:"Login verification timed out. Please try again."};setLoggedOut(messages[error.message]||error.message||"Login failed. Please try again.","error");}finally{loginBtn.disabled=false;}}
+ loginBtn.addEventListener("click",login);logoutBtn.addEventListener("click",()=>setLoggedOut());methodSelect.addEventListener("change",updateMethod);updateMethod();if(readSGSession()===ACCOUNT)setLoggedIn();else setLoggedOut("Please log in with the same SG authentication methods. Access is restricted to @do2earn.");window.addEventListener("pagehide",()=>{window.sgReportsIsAuthorized=false;});
 })();
 </script>
 <script src="scripts/report-builder.js" defer></script>
