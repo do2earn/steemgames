@@ -185,10 +185,24 @@
   function showPreview() {
     const content = editor.value.trim();
     if (!content) return;
-    const documentHtml = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>body{margin:0;padding:14px;font:15px/1.6 Arial,sans-serif;color:#263445;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0;display:block;overflow-x:auto}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:middle}th{background:#eaf0f7}img{max-width:100%}a{color:#175bb5}</style></head><body>" + content + "</body></html>";
-    preview.srcdoc = documentHtml;
-    preview.hidden = false;
-    previewBtn.textContent = "Refresh Preview";
+
+    // Open synchronously from the Preview button click so popup blockers allow it.
+    const previewTab = window.open("", "_blank");
+    if (!previewTab) {
+      setProgress(progressBar.value,"The preview tab was blocked. Allow pop-ups for this site, then try again.","warn");
+      return;
+    }
+
+    const documentHtml = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>body{margin:0;padding:18px;font:15px/1.6 Arial,sans-serif;color:#263445;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0;display:block;overflow-x:auto}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:middle}th{background:#eaf0f7}img{max-width:100%;height:auto}a{color:#175bb5}</style></head><body>" + content + "</body></html>";
+
+    previewTab.document.open();
+    previewTab.document.write("<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Steem Games Report Preview</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#14243b;color:#fff;box-shadow:0 2px 10px #0002}.toolbar strong{font-size:14px}.toolbar button{border:0;border-radius:8px;padding:9px 15px;background:#fff;color:#14243b;font-weight:700;cursor:pointer}.report-frame{display:block;width:100%;height:calc(100vh - 54px);border:0;background:#fff}@media print{.toolbar{display:none}.report-frame{height:100vh}}</style></head><body><header class='toolbar'><strong>Steem Games · Report Preview</strong><button id='closePreview' type='button'>✕ Close Preview</button></header><iframe class='report-frame' id='reportFrame' title='Complete HTML report preview' sandbox=''></iframe></body></html>");
+    previewTab.document.close();
+    previewTab.document.getElementById("reportFrame").srcdoc = documentHtml;
+    previewTab.document.getElementById("closePreview").addEventListener("click",() => previewTab.close());
+    previewTab.focus();
+    previewBtn.textContent = "Open Preview Again";
+    setProgress(progressBar.value,"Full-page HTML preview opened in a new tab.","ok");
   }
 
   async function copyTextBox(box,label) {
@@ -220,8 +234,7 @@
       copyBtn.disabled = false;
       previewBtn.disabled = false;
       $("reportResultSummary").textContent = report.summary.games + " active games · " + fmt(report.summary.posts) + " posts · " + fmt(report.summary.votes) + " votes · " + report.summary.beneficiaries + " developer beneficiaries · database points last updated: " + (lastUpdated || "not recorded") + ".";
-      setProgress(100,"Daily report generated from the live SG database. Review and edit the HTML, then preview and copy.","ok");
-      showPreview();
+      setProgress(100,"Daily report generated from the live SG database. Review and edit the HTML, then open the full-page preview and copy.","ok");
     } catch(error) {
       setProgress(progressBar.value,error.message || "Daily report generation failed.","error");
     } finally {
