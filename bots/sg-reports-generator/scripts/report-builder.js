@@ -119,7 +119,7 @@
       const logoLink = "<a href='" + info + "' target='_blank' rel='noopener noreferrer'><img src='" + logo + "' width='88' alt='" + name + "' style='width:88px;max-height:64px;object-fit:contain;vertical-align:middle'></a>";
       const voteLink = "**[✅ Vote](" + SITE_BASE + "/#steemgamesComponent)**";
       const tagLabel = tag ? "[#" + esc(tag) + "](" + tagUrl + ")" : "—";
-      return "| " + (index+1) + " | " + logoLink + " | **" + fmt(game.points) + "**<br>" + voteLink + " | " + fmt(game.posts) + " | " + tagLabel + " | " + developerLabel + " |";
+      return "| " + (index+1) + " | " + logoLink + " | **" + fmt(game.points) + "** · " + voteLink + " | " + fmt(game.posts) + " | " + tagLabel + " | " + developerLabel + " |";
     }).join("\n");
 
     const topDevelopers = [];
@@ -192,7 +192,7 @@
 
   function markdownInline(value) {
     const safeTags = [];
-    const preserved = String(value).replace(/<a href='(https?:[^']+)' target='_blank' rel='noopener noreferrer'><img src='(https?:[^']+)' width='88' alt='([^']*)' style='[^']*'><\\/a>/g, match => {
+    const preserved = String(value).replace(/<a href='(https?:[^']+)' target='_blank' rel='noopener noreferrer'><img src='(https?:[^']+)' width='88' alt='([^']*)' style='[^']*'><\/a>/g, match => {
       const token = "__SAFE_HTML_" + safeTags.length + "__";
       safeTags.push(match);
       return token;
