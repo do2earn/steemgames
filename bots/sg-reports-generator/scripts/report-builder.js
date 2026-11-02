@@ -247,7 +247,6 @@
   titleBox.addEventListener("input",() => {
     if (!editor.value.trim()) return;
     editor.value = editor.value.replace(/<h1[^>]*>.*?<\/h1>/, "<h1 style=\"color:#17365d;text-align:center\">🎮 " + esc(titleBox.value) + "</h1>");
-    preview.hidden = true;
   });
   previewBtn.addEventListener("click",showPreview);
   $("copyTitleBtn").addEventListener("click",() => copyTextBox(titleBox,"Report title"));
