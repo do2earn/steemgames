@@ -113,13 +113,15 @@
       const info = esc(gamePageUrl(game));
       const tag = cleanTag(game.tag);
       const developer = accountName(game.developer);
-      const developerLabel = developer ? "@" + esc(developer) : esc(game.developer || "Not listed");
+      const tagUrl = tag ? "https://www.steemx.org/created/" + encodeURIComponent(tag) : "";
+      const developerUrl = developer ? "https://www.steemx.org/@" + encodeURIComponent(developer) : "";
+      const developerLabel = developer ? "<a href=\'" + developerUrl + "\' target=\'_blank\' rel=\'noopener noreferrer\'>@" + esc(developer) + "</a>" : esc(game.developer || "Not listed");
       return "<tr>" +
         "<td style='text-align:center;font-weight:700;white-space:nowrap'>" + (index+1) + "</td>" +
         "<td style='text-align:center;min-width:92px'><a href='" + info + "' target='_blank' rel='noopener noreferrer' title='Open " + name + " on Steem Games'><img src='" + logo + "' alt='" + name + "' style='width:76px;max-height:58px;object-fit:contain;border:0;display:block;margin:0 auto'></a></td>" +
         "<td style='text-align:center;white-space:nowrap'><strong>" + fmt(game.points) + "</strong><br><a href='" + SITE_BASE + "/#steemgamesComponent' target='_blank' rel='noopener noreferrer' style='display:inline-block;margin-top:5px;padding:4px 8px;background:#198754;color:#fff;text-decoration:none;border-radius:5px;font-size:12px;font-weight:bold'>✅ Vote</a></td>" +
         "<td style='text-align:center;white-space:nowrap'>" + fmt(game.posts) + "</td>" +
-        "<td style='text-align:center;white-space:nowrap'>" + (tag ? "#" + esc(tag) : "—") + "</td>" +
+        "<td style='text-align:center;white-space:nowrap'>" + (tag ? "<a href=\'" + tagUrl + "\' target=\'_blank\' rel=\'noopener noreferrer\'>#" + esc(tag) + "</a>" : "—") + "</td>" +
         "<td style='text-align:center;overflow-wrap:anywhere;min-width:100px'>" + developerLabel + "</td>" +
         "</tr>";
     }).join("");
@@ -146,19 +148,18 @@
     const tags = Array.from(new Set(["steemgame", ...topTags, "steemflags"]));
     const title = "Steem Games | Daily Report | " + date;
     const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
-    const intro = "استییم گیمز (" + sgLink + ") یک وبسایت دایرکتوری و مرجع برای بازی های شبکه بلاکچین استییم است. در وبسایت " + sgLink + " شما می توانید به اطلاعات همه این بازی‌ها دسترسی داشته باشید. بازی‌های جدید بر روی شبکه بلاکچین استییم را کشف کنید و هر روز به بازی های مورد علاقه تان رای دهید تا وضعیت امتیاز آن ها در وبسایت " + sgLink + " بهتر شوند. بازی‌های مورد علاقه تان را انجام دهید و با ساختن و انتشار محتوا درباره گیم پلی آنها بر روی سکوهای استییم، رمزارز $STEEM بیشتری بدست آورید‌. توسعه‌دهندگان بازی‌ها می‌توانند کاربران خود را دعوت کنند تا در وبسایت " + sgLink + " به بازی‌های آن‌ها رای دهند تا رتبه بازی‌ها بهتر شوند.";
+    const intro = sgLink + " is a directory and information hub for games on the Steem blockchain. On " + sgLink + ", you can access information about all these games. Discover new games on the Steem blockchain and vote for your favourites every day to help improve their points on " + sgLink + ". Play the games you enjoy and earn more $STEEM by creating and publishing gameplay content about them on Steem platforms. Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
     const analysis = buildStatParagraphs(ranked, totals);
     const html = [
       "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px;max-width:100%;overflow-wrap:anywhere'>",
       "<h1 style='color:#17365d;text-align:center'>🎮 <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='color:inherit;text-decoration:none'>Steem Games</a> | Daily Report | " + esc(date) + "</h1>",
       "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:rtl'>" + intro + "</p>",
       "<h2 style='color:#17365d'>" + sgLink + " Status</h2>",
-      "<div style='margin:16px 0'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#198754;color:#fff;padding:11px 19px;border-radius:8px;text-decoration:none;font-weight:bold;box-shadow:0 3px 8px #19875433'><img src='" + SITE_BASE + "/assets/images/steemgames_logo.webp' alt='' style='width:25px;height:25px;object-fit:contain;border:0'>Explore Steem Games</a></div>",
+      "<div style='text-align:center;margin:24px 0 28px'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:13px;background:#198754;color:#fff;padding:16px 28px;border-radius:10px;text-decoration:none;font-size:20px;font-weight:800;box-shadow:0 4px 12px #19875444'><img src='" + SITE_BASE + "/assets/images/steemgames_logo.webp' alt='' style='width:38px;height:38px;object-fit:contain;border:0'>Explore Steem Games</a></div>",
       "<h2 style='color:#17365d'>" + sgLink + " Table</h2>",
       "<div style='width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #cbd5e1;border-radius:7px;margin:12px 0'><table style='border-collapse:collapse;width:100%;min-width:650px;font-size:13px;margin:0;table-layout:auto'><thead><tr style='background:#eaf0f7'><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Rank</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Games Logo</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Points</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Posts</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Dedicated Tag</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Developer</th></tr></thead><tbody>" + rows + "</tbody></table></div>",
-      "<p style='font-size:13px;color:#667085'>Points, posts, votes, and developer details are taken from the current active-game records in the Steem Games database. Games are ranked by Points (highest first). The green Vote links open the SG directory, where you can log in and vote for a game.</p>",
-      "<h2 style='color:#17365d'>" + sgLink + " Table Analysis</h2><p>" + esc(analysis[0]) + "</p><p>" + esc(analysis[1]) + "</p>",
-      "<h2 style='color:#17365d'>Developers Beneficiaries</h2><p>" + esc(beneficiaryText) + "</p><ul>" + beneficiaryList + "</ul>",
+      "<p>" + esc(analysis[0]) + "</p><p>" + esc(analysis[1]) + "</p>",
+      "<div style='background:#fff8d6;border:1px solid #f1df91;border-radius:10px;padding:16px 20px;margin:22px 0;color:#493d16'><h2 style='color:#6b5510;margin-top:0'>Developers Beneficiaries</h2><p>" + esc(beneficiaryText) + "</p><ul style='margin-bottom:0'>" + beneficiaryList + "</ul></div>",
       "<hr style='border:0;border-top:1px solid #dce5ef;margin:22px 0'><p style='font-size:12px;color:#7b8794;text-align:center'>Published by @do2earn · " + sgLink + " Daily Report · " + esc(date) + "</p>",
       "</div>"
     ].join("\n");
