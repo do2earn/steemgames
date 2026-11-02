@@ -13,7 +13,7 @@
   const reportStatus = $("createReportStatus");
   const titleBox = $("reportTitleBox");
   const tagsBox = $("reportTagsBox");
-  const copyBtn = $("copyHtmlBtn");
+  const copyBtn = $("copyEditorBtn");
   const previewBtn = $("previewHtmlBtn");
   let latestGeneratedHtml = "";
 
@@ -122,7 +122,7 @@
         "<td style='text-align:center;min-width:100px'><a href='" + info + "' target='_blank' rel='noopener noreferrer' title='Open " + name + " on Steem Games'><img src='" + logo + "' alt='" + name + "' style='width:86px;max-height:66px;object-fit:contain;border:0;display:block;margin:0 auto'></a></td>" +
         "<td style='text-align:center;white-space:nowrap'><strong>" + fmt(game.points) + "</strong><br><a href='" + SITE_BASE + "/#steemgamesComponent' target='_blank' rel='noopener noreferrer' style='display:inline-block;margin-top:5px;padding:4px 8px;background:#198754;color:#fff;text-decoration:none;border-radius:5px;font-size:12px;font-weight:bold'>✅ Vote</a></td>" +
         "<td style='text-align:center'>" + fmt(game.posts) + "</td>" +
-        "<td style='text-align:center;white-space:nowrap'>" + (tag ? "<a href='https://steemx.org/trending/" + encodeURIComponent(tag) + "' target='_blank' rel='noopener noreferrer'>#" + esc(tag) + "</a>" : "—") + "</td>" +
+        "<td style='text-align:center;white-space:nowrap'>" + (tag ? "#" + esc(tag) : "—") + "</td>" +
         "<td style='text-align:center;overflow-wrap:anywhere'>" + developerLabel + "</td>" +
         "</tr>";
     }).join("");
@@ -138,7 +138,7 @@
     }
     const beneficiaryList = topDevelopers.map(name => "<li><strong>@" + esc(name) + "</strong>: 5%</li>").join("");
     const beneficiaryText = topDevelopers.length
-      ? "50% of the author rewards from this report is allocated to the ten highest-ranked distinct game developers represented in the SG table. Each listed developer receives a 5% beneficiary share."
+      ? (topDevelopers.length === 10 ? "50% of the author rewards from this report is allocated to the ten highest-ranked distinct game developers represented in the SG table. Each listed developer receives a 5% beneficiary share." : "The intended allocation is 50% of the author rewards: 5% for each of the ten highest-ranked game developers. Only " + topDevelopers.length + " distinct valid developer accounts are currently available in the SG database, so please complete the missing Developer fields before publishing to ensure the full 50% is assigned.")
       : "Developer beneficiary accounts could not be identified from the current SG game records. Please review the Developer fields before publishing this report.";
     const topTags = [];
     for (const game of ranked) {
@@ -238,5 +238,4 @@
   $("copyTitleBtn").addEventListener("click",() => copyTextBox(titleBox,"Report title"));
   $("copyEditorBtn").addEventListener("click",() => copyTextBox(editor,"Report content"));
   $("copyTagsBtn").addEventListener("click",() => copyTextBox(tagsBox,"Report tags"));
-  copyBtn.addEventListener("click",() => copyTextBox(editor,"Report HTML"));
 })();
