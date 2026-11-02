@@ -147,6 +147,7 @@
     const title = "Steem Games | Daily Report | " + date;
     const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
     const intro = "استییم گیمز (" + sgLink + ") یک وبسایت دایرکتوری و مرجع برای بازی های شبکه بلاکچین استییم است. در وبسایت " + sgLink + " شما می توانید به اطلاعات همه این بازی‌ها دسترسی داشته باشید. بازی‌های جدید بر روی شبکه بلاکچین استییم را کشف کنید و هر روز به بازی های مورد علاقه تان رای دهید تا وضعیت امتیاز آن ها در وبسایت " + sgLink + " بهتر شوند. بازی‌های مورد علاقه تان را انجام دهید و با ساختن و انتشار محتوا درباره گیم پلی آنها بر روی سکوهای استییم، رمزارز $STEEM بیشتری بدست آورید‌. توسعه‌دهندگان بازی‌ها می‌توانند کاربران خود را دعوت کنند تا در وبسایت " + sgLink + " به بازی‌های آن‌ها رای دهند تا رتبه بازی‌ها بهتر شوند.";
+    const analysis = buildStatParagraphs(ranked, totals);
     const html = [
       "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px;max-width:100%;overflow-wrap:anywhere'>",
       "<h1 style='color:#17365d;text-align:center'>🎮 <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='color:inherit;text-decoration:none'>Steem Games</a> | Daily Report | " + esc(date) + "</h1>",
@@ -156,7 +157,7 @@
       "<h2 style='color:#17365d'>" + sgLink + " Table</h2>",
       "<div style='width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #cbd5e1;border-radius:7px;margin:12px 0'><table style='border-collapse:collapse;width:100%;min-width:650px;font-size:13px;margin:0;table-layout:auto'><thead><tr style='background:#eaf0f7'><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Rank</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Games Logo</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Points</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Posts</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Dedicated Tag</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Developer</th></tr></thead><tbody>" + rows + "</tbody></table></div>",
       "<p style='font-size:13px;color:#667085'>Points, posts, votes, and developer details are taken from the current active-game records in the Steem Games database. Games are ranked by Points (highest first). The green Vote links open the SG directory, where you can log in and vote for a game.</p>",
-      "<h2 style='color:#17365d'>" + sgLink + " Table Analysis</h2><p>" + esc(buildStatParagraphs(ranked, totals)[0]) + "</p><p>" + esc(buildStatParagraphs(ranked, totals)[1]) + "</p>",
+      "<h2 style='color:#17365d'>" + sgLink + " Table Analysis</h2><p>" + esc(analysis[0]) + "</p><p>" + esc(analysis[1]) + "</p>",
       "<h2 style='color:#17365d'>Developers Beneficiaries</h2><p>" + esc(beneficiaryText) + "</p><ul>" + beneficiaryList + "</ul>",
       "<hr style='border:0;border-top:1px solid #dce5ef;margin:22px 0'><p style='font-size:12px;color:#7b8794;text-align:center'>Published by @do2earn · " + sgLink + " Daily Report · " + esc(date) + "</p>",
       "</div>"
