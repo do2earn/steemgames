@@ -115,16 +115,12 @@
       const developer = accountName(game.developer);
       const tagUrl = tag ? "https://www.steemx.org/created/" + encodeURIComponent(tag) : "";
       const developerUrl = developer ? "https://www.steemx.org/@" + encodeURIComponent(developer) : "";
-      const developerLabel = developer ? "<a href=\'" + developerUrl + "\' target=\'_blank\' rel=\'noopener noreferrer\'>@" + esc(developer) + "</a>" : esc(game.developer || "Not listed");
-      return "<tr>" +
-        "<td style='text-align:center;font-weight:700;white-space:nowrap'>" + (index+1) + "</td>" +
-        "<td style='text-align:center;min-width:92px'><a href='" + info + "' target='_blank' rel='noopener noreferrer' title='Open " + name + " on Steem Games'><img src='" + logo + "' alt='" + name + "' style='width:76px;max-height:58px;object-fit:contain;border:0;display:block;margin:0 auto'></a></td>" +
-        "<td style='text-align:center;white-space:nowrap'><strong>" + fmt(game.points) + "</strong><br><a href='" + SITE_BASE + "/#steemgamesComponent' target='_blank' rel='noopener noreferrer' style='display:inline-block;margin-top:5px;padding:4px 8px;background:#198754;color:#fff;text-decoration:none;border-radius:5px;font-size:12px;font-weight:bold'>✅ Vote</a></td>" +
-        "<td style='text-align:center;white-space:nowrap'>" + fmt(game.posts) + "</td>" +
-        "<td style='text-align:center;white-space:nowrap'>" + (tag ? "<a href=\'" + tagUrl + "\' target=\'_blank\' rel=\'noopener noreferrer\'>#" + esc(tag) + "</a>" : "—") + "</td>" +
-        "<td style='text-align:center;overflow-wrap:anywhere;min-width:100px'>" + developerLabel + "</td>" +
-        "</tr>";
-    }).join("");
+      const developerLabel = developer ? "[@" + developer + "](" + developerUrl + ")" : esc(game.developer || "Not listed");
+      const logoLink = "<a href='" + info + "' target='_blank' rel='noopener noreferrer'><img src='" + logo + "' width='88' alt='" + name + "' style='width:88px;max-height:64px;object-fit:contain;vertical-align:middle'></a>";
+      const voteLink = "**[✅ Vote](" + SITE_BASE + "/#steemgamesComponent)**";
+      const tagLabel = tag ? "[#" + esc(tag) + "](" + tagUrl + ")" : "—";
+      return "| " + (index+1) + " | " + logoLink + " | **" + fmt(game.points) + "**<br>" + voteLink + " | " + fmt(game.posts) + " | " + tagLabel + " | " + developerLabel + " |";
+    }).join("\n");
 
     const topDevelopers = [];
     const seen = new Set();
@@ -152,18 +148,33 @@
     const introSecond = "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
     const analysis = buildStatParagraphs(ranked, totals);
     const html = [
-      "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px;max-width:100%;overflow-wrap:anywhere'>",
-      "<h1 style='color:#17365d;text-align:center'>🎮 <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='color:inherit;text-decoration:none'>Steem Games</a> | Daily Report | " + esc(date) + "</h1>",
-      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:ltr;margin:0 0 14px'>" + introFirst + "</p>",
-      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:ltr;margin:0 0 22px'>" + introSecond + "</p>",
-      "<div style='text-align:center;margin:24px 0 28px'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:13px;background:#198754;color:#fff;padding:16px 28px;border-radius:10px;text-decoration:none;font-size:20px;font-weight:800;box-shadow:0 4px 12px #19875444'><img src='" + SITE_BASE + "/assets/images/steemgames_logo.webp' alt='' style='width:38px;height:38px;object-fit:contain;border:0'>Explore Steem Games</a></div>",
-      "<h2 style='color:#17365d'>" + sgLink + " Status</h2>",
-      "<h2 style='color:#17365d'>" + sgLink + " Table</h2>",
-      "<div style='width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #cbd5e1;border-radius:7px;margin:12px 0'><table style='border-collapse:collapse;width:100%;min-width:650px;font-size:13px;font-weight:700;margin:0;table-layout:auto'><thead><tr style='background:#eaf0f7'><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Rank</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Game</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Points</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Posts</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Dedicated Tag</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Developer</th></tr></thead><tbody>" + rows + "</tbody></table></div>",
-      "<p>" + esc(analysis[0]) + "</p><p>" + esc(analysis[1]) + "</p>",
-      "<div style='background:#fff8d6;border:1px solid #f1df91;border-radius:10px;padding:16px 20px;margin:22px 0;color:#493d16'><h2 style='color:#6b5510;margin-top:0'>Developers Beneficiaries</h2><p>" + esc(beneficiaryText) + "</p><ul style='margin-bottom:0'>" + beneficiaryList + "</ul></div>",
-      "<hr style='border:0;border-top:1px solid #dce5ef;margin:22px 0'><p style='font-size:12px;color:#7b8794;text-align:center'>Published by @do2earn · " + sgLink + " Daily Report · " + esc(date) + "</p>",
-      "</div>"
+      introFirst,
+      "",
+      introSecond,
+      "",
+      "**[🎮 Explore Steem Games](" + SITE_BASE + ")**",
+      "",
+      "# Steem Games Status",
+      "",
+      "# Steem Games Table",
+      "",
+      "| Rank | Game | Points | Posts | Dedicated Tag | Developer |",
+      "|:---:|:---:|:---:|:---:|:---:|:---:|",
+      rows,
+      "",
+      analysis[0],
+      "",
+      analysis[1],
+      "",
+      "# Developers Beneficiaries",
+      "",
+      beneficiaryText,
+      "",
+      ...topDevelopers.map(name => "- **[@" + name + "](https://www.steemx.org/@" + encodeURIComponent(name) + ")**: 5%"),
+      "",
+      "---",
+      "",
+      "Published by @do2earn · [Steem Games](" + SITE_BASE + ") Daily Report · " + date
     ].join("\n");
 
     return {title,html,tags:tags.map(tag=>"#"+tag).join(" "),summary:{games:games.length,posts:totals.posts,votes:totals.votes,points:totals.points,beneficiaries:topDevelopers.length}};
@@ -179,27 +190,62 @@
     return {games,lastUpdated:data.last_points_updated_at || null};
   }
 
+  function markdownInline(value) {
+    return value
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, "<img src=\"$2\" alt=\"$1\">")
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "<a href=\"$2\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");
+  }
+
+  function markdownToHtml(markdown) {
+    const lines = String(markdown || "").replace(/\r/g, "").split("\n");
+    const out = [];
+    let paragraph = [];
+    let table = [];
+    const flushParagraph = () => {
+      if (paragraph.length) { out.push("<p>" + markdownInline(paragraph.join(" ")) + "</p>"); paragraph = []; }
+    };
+    const flushTable = () => {
+      if (!table.length) return;
+      const parsed = table.map(line => line.trim().replace(/^\||\|$/g, "").split("|").map(cell => cell.trim()));
+      const headers = parsed[0] || [];
+      const body = parsed.slice(2);
+      out.push("<div class='table-wrap'><table><thead><tr>" + headers.map(c => "<th>" + markdownInline(c) + "</th>").join("") + "</tr></thead><tbody>" +
+        body.map(row => "<tr>" + headers.map((_,i) => "<td>" + markdownInline(row[i] || "") + "</td>").join("") + "</tr>").join("") +
+        "</tbody></table></div>");
+      table = [];
+    };
+    for (const line of lines) {
+      if (/^\s*\|.*\|\s*$/.test(line)) { flushParagraph(); table.push(line); continue; }
+      flushTable();
+      if (!line.trim()) { flushParagraph(); continue; }
+      const heading = line.match(/^(#{1,6})\s+(.+)$/);
+      if (heading) { flushParagraph(); const level = heading[1].length; out.push("<h" + level + ">" + markdownInline(heading[2]) + "</h" + level + ">"); continue; }
+      if (/^---+$/.test(line.trim())) { flushParagraph(); out.push("<hr>"); continue; }
+      if (/^\s*[-*]\s+/.test(line)) { flushParagraph(); out.push("<li>" + markdownInline(line.replace(/^\s*[-*]\s+/, "")) + "</li>"); continue; }
+      paragraph.push(line.trim());
+    }
+    flushParagraph(); flushTable();
+    return out.join("\n");
+  }
+
   function showPreview() {
     const content = editor.value.trim();
     if (!content) return;
-
-    // Open synchronously from the Preview button click so popup blockers allow it.
     const previewTab = window.open("", "_blank");
     if (!previewTab) {
       setProgress(progressBar.value,"The preview tab was blocked. Allow pop-ups for this site, then try again.","warn");
       return;
     }
-
-    const documentHtml = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>*{box-sizing:border-box}body{margin:0;padding:18px;font:15px/1.6 Arial,sans-serif;color:#263445;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;min-width:650px;font-size:13px;font-weight:700;margin:0;table-layout:auto}th,td{border:1px solid #cbd5e1;padding:7px;text-align:center;vertical-align:middle;white-space:nowrap;font-weight:700}th{background:#eaf0f7}img{max-width:100%;height:auto}a{color:#175bb5}</style></head><body>" + content + "</body></html>";
-
+    const rendered = markdownToHtml(content);
     previewTab.document.open();
-    previewTab.document.write("<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Steem Games Report Preview</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#14243b;color:#fff;box-shadow:0 2px 10px #0002}.toolbar strong{font-size:14px}.toolbar button{border:0;border-radius:8px;padding:9px 15px;background:#fff;color:#14243b;font-weight:700;cursor:pointer}.report-frame{display:block;width:100%;height:calc(100vh - 54px);border:0;background:#fff}@media print{.toolbar{display:none}.report-frame{height:100vh}}</style></head><body><header class='toolbar'><strong>Steem Games · Report Preview</strong><button id='closePreview' type='button'>✕ Close Preview</button></header><iframe class='report-frame' id='reportFrame' title='Complete HTML report preview' sandbox=''></iframe></body></html>");
+    previewTab.document.write("<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Steem Games Report Preview</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65}body{padding:0 20px 30px}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;margin:0 -20px 22px;background:#14243b;color:#fff;box-shadow:0 2px 10px #0002}.toolbar button{border:0;border-radius:8px;padding:9px 15px;background:#fff;color:#14243b;font-weight:700;cursor:pointer}.report{max-width:1100px;margin:0 auto}.report h1,.report h2{color:#17365d}.report p{margin:0 0 18px;text-align:justify}.report a{color:#175bb5}.table-wrap{width:100%;overflow-x:auto;margin:14px 0 22px}table{border-collapse:collapse;width:100%;min-width:600px;table-layout:auto;font-size:12px;font-weight:700}th,td{border:1px solid #cbd5e1;padding:4px 5px;text-align:center;vertical-align:middle;font-weight:700;white-space:nowrap}th{background:#eaf0f7}td img{width:88px;max-height:64px;object-fit:contain;vertical-align:middle}td a img{display:inline-block}li{margin:4px 0}hr{border:0;border-top:1px solid #dce5ef;margin:22px 0}@media(max-width:600px){body{padding-left:12px;padding-right:12px}.toolbar{margin-left:-12px;margin-right:-12px}}</style></head><body><header class='toolbar'><strong>Steem Games · Report Preview</strong><button id='closePreview' type='button'>✕ Close Preview</button></header><main class='report'>" + rendered + "</main></body></html>");
     previewTab.document.close();
-    previewTab.document.getElementById("reportFrame").srcdoc = documentHtml;
     previewTab.document.getElementById("closePreview").addEventListener("click",() => previewTab.close());
     previewTab.focus();
     previewBtn.textContent = "Open Preview Again";
-    setProgress(progressBar.value,"Full-page HTML preview opened in a new tab.","ok");
+    setProgress(progressBar.value,"Markdown report preview opened in a new tab.","ok");
   }
 
   async function copyTextBox(box,label) {
