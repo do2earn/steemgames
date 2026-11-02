@@ -119,9 +119,10 @@
       const developerCell = developer ? "<a href='" + developerUrl + "' target='_blank' rel='noopener noreferrer'>@" + developer + "</a>" : esc(game.developer || "Not listed");
       const logoCell = "<a href='" + info + "' target='_blank' rel='noopener noreferrer'><img src='" + logo + "' width='120' height='84' alt='" + name + "'></a>";
       const voteCell = "<a href='" + SITE_BASE + "/#steemgamesComponent' target='_blank' rel='noopener noreferrer' style='display:inline-block;padding:7px 12px;background-color:#16834a;color:#ffffff;text-decoration:none;font-weight:bold;border-radius:6px'>✓ Vote</a>";
-      return "<tr><td align='center'>" + (index+1) + "</td><td align='center'>" + logoCell + "</td><td align='center'><strong>" + fmt(game.points) + "</strong><br>" + voteCell + "</td><td align='center'>" + fmt(game.posts) + "</td><td align='center'>" + tagCell + "</td><td align='center'>" + developerCell + "</td></tr>";
+      const details = "<strong>Points:</strong> " + fmt(game.points) + "<br><strong>Posts:</strong> " + fmt(game.posts) + "<br><strong>Dedicated Tag:</strong> " + tagCell + "<br><strong>Developer:</strong> " + developerCell + "<br>" + voteCell;
+      return "<tr><td width='38%' align='center'><strong>#" + (index+1) + " · " + name + "</strong><br>" + logoCell + "</td><td width='62%' align='left'>" + details + "</td></tr>";
     }).join("\n");
-    const gameTable = "<table width='100%' cellpadding='6' cellspacing='0' border='1' style='width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px'><thead><tr><th width='7%'>Rank</th><th width='21%'>Game</th><th width='17%'>Points</th><th width='12%'>Posts</th><th width='21%'>Dedicated Tag</th><th width='22%'>Developer</th></tr></thead><tbody>" + tableRows + "</tbody></table>";
+    const gameTable = "<table width='100%' cellpadding='8' cellspacing='0' border='1' style='width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px'><thead><tr><th width='38%'>Game</th><th width='62%'>Game Details</th></tr></thead><tbody>" + tableRows + "</tbody></table>";
 
     const topDevelopers = [];
     const seen = new Set();
