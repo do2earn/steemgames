@@ -153,9 +153,9 @@
     const html = [
       "<div style='font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65;font-size:16px;max-width:100%;overflow-wrap:anywhere'>",
       "<h1 style='color:#17365d;text-align:center'>🎮 <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='color:inherit;text-decoration:none'>Steem Games</a> | Daily Report | " + esc(date) + "</h1>",
-      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:rtl'>" + intro + "</p>",
-      "<h2 style='color:#17365d'>" + sgLink + " Status</h2>",
+      "<p style='font-size:16px;line-height:1.9;text-align:justify;direction:ltr'>" + intro + "</p>",
       "<div style='text-align:center;margin:24px 0 28px'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:13px;background:#198754;color:#fff;padding:16px 28px;border-radius:10px;text-decoration:none;font-size:20px;font-weight:800;box-shadow:0 4px 12px #19875444'><img src='" + SITE_BASE + "/assets/images/steemgames_logo.webp' alt='' style='width:38px;height:38px;object-fit:contain;border:0'>Explore Steem Games</a></div>",
+      "<h2 style='color:#17365d'>" + sgLink + " Status</h2>",
       "<h2 style='color:#17365d'>" + sgLink + " Table</h2>",
       "<div style='width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #cbd5e1;border-radius:7px;margin:12px 0'><table style='border-collapse:collapse;width:100%;min-width:650px;font-size:13px;margin:0;table-layout:auto'><thead><tr style='background:#eaf0f7'><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Rank</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Games Logo</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Points</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Posts</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Dedicated Tag</th><th style='border:1px solid #cbd5e1;padding:8px;white-space:nowrap'>Developer</th></tr></thead><tbody>" + rows + "</tbody></table></div>",
       "<p>" + esc(analysis[0]) + "</p><p>" + esc(analysis[1]) + "</p>",
