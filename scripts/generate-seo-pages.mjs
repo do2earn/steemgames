@@ -155,6 +155,35 @@ async function main() {
     sitemapEntries.push(["games/" + slug + "/", "weekly", "0.8"]);
   }
 
+  const listingItems = games.map((game) => {
+    const name = String(game.game_name || "Steem Game");
+    const url = "/games/" + gameSlug(game) + "/";
+    return '<li><a href="' + url + '">' + escapeHtml(name) + '</a></li>';
+  }).join("\\n");
+  const directoryHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All Steem Games | Game Directory</title>
+  <meta name="description" content="Browse all active games in the Steem blockchain gaming directory.">
+  <link rel="canonical" href="${SITE_URL}/games/">
+  <meta name="robots" content="index,follow">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/"><img src="/assets/images/steemgames_logo.png" alt="Steem Games"><span>STEEM <b>GAMES</b></span></a><a href="/">Home</a></header>
+  <main style="width:min(920px,calc(100% - 28px));margin:28px auto">
+    <h1>All Steem Games</h1>
+    <p>Explore the games in the Steem blockchain gaming directory.</p>
+    <ul>${listingItems}</ul>
+  </main>
+</body>
+</html>
+`;
+  await fs.writeFile(path.join(OUTPUT_DIR, "index.html"), directoryHtml, "utf8");
+  sitemapEntries.push(["games/", "weekly", "0.9"]);
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapEntries.map(([loc, frequency, priority]) => `  <url><loc>${SITE_URL}/${loc}</loc><changefreq>${frequency}</changefreq><priority>${priority}</priority></url>`).join("\n")}
