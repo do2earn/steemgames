@@ -8,7 +8,7 @@ const SESSION_KEY='steemGamesAuthSession';
 const SHARED_SESSION_KEY='steemGamesSharedAuthSession';
 const SHARED_SESSION_TTL=8*60*60*1000;
 function writeSharedSession(username){try{localStorage.setItem(SHARED_SESSION_KEY,JSON.stringify({username,expiresAt:Date.now()+SHARED_SESSION_TTL}))}catch{}}
-function readSession(){try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')?.username||null}catch{return null}}
+function readSession(){try{const current=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')?.username;if(current)return current;const shared=JSON.parse(localStorage.getItem(SHARED_SESSION_KEY)||'null');return shared?.username==='do2earn'&&Number(shared.expiresAt)>Date.now()?'do2earn':null}catch{return null}}
 function clearSession(){try{sessionStorage.removeItem(SESSION_KEY);localStorage.removeItem(SHARED_SESSION_KEY)}catch{}state.username=null;state.postingPrivateKey=null;state.votedGameIds.clear();state.voteStatusDate=null;applyVoteButtonStates();delete window.steemGamesAdminSignMessage;renderAuth();window.dispatchEvent(new Event('steemGamesAuthChanged'))}
 function renderAuth(){const logged=Boolean(state.username);const login=$('menuLoginButton'),logout=$('logoutButton'),admin=$('adminToolsSection');if(login)login.hidden=logged;if(logout)logout.hidden=!logged;if(admin)admin.hidden=state.username!=='do2earn';refreshHeaderAssets()}
 function openLogin(){if(!$('loginDialog').open)$('loginDialog').showModal();updateMethod()}
