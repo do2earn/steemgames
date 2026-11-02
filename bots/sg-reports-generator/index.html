@@ -104,6 +104,6 @@ import { verifyPostingKey, verifyKeychainLogin } from "../../assets/js/steem-aut
  loginBtn.addEventListener("click",login);logoutBtn.addEventListener("click",()=>setLoggedOut());methodSelect.addEventListener("change",updateMethod);window.addEventListener("storage",event=>{if(event.key!=="steemGamesSharedAuthSession")return;const username=readSGSession();if(username===ACCOUNT)setLoggedIn();else setLoggedOut("Your SG login session has ended. Please log in again.","warn",false);});updateMethod();if(readSGSession()===ACCOUNT)setLoggedIn();else setLoggedOut("Please log in with the same SG authentication methods. Access is restricted to @do2earn.");window.addEventListener("pagehide",()=>{window.sgReportsIsAuthorized=false;});
 })();
 </script>
-<script src="scripts/report-builder.js?v=20261102-2" defer></script>
+<script src="scripts/report-builder.js?v=20261102-3" defer></script>
 </body>
 </html>
