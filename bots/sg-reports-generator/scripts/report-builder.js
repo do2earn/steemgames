@@ -5,7 +5,6 @@
   const $ = id => document.getElementById(id);
   const createBtn = $("createReportBtn");
   const editor = $("reportHtmlEditor");
-  const preview = $("reportPreview");
   const progressWrap = $("reportProgressWrap");
   const progressBar = $("reportProgress");
   const progressPercent = $("reportProgressPercent");
@@ -220,7 +219,6 @@
     createBtn.disabled = true;
     $("reportEditorSection").hidden = true;
     editor.value = "";
-    preview.hidden = true;
     setProgress(5,"Connecting to the Steem Games database…");
     try {
       const {games,lastUpdated} = await fetchGames();
