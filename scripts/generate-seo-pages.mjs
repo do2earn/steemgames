@@ -120,7 +120,7 @@ function renderGame(game) {
         <div><strong>Points:</strong> ${formatNumber(game.points)}</div>
         <div><strong>Posts:</strong> ${formatNumber(game.posts)}</div>
         <div><strong>Community members:</strong> ${formatNumber(game.users)}</div>
-        ${genres.length ? `<div><strong>Genres:/strong> <span class="sg-seo-genres">${genres.map((genre) => `<span class="sg-seo-genre">${escapeHtml(genre)}</span>`).join("")}</span></div>` : ""}
+        ${genres.length ? `<div><strong>Genres:</strong> <span class="sg-seo-genres">${genres.map((genre) => `<span class="sg-seo-genre">${escapeHtml(genre)}</span>`).join("")}</span></div>` : ""}
       </section>
       <hr>
       <h2>About ${escapeHtml(name)}</h2>
@@ -140,6 +140,7 @@ async function main() {
   if (!payload?.success || !Array.isArray(payload.games)) throw new Error("Games API returned an invalid payload");
 
   const games = payload.games.filter((game) => Number(game.is_active) !== 0 && game.game_name && Number.isFinite(Number(game.id)));
+  if (!games.length) throw new Error("The API returned zero active games; refusing to remove the current SEO pages.");
   await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
   const sitemapEntries = [
     ["", "daily", "1.0"],
