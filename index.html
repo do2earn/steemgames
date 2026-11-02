@@ -139,9 +139,30 @@
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261101-7"></script>
+  <script type="module" src="assets/js/app.js?v=20261102-1"></script>
   <script src="assets/js/preloader.js?v=20261101-6" defer></script>
 
+
+  <link rel="canonical" href="https://steemgames.do2earn.dev/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Steem Games">
+  <meta property="og:title" content="Steem Games | Steem Blockchain Game Directory">
+  <meta property="og:description" content="Discover games built on the Steem blockchain. Explore game details, activity rankings and community statistics, and support games with daily votes.">
+  <meta property="og:url" content="https://steemgames.do2earn.dev/">
+  <meta property="og:image" content="https://steemgames.do2earn.dev/assets/images/steemgames_logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Steem Games | Steem Blockchain Game Directory">
+  <meta name="twitter:description" content="Discover games built on the Steem blockchain. Explore game details, activity rankings and community statistics, and support games with daily votes.">
+  <meta name="twitter:image" content="https://steemgames.do2earn.dev/assets/images/steemgames_logo.png">
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {"@type":"WebSite","@id":"https://steemgames.do2earn.dev/#website","url":"https://steemgames.do2earn.dev/","name":"Steem Games","description":"A directory to discover games built on the Steem blockchain."},
+      {"@type":"Organization","@id":"https://steemgames.do2earn.dev/#organization","name":"Steem Games","url":"https://steemgames.do2earn.dev/","logo":{"@type":"ImageObject","url":"https://steemgames.do2earn.dev/assets/images/steemgames_logo.png"}}
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -220,6 +241,7 @@
 
     <section id="games" class="section sg-directory-card" aria-label="Steem Games directory">
       <div id="steemgamesComponent" class="sg-component-loading" role="status">Loading Steem Games directory…</div>
+      <p class="sg-directory-all-link"><a href="/games/">Browse all Steem Games</a></p>
     </section>
 
   </main>

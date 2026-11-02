@@ -12,8 +12,20 @@
   <link rel="stylesheet" href="assets/css/preloader.css?v=20261101-2">
   <script src="https://unpkg.com/@esteemapp/dsteem@0.11.5/dist/dsteem.js"></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261101-7"></script>
+  <script type="module" src="assets/js/app.js?v=20261102-1"></script>
   <script src="assets/js/preloader.js?v=20261101-6" defer></script>
+
+  <link rel="canonical" href="https://steemgames.do2earn.dev/game-info.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Steem Games">
+  <meta property="og:title" content="Game Information | Steem Games">
+  <meta property="og:description" content="Explore game details, genres, developers, dedicated Steem tags and community activity for games in the Steem Games directory.">
+  <meta property="og:url" content="https://steemgames.do2earn.dev/game-info.html">
+  <meta property="og:image" content="https://steemgames.do2earn.dev/assets/images/steemgames_logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Game Information | Steem Games">
+  <meta name="twitter:description" content="Explore game details, genres, developers, dedicated Steem tags and community activity for games in the Steem Games directory.">
+  <meta name="twitter:image" content="https://steemgames.do2earn.dev/assets/images/steemgames_logo.png">
 </head>
 <body>
 
@@ -155,6 +167,43 @@
       const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
       const params = new URLSearchParams(location.search);
       const requestedName = (params.get('game') || '').trim();
+      const setMeta = (name, content, attribute = 'name') => {
+        let element = document.head.querySelector('meta[' + attribute + '="' + name + '"]');
+        if (!element) { element = document.createElement('meta'); element.setAttribute(attribute, name); document.head.appendChild(element); }
+        element.setAttribute('content', content);
+      };
+      const setGameSeo = game => {
+        const name = String(game.game_name || requestedName).trim();
+        const plainAbout = String(game.about || ('Explore ' + name + ', a game in the Steem blockchain gaming directory.')).replace(/\s+/g, ' ').trim();
+        const description = (plainAbout || ('Explore ' + name + ' on Steem Games.')).slice(0, 300);
+        const gameSlug = name.normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'steem-game';
+        const pageUrl = 'https://steemgames.do2earn.dev/games/' + gameSlug + '-' + Number(game.id) + '/';
+        const imageValue = String(game.game_logo || '').trim();
+        const imageUrl = !imageValue ? 'https://steemgames.do2earn.dev/assets/images/steemgames_logo.png'
+          : (/^https?:\/\//i.test(imageValue) ? imageValue : (imageValue.startsWith('/') ? 'https://steemgames.do2earn.dev' + imageValue : (imageValue.includes('/') ? 'https://steemgames.do2earn.dev/' + imageValue : 'https://steemgames.do2earn.dev/assets/games-logos/' + encodeURIComponent(imageValue))));
+        document.title = name + ' | Steem Games';
+        let canonical = document.head.querySelector('link[rel="canonical"]');
+        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+        canonical.href = pageUrl;
+        setMeta('description', description);
+        setMeta('og:type', 'website', 'property');
+        setMeta('og:site_name', 'Steem Games', 'property');
+        setMeta('og:title', name + ' | Steem Games', 'property');
+        setMeta('og:description', description, 'property');
+        setMeta('og:url', pageUrl, 'property');
+        setMeta('og:image', imageUrl, 'property');
+        setMeta('twitter:card', 'summary', 'name');
+        setMeta('twitter:title', name + ' | Steem Games', 'name');
+        setMeta('twitter:description', description, 'name');
+        setMeta('twitter:image', imageUrl, 'name');
+        let structured = document.getElementById('sg-game-jsonld');
+        if (!structured) { structured = document.createElement('script'); structured.id = 'sg-game-jsonld'; structured.type = 'application/ld+json'; document.head.appendChild(structured); }
+        const genres = (Array.isArray(game.genres) ? game.genres : String(game.genres || '').split(/[|,;]/)).map(value => String(value || '').trim()).filter(Boolean);
+        const schema = { '@context':'https://schema.org', '@type':'VideoGame', name, description, url:pageUrl, image:imageUrl, gamePlatform:'Steem blockchain' };
+        if (genres.length) schema.genre = genres;
+        if (game.website_url) schema.sameAs = [String(game.website_url)];
+        structured.textContent = JSON.stringify(schema);
+      };
       let currentGame = null;
       let availableGenres = [];
       const genresReady = fetch("assets/data/game-genres.json", { cache: "no-cache" })
@@ -163,6 +212,7 @@
         .catch(error => { console.error("Unable to load game genres:", error); availableGenres = []; });
       const markPageReady = () => { document.documentElement.dataset.sgPageContentReady = 'true'; window.dispatchEvent(new Event('sgPageContentReady')); };
       if (!requestedName) {
+        setMeta('robots', 'noindex,follow');
         card.innerHTML = '<p role="status">No game was specified. Open this page as <code>game-info.html?game=Game%20Name</code>.</p>';
         markPageReady();
         return;
@@ -177,6 +227,7 @@
       const render = game => {
         currentGame = game;
         const name = String(game.game_name || requestedName);
+        setGameSeo(game);
         const developer = String(game.developer || '').replace(/^@/, '').trim();
         const genres = (Array.isArray(game.genres) ? game.genres : String(game.genres || '').split(/[|,;]/))
           .map(genre => String(genre || '').trim()).filter(Boolean);
