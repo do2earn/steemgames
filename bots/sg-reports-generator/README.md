@@ -1,71 +1,43 @@
-# Steem Games Analyst (SGA)
+# SG Reports Generator
 
-SGA is an independent project by Do2Earn for measuring activity across games and gaming communities on the Steem blockchain.
+SG Reports Generator is the daily reporting tool for the Steem Games (SG) website. It creates a publication-ready HTML report for @do2earn using the current active-game records exposed by the SG Worker API, which reads the shared Cloudflare D1 database.
 
-## Mission
+## Source of truth
 
-- Track public gaming-related content and participation signals on Steem.
-- Produce repeatable, source-linked statistical reports.
-- Identify practical, evidence-based opportunities to grow Steem Flags organically.
+- API: `https://steemgames.do2earn.workers.dev/api/games`
+- Database: shared SG D1 database, through the public read-only games endpoint
+- Only active games are included.
+- The live API supplies each game's name, logo filename, Points, Posts, Votes, dedicated tag, developer account, website URL, and active status.
+- Games are ranked by Points, highest first. The report does not scan Steem posts or calculate a separate activity score.
 
-## Measurement principles
+## Daily report structure
 
-SGA keeps different kinds of evidence separate:
+1. Title: `Steem Games | Daily Report | YYYY-MM-DD`
+2. A stable introductory paragraph about SG and an invitation to join.
+3. **Steem Games Status** — a first-person editorial draft attributed to @do2earn, based on the current table.
+4. **Steem Games Table** — rank, linked game logo, Points and a green Vote link, Posts, Dedicated Tag, and Developer.
+5. Two varied, data-driven statistical analysis paragraphs.
+6. **Developers Beneficiaries** — up to ten distinct developer accounts taken in game-rank order, with a 5% beneficiary share each. The intended total is 50%. If fewer than ten valid developer accounts are present, the report explicitly warns that the missing Developer fields must be completed before publishing.
+7. Tags: #steemgame, the dedicated tags of the eight highest-ranked games, and #steemflags (duplicates removed).
 
-1. **Content activity** — posts discovered through documented tags and community feeds.
-2. **Content authors** — distinct accounts publishing qualifying posts during a reporting period.
-3. **Verified game activity** — gameplay or player counts only when a game exposes a reliable, documented data source.
-4. **Engagement signals** — comments, votes, and rewards, reported as platform signals rather than proof of actual gameplay.
+The title, HTML content, and tags are separately editable/copyable. A sandboxed full HTML preview is rendered below the editors.
 
-A post about a game is not, by itself, proof that the author played it. SGA will label estimates and coverage gaps clearly and will not invent player counts.
+## Authentication and safety
 
-## Project status
+- The interface uses the shared SG authentication module and supports Posting Key verification or Steem Keychain.
+- Access is restricted in the interface to the fixed account @do2earn.
+- Report generation reads the public SG games API only. It does not modify D1, vote, sign a post, or publish to the Steem blockchain.
+- Publishing remains a manual step performed by @do2earn after reviewing the title, content, beneficiary list, and tags.
+- Static-site authentication is a client-side access gate, not server-enforced protection for confidential data or privileged operations.
 
-**Initial collector run succeeded.** The browser dashboard, public-tag collector, daily GitHub Actions workflow, and GitHub Pages deployment workflow are in the repository. The first report was generated successfully on 2026-10-16. Pages deployment is currently blocked because GitHub Pages has not yet been enabled in repository Settings.
+## Daily publication checklist
 
-## Planned outputs
+1. Log in to SG as @do2earn.
+2. Open SG Reports Generator and generate today's report.
+3. Review the game ranking and current database values.
+4. Check that ten distinct developer accounts are present and that each beneficiary is correct.
+5. Review the generated analysis, edit the HTML if needed, and inspect the complete preview.
+6. Copy the title, content, and tags separately.
+7. Publish manually from @do2earn.
 
-- Game directory and evidence notes
-- Activity data-source registry
-- Analytics framework
-- Weekly report specification
-- Automated collection and English-language reports
-
-## Running the collector
-
-The root workflow `.github/workflows/sg-reports-collector.yml` collects statistics daily or can be started manually from the GitHub Actions tab. It queries the configured dedicated tags in `data/games.json` and the general discovery tag in `data/aliases.json`/the game library, then commits a dated JSON snapshot and Markdown report. It is read-only against Steem and does not need a private key. API errors and page limits are recorded; an all-failed run does not create a misleading empty report.
-
-The `Deploy SGA to GitHub Pages` workflow publishes the static dashboard. Before the first deployment, open repository **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. The workflow token cannot create the Pages site in this repository until Pages has been enabled through Settings. After saving, rerun the Pages workflow from **Actions → Deploy SGA to GitHub Pages → Run workflow**. The dashboard is served from the Steem Games site at `https://steemgames.do2earn.dev/bots/sg-reports-generator/`. The original Pages deployment workflow is retained here as project history; it is not active from this nested directory. The dashboard reads its game directory and latest-report pointer from the published repository files.
-
-## Language and publishing
-
-All repository content, code comments, configuration descriptions, logs, and generated reports are written in English. Reports should include the reporting window, collection time, methods, source links, limitations, and reproducible counts.
-
-## Access and authentication
-
-The initial web interface is intended for `@do2earn` only. It fixes the username and checks the supplied Posting Key against the account's public posting authority. The key is held in browser memory for the active page session and is not stored in local/session storage, repository files, or a SGA backend. The key is used only for verification; SGA does not sign or broadcast transactions.
-
-**Security limitation:** this is a client-side access gate, not strong server-enforced authorization. Because the initial app is static and its files are public, a technically skilled visitor could bypass the interface. Do not treat it as protection for confidential data or privileged server actions. Strong enforcement would require a trusted backend or another server-side authorization layer.
-
-## Automation safety
-
-The first automated runs should be read-only. Publishing reports externally will remain a separate, explicitly reviewed step.
-
-## JSON-first data architecture
-
-SGA starts without a database or Cloudflare dependency. GitHub is the source-controlled home for the canonical game library, discovery tags, dated statistics snapshots, and generated reports.
-
-- `data/games.json` — canonical game directory, tags, source links, and verification notes
-- `data/aliases.json` — general discovery tags and reviewed alternate tags/names
-- `data/snapshots/` — dated statistics snapshots; historical records should not be silently overwritten
-- `scripts/` — collection, validation, snapshot, and report-generation code (implementation follows the data model)
-- `.github/workflows/` — original workflow definitions retained with the project; the active collector is registered at the parent repository root
-- `reports/` — generated English-language reports
-
-Calculated metrics belong in snapshots, not in `games.json`. This keeps game identity and tags separate from changing statistics. A future GitHub Actions workflow may commit updated snapshots and reports with repository write permission. D1 and Cloudflare are not part of the initial architecture; reconsider a database only if repository-based storage becomes insufficient.
-
-See `data/README.md` for the schema and update rules.
-
-## Primary technical reference
-
-The Steem Developer documentation describes the public Condenser API methods used to query posts, including `condenser_api.get_discussions_by_created`: https://developers.steem.io/apidefinitions/condenser-api
+All generated report text is in English.
