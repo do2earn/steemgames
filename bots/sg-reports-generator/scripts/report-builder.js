@@ -222,12 +222,13 @@
         "</tbody></table></div>");
       table = [];
     };
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       if (/^\s*<table\b/i.test(line)) {
         flushParagraph(); flushTable();
         const raw = [line];
-        while (i + 1 < lines.length && !/<\/table>\s*$/i.test(raw.join("\\n"))) raw.push(lines[++i]);
-        out.push(raw.join("\\n"));
+        while (i + 1 < lines.length && !/<\/table>\s*$/i.test(raw.join("\n"))) raw.push(lines[++i]);
+        out.push(raw.join("\n"));
         continue;
       }
       if (/^\s*<p\b/i.test(line)) { flushParagraph(); flushTable(); out.push(line); continue; }
