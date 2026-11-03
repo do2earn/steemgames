@@ -170,7 +170,7 @@
       "",
       "<p style='margin:18px 0 8px;text-align:center;font-size:12px;line-height:1.7;'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Explore Steem Games</a> &nbsp;·&nbsp; <a href='" + SITE_BASE + "/faq.html' target='_blank' rel='noopener noreferrer'>Frequency Questions (FAQ)</a> &nbsp;·&nbsp; <a href='" + SITE_BASE + "/about.html' target='_blank' rel='noopener noreferrer'>About Steem Games</a></p>",
       "",
-      "<hr>",
+      "<hr style='display:block;border:0;border-top:1px solid #cbd5e1;height:0;margin:14px 0 10px;'>",
       "",
       "<p style='margin:8px 0 0;text-align:center;color:#667085;font-size:11px;line-height:1.6;'>Published by <a href='https://do2earn.dev' target='_blank' rel='noopener noreferrer'>Do2Earn</a> (@do2earn)<br>© <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a> Daily Report</p>"
     ].join("\n");
@@ -223,14 +223,25 @@
     };
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      if (/^\s*<table\b/i.test(line)) {
+      // Preserve complete raw HTML blocks. The game table is wrapped in a
+      // <div>, so treating only standalone <table> tags as raw HTML breaks it.
+      const blockStart = line.match(/^\s*<(div|table)\b/i);
+      if (blockStart) {
         flushParagraph(); flushTable();
+        const tagName = blockStart[1].toLowerCase();
+        const closeTag = new RegExp("</" + tagName + "\\s*>\\s*$", "i");
         const raw = [line];
-        while (i + 1 < lines.length && !/<\/table>\s*$/i.test(raw.join("\n"))) raw.push(lines[++i]);
-        out.push(raw.join("\n"));
+        while (!closeTag.test(raw.join("\\n")) && i + 1 < lines.length) raw.push(lines[++i]);
+        out.push(raw.join("\\n"));
         continue;
       }
       if (/^\s*<p\b/i.test(line)) { flushParagraph(); flushTable(); out.push(line); continue; }
+      // Keep standalone horizontal rules as real HTML instead of escaping them.
+      if (/^\s*<hr\\b[^>]*>\\s*$/i.test(line)) {
+        flushParagraph(); flushTable();
+        out.push(line.trim());
+        continue;
+      }
       if (/^\s*\|.*\|\s*$/.test(line)) { flushParagraph(); table.push(line); continue; }
       flushTable();
       if (!line.trim()) { flushParagraph(); continue; }
