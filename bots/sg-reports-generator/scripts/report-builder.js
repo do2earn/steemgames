@@ -231,8 +231,8 @@
         const tagName = blockStart[1].toLowerCase();
         const closeTag = new RegExp("</" + tagName + "\\s*>\\s*$", "i");
         const raw = [line];
-        while (!closeTag.test(raw.join("\\n")) && i + 1 < lines.length) raw.push(lines[++i]);
-        out.push(raw.join("\\n"));
+        while (!closeTag.test(raw.join("\n")) && i + 1 < lines.length) raw.push(lines[++i]);
+        out.push(raw.join("\n"));
         continue;
       }
       if (/^\s*<p\b/i.test(line)) { flushParagraph(); flushTable(); out.push(line); continue; }
