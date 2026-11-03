@@ -237,7 +237,7 @@
       }
       if (/^\s*<p\b/i.test(line)) { flushParagraph(); flushTable(); out.push(line); continue; }
       // Keep standalone horizontal rules as real HTML instead of escaping them.
-      if (/^\s*<hr\\b[^>]*>\\s*$/i.test(line)) {
+      if (/^\s*<hr\b[^>]*>\s*$/i.test(line)) {
         flushParagraph(); flushTable();
         out.push(line.trim());
         continue;
