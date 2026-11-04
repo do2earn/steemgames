@@ -150,6 +150,10 @@
     const introSecond = "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
     const analysis = buildStatParagraphs(ranked, totals);
     const html = [
+      "[Image cover]()",
+      "",
+      "## **Greetings to All Fans and Developers of Steem Blockchain Games.**",
+      "",
       introFirst,
       "",
       introSecond,
