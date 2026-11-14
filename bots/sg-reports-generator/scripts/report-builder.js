@@ -75,24 +75,80 @@
   }
 
   function buildStatParagraphs(games, totals) {
-    const ranked = games.slice().sort((a,b) => Number(b.points || 0) - Number(a.points || 0));
-    const top3 = ranked.slice(0,3);
-    const leaders = top3.map((g,i) => (i+1) + ". " + g.game_name + " (" + fmt(g.points) + " points)").join("; ");
-    const top = ranked[0];
-    const second = ranked[1];
-    const topShare = totals.points ? Math.round(Number(top?.points || 0) / totals.points * 100) : 0;
-    const postShare = totals.posts ? Math.round(Number(top?.posts || 0) / totals.posts * 100) : 0;
-    const voteLeader = games.slice().sort((a,b) => Number(b.votes || 0) - Number(a.votes || 0))[0];
-    const postLeaders = games.slice().sort((a,b) => Number(b.posts || 0) - Number(a.posts || 0)).slice(0,3);
-    const paragraphOne = randomItem([
-      "The current leaderboard is headed by " + (top?.game_name || "the top-ranked game") + " with " + fmt(top?.points) + " points, followed by " + (second?.game_name || "the next title") + " with " + fmt(second?.points) + ". The top-ranked game represents approximately " + topShare + "% of the combined points in this active-game snapshot. The three leading positions are: " + leaders + ".",
-      "Across " + games.length + " active listings, the SG table records " + fmt(totals.points) + " combined points. " + (top?.game_name || "The leading title") + " currently contributes " + topShare + "% of that total, while " + (second?.game_name || "the runner-up") + " is next in the ranking. Top three today: " + leaders + ".",
-      "Points are distributed across a range of projects rather than being identical from game to game. " + (top?.game_name || "The leader") + " has " + fmt(top?.points) + " points (" + topShare + "% of the total), and the leading three games are " + leaders + "."
-    ]);
-    const paragraphTwo = randomItem([
-      "The database currently lists " + fmt(totals.posts) + " posts and " + fmt(totals.votes) + " votes across these games, an average of about " + fmt(totals.posts / Math.max(1,games.length)) + " posts per active listing. " + (postLeaders.length ? postLeaders.map(g=>g.game_name+" ("+fmt(g.posts)+" posts)").join(", ") : "Post activity is not yet available") + " lead the post counts. " + (voteLeader ? voteLeader.game_name + " currently has the highest recorded vote count at " + fmt(voteLeader.votes) + "." : "") + " These totals are a snapshot of SG's database, not a measure of unique verified players.",
-      "Content activity is another useful way to compare projects: " + (postLeaders.length ? postLeaders.map(g=>g.game_name+" with "+fmt(g.posts)+" posts").join(", ") : "post totals are not available") + ". Together, the listed games have " + fmt(totals.posts) + " posts and " + fmt(totals.votes) + " community votes recorded in SG. Use these numbers as a guide for discovery, then visit the games and decide which experiences you want to support.",
-      "The table also highlights the role of community support. " + fmt(totals.votes) + " votes and " + fmt(totals.posts) + " posts are recorded across the active games, while " + (voteLeader ? voteLeader.game_name + " leads the vote count with " + fmt(voteLeader.votes) + " votes." : "vote totals are not available") + " The strongest next step is to turn discovery into participation: vote for a favourite, play it, and share an original gameplay post or tutorial."
+    const ranked = games.slice().sort((a,b) => Number(b.points || 0) - Number(a.points || 0) || String(a.game_name || "").localeCompare(String(b.game_name || "")));
+    const postRanked = games.slice().sort((a,b) => Number(b.posts || 0) - Number(a.posts || 0));
+    const voteRanked = games.slice().sort((a,b) => Number(b.votes || 0) - Number(a.votes || 0));
+    const userRanked = games.slice().sort((a,b) => Number(b.users || 0) - Number(a.users || 0));
+    const pointLeader = ranked[0];
+    const postLeader = postRanked[0];
+    const voteLeader = voteRanked[0];
+    const userLeader = userRanked[0];
+    const average = key => games.length ? totals[key] / games.length : 0;
+    const pointShare = game => totals.points > 0 ? Number(game.points || 0) / totals.points * 100 : 0;
+    const postShare = game => totals.posts > 0 ? Number(game.posts || 0) / totals.posts * 100 : 0;
+    const userShare = game => totals.users > 0 ? Number(game.users || 0) / totals.users * 100 : 0;
+    const voteShare = game => totals.votes > 0 ? Number(game.votes || 0) / totals.votes * 100 : 0;
+    const ordinal = n => n === 1 ? "first" : n === 2 ? "second" : n === 3 ? "third" : n + "th";
+    const gameDescriptions = ranked.map((game,index) => {
+      const name = game.game_name || "Unnamed game";
+      const parts = [
+        name + " is " + ordinal(index + 1) + " in the points ranking with " + fmt(game.points) + " points",
+        fmt(game.posts) + " posts",
+        fmt(game.users) + " recorded users",
+        fmt(game.votes) + " SG votes"
+      ];
+      const standout = [];
+      if (game === pointLeader) standout.push("the strongest points position");
+      if (game === postLeader) standout.push("the highest post count");
+      if (game === userLeader) standout.push("the largest recorded user count");
+      if (game === voteLeader) standout.push("the highest SG vote count");
+      const context = standout.length ? "; notably, it also records " + standout.join(" and ") : "";
+      const interpretations = [
+        "Together, these figures place it at " + pointShare(game).toFixed(1) + "% of all listed points" + context + ".",
+        "Its share of the directory's combined points is " + pointShare(game).toFixed(1) + "%" + context + ".",
+        "This represents " + pointShare(game).toFixed(1) + "% of total points in the current snapshot" + context + "."
+      ];
+      return parts.join(", ") + context + ".";
+    });
+    const openings = [
+      "A game-by-game reading of today's SG table shows how differently the listed projects are performing. ",
+      "Looking across every entry rather than only the top of the leaderboard reveals the distinct activity profiles of the games. ",
+      "The current database snapshot provides a detailed comparison of all " + games.length + " listed games. "
+    ];
+    const closings = [
+      "The point shares below show how much each title contributes to the combined leaderboard score.",
+      "Taken together, these individual records explain the current ranking while keeping content, users, and SG votes visible as separate measures.",
+      "This comparison uses the same four live database measures for every game, making the differences between projects easier to assess."
+    ];
+    const paragraphOne = randomItem(openings) + gameDescriptions.join(" ") + " " + randomItem(closings);
+
+    const topThree = ranked.slice(0,3);
+    const topThreePoints = topThree.reduce((sum,g) => sum + (Number(g.points) || 0),0);
+    const topThreeShare = totals.points > 0 ? topThreePoints / totals.points * 100 : 0;
+    const activePoints = games.filter(g => Number(g.points) > 0).length;
+    const activePosts = games.filter(g => Number(g.posts) > 0).length;
+    const activeUsers = games.filter(g => Number(g.users) > 0).length;
+    const activeVotes = games.filter(g => Number(g.votes) > 0).length;
+    const postPerGame = average("posts");
+    const userPerGame = average("users");
+    const votePerGame = average("votes");
+    const pointPerGame = average("points");
+    const pointSpread = pointLeader ? Number(pointLeader.points || 0) - Number(ranked[ranked.length - 1]?.points || 0) : 0;
+    const leaders = [
+      pointLeader ? pointLeader.game_name + " leads points (" + fmt(pointLeader.points) + ")" : "",
+      postLeader ? postLeader.game_name + " leads posts (" + fmt(postLeader.posts) + ")" : "",
+      userLeader ? userLeader.game_name + " leads recorded users (" + fmt(userLeader.users) + ")" : "",
+      voteLeader ? voteLeader.game_name + " leads SG votes (" + fmt(voteLeader.votes) + ")" : ""
+    ].filter(Boolean);
+    const conclusions = [
+      "Overall, the table describes an ecosystem with " + activePoints + " of " + games.length + " games currently recording points, " + activePosts + " recording posts, " + activeUsers + " recording users, and " + activeVotes + " recording SG votes. The top three games account for " + topThreeShare.toFixed(1) + "% of all points, while the average listing has " + fmt(pointPerGame) + " points, " + fmt(postPerGame) + " posts, " + fmt(userPerGame) + " recorded users, and " + fmt(votePerGame) + " votes. These figures suggest " + (topThreeShare >= 70 ? "a strongly concentrated points leaderboard, where a small group currently holds most of the scoring weight" : topThreeShare >= 45 ? "a leaderboard with a noticeable leading group, alongside meaningful participation from the rest of the directory" : "a comparatively distributed points leaderboard, with the leading group accounting for less than half of the total") + ".",
+      "The leading positions are spread across the following measures: " + leaders.join("; ") + ". This distinction matters because a game can attract posts, users, or votes without holding the top points position. The points gap between first and last place is " + fmt(pointSpread) + ", and " + (activePosts === games.length ? "every listed game has recorded posts" : (games.length - activePosts) + " games currently show no recorded posts") + ". The directory therefore contains both established activity and opportunities for quieter projects to grow their player and creator communities.",
+      "The figures should be read as a snapshot of SG's recorded activity, not as a judgement of gameplay quality or proof of long-term momentum. " + (topThreeShare >= 60 ? "The concentration of points among the top three makes it especially valuable for other developers to build consistent participation and improve discoverability." : "The spread of points leaves room for several projects to strengthen their position through sustained community involvement.") + " With averages of " + fmt(postPerGame) + " posts and " + fmt(userPerGame) + " recorded users per game, the clearest opportunity across the directory is to turn discovery into real play, original gameplay content, and regular community participation."
+    ];
+    const paragraphTwo = randomItem(conclusions) + " " + randomItem([
+      "Players can help by exploring titles beyond the leaders, sharing useful gameplay posts, and voting for the games they genuinely enjoy.",
+      "Developers can use these comparisons to identify where their communities are active and where clearer onboarding, fresh content, or player engagement could make a difference.",
+      "The strongest path forward is practical community support: play, publish original experiences, welcome new users, and use SG votes to recognise games worth discovering."
     ]);
     return [paragraphOne, paragraphTwo];
   }
@@ -124,19 +180,11 @@
     }).join("\n");
     const gameTable = "<div class='sg-games-table-wrap' style='width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0 18px;'><table class='sg-games-table' cellpadding='4' cellspacing='0' border='1' style='width:auto;max-width:100%;min-width:0;margin:0 auto;border-collapse:collapse;table-layout:auto;font-size:13px;white-space:nowrap;'><thead><tr><th style='padding:5px 6px;text-align:center;'>Rank</th><th style='padding:5px 6px;text-align:center;'>Game</th><th style='padding:5px 6px;text-align:center;'>Points</th><th style='padding:5px 6px;text-align:center;'>Posts</th><th style='padding:5px 6px;text-align:center;'>Dedicated Tag</th><th style='padding:5px 6px;text-align:center;'>Developer</th></tr></thead><tbody>" + tableRows + "</tbody></table></div>";
 
-    const topDevelopers = [];
-    const seen = new Set();
-    for (const game of ranked) {
-      const developer = accountName(game.developer);
-      if (!developer || seen.has(developer)) continue;
-      seen.add(developer);
-      topDevelopers.push(developer);
-      if (topDevelopers.length === 10) break;
-    }
-    const beneficiaryList = topDevelopers.map(name => "<li style='text-align:left;font-size:16px;line-height:1.65;'><strong>@" + esc(name) + "</strong>: 5%</li>").join("");
-    const beneficiaryText = topDevelopers.length
-      ? (topDevelopers.length === 10 ? "50% of the author rewards from this report is allocated to the ten highest-ranked distinct game developers represented in the SG table. Each listed developer receives a 5% beneficiary share." : "The intended allocation is 50% of the author rewards: 5% for each of the ten highest-ranked game developers. Only " + topDevelopers.length + " distinct valid developer accounts are currently available in the SG database, so please complete the missing Developer fields before publishing to ensure the full 50% is assigned.")
-      : "Developer beneficiary accounts could not be identified from the current SG game records. Please review the Developer fields before publishing this report.";
+    const eligibleDevelopers = Array.from(new Set(ranked.map(game => accountName(game.developer)).filter(Boolean)));
+    const selectedDeveloper = eligibleDevelopers.length ? randomItem(eligibleDevelopers) : "";
+    const beneficiaryText = selectedDeveloper
+      ? "10% of the author rewards from this daily report is allocated to a random selected developer."
+      : "No valid developer account is currently available in the SG database, so a 10% developer beneficiary cannot be assigned. Please review the Developer fields before publishing.";
     const topTags = [];
     for (const game of ranked) {
       const tag = cleanTag(game.tag);
@@ -150,9 +198,9 @@
     const introSecond = "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
     const analysis = buildStatParagraphs(ranked, totals);
     const html = [
-      "[Image cover]()",
+      "![Image cover]()",
       "",
-      "## **Greetings to All Fans and Developers of Steem Blockchain Games.**",
+      "Hello to All Fans and Developers of Steem Blockchain Games.",
       "",
       introFirst,
       "",
@@ -161,7 +209,7 @@
       '<center>' + '<a href="' + SITE_BASE + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;gap:14px;padding:16px 28px;margin:10px 0;text-align:center;background:linear-gradient(180deg,#ffffff 0%,#d1d5db 100%);border:2px solid #343a40;border-radius:14px;color:#000000!important;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:25px;font-weight:900;line-height:1.05;box-shadow:0 5px 0 #343a40;"><img src="' + SITE_BASE + '/assets/images/steemgames_logo.webp" alt="Steem Games Logo" width="68" height="68" style="display:block;width:68px;height:68px;object-fit:contain;flex:0 0 68px;"><span style="display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;white-space:nowrap;line-height:1.05;"><font color="#000000">Explore</font><span><span style="color:#ef4444!important;-webkit-text-fill-color:#ef4444!important">S</span><span style="color:#f59e0b!important;-webkit-text-fill-color:#f59e0b!important">t</span><span style="color:#22c55e!important;-webkit-text-fill-color:#22c55e!important">e</span><span style="color:#06b6d4!important;-webkit-text-fill-color:#06b6d4!important">e</span><span style="color:#3b82f6!important;-webkit-text-fill-color:#3b82f6!important">m</span> <span style="color:#ec4899!important;-webkit-text-fill-color:#ec4899!important">G</span><span style="color:#f97316!important;-webkit-text-fill-color:#f97316!important">a</span><span style="color:#14b8a6!important;-webkit-text-fill-color:#14b8a6!important">m</span><span style="color:#6366f1!important;-webkit-text-fill-color:#6366f1!important">e</span><span style="color:#eab308!important;-webkit-text-fill-color:#eab308!important">s</span></span></span></a></center>',
       '<div style="height:16px;line-height:16px;"></div>',
       "",
-      "# Steem Games Status",
+      "<hr>",\n      "",\n      "# SG Developer Updates",\n      "",\n      "<hr>",
       "",
       "# Steem Games Table",
       "",
@@ -171,7 +219,7 @@
       "",
       analysis[1],
       "",
-      "<table width='100%' cellpadding='16' cellspacing='0' border='0' style='width:100%;border:1px solid #e6c85c;border-radius:12px;border-collapse:separate;border-spacing:0;background:#fff9db;margin:10px 0 18px;'><tr><td align='left' style='text-align:left;background:#fff9db;border-radius:12px;padding:16px 18px;color:#3d3420;'><h2 style='margin:0 0 18px;text-align:left;color:#5b4812;font-size:20px;font-weight:700;line-height:1.3;'>Developers Beneficiaries</h2><p style='margin:0 0 10px;text-align:left;'>" + esc(beneficiaryText) + "</p><ul style='margin:0;padding-left:22px;text-align:left;'>" + beneficiaryList + "</ul></td></tr></table>",
+      "<table width='100%' cellpadding='16' cellspacing='0' border='0' style='width:100%;border:2px solid #3f8f45;border-radius:12px;border-collapse:separate;border-spacing:0;background:#e4f2d5;margin:10px 0 18px;'><tr><td align='left' style='text-align:left;background:#e4f2d5;border-radius:12px;padding:16px 18px;color:#254329;'><h2 style='margin:0 0 18px;text-align:left;color:#286b35;font-size:20px;font-weight:700;line-height:1.3;'>🎁 Selected Developer Rewards</h2><p style='margin:0 0 14px;text-align:left;'>" + esc(beneficiaryText) + "</p>" + (selectedDeveloper ? "<p style='margin:0;text-align:left;font-size:17px;line-height:1.7;'>🎉 <strong>Today Lucky Developer:</strong><br><strong style='font-size:21px;'>@" + esc(selectedDeveloper) + "</strong></p>" : "") + "</td></tr></table>",
       "",
       "<p style='margin:18px 0 8px;text-align:center;font-size:12px;line-height:1.7;'><a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Explore Steem Games</a> &nbsp;·&nbsp; <a href='" + SITE_BASE + "/faq.html' target='_blank' rel='noopener noreferrer'>Frequency Questions (FAQ)</a> &nbsp;·&nbsp; <a href='" + SITE_BASE + "/about.html' target='_blank' rel='noopener noreferrer'>About Steem Games</a></p>",
       "",
@@ -180,7 +228,7 @@
       "<p style='margin:8px 0 0;text-align:center;color:#667085;font-size:11px;line-height:1.6;'>Published by <a href='https://do2earn.dev' target='_blank' rel='noopener noreferrer'>Do2Earn</a> (@do2earn)<br>© <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a> Daily Report</p>"
     ].join("\n");
 
-    return {title,html,tags:tags.map(tag=>"#"+tag).join(" "),summary:{games:games.length,posts:totals.posts,votes:totals.votes,points:totals.points,beneficiaries:topDevelopers.length}};
+    return {title,html,tags:tags.map(tag=>"#"+tag).join(" "),summary:{games:games.length,posts:totals.posts,votes:totals.votes,points:totals.points,beneficiaries:selectedDeveloper ? 1 : 0}};
   }
 
   async function fetchGames() {
