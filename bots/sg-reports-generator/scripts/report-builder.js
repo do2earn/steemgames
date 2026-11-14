@@ -108,7 +108,7 @@
         "Its share of the directory's combined points is " + pointShare(game).toFixed(1) + "%" + context + ".",
         "This represents " + pointShare(game).toFixed(1) + "% of total points in the current snapshot" + context + "."
       ];
-      return parts.join(", ") + context + ".";
+      return parts.join(", ") + randomItem(interpretations);
     });
     const openings = [
       "A game-by-game reading of today's SG table shows how differently the listed projects are performing. ",
