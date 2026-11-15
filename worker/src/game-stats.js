@@ -102,7 +102,8 @@ async function getPage(tag, offset) {
 }
 
 async function savePage(db, gameId, posts) {
-  if (!posts.length) return;
+  if (!posts.length) return 0;
+  let inserted = 0;
   // Keep each D1 batch modest even when the feed page contains 1,000 posts.
   for (let start = 0; start < posts.length; start += 100) {
     const statements = posts.slice(start, start + 100).map(post => db.prepare(`
@@ -110,8 +111,10 @@ async function savePage(db, gameId, posts) {
         (game_id, author, permlink, created_at)
       VALUES (?, ?, ?, ?)
     `).bind(gameId, post.author, post.permlink, post.created));
-    await db.batch(statements);
+    const results = await db.batch(statements);
+    inserted += (results || []).reduce((sum, item) => sum + Number(item?.meta?.changes || 0), 0);
   }
+  return inserted;
 }
 
 async function updateAggregate(db, gameId, markSynced) {
@@ -213,6 +216,7 @@ async function processGame(db, game) {
   let baseline = state.baseline_created;
   let completed = false;
   let scanned = 0;
+  let insertedRows = 0;
   let page = [];
   let pages = 0;
 
@@ -225,7 +229,7 @@ async function processGame(db, game) {
       const baselineTime = utcMillis(baseline);
       const boundaryIndex = page.findIndex(post => utcMillis(post.created) <= baselineTime);
       const newPosts = boundaryIndex === -1 ? page : page.slice(0, boundaryIndex);
-      await savePage(db, game.id, newPosts);
+      insertedRows += await savePage(db, game.id, newPosts);
       scanned += newPosts.length;
 
       if (boundaryIndex !== -1 || page.length === 0 || page.length < PAGE_SIZE) {
@@ -239,7 +243,7 @@ async function processGame(db, game) {
       continue;
     }
 
-    await savePage(db, game.id, page);
+    insertedRows += await savePage(db, game.id, page);
     scanned += page.length;
 
     if (page.length < PAGE_SIZE) {
@@ -278,8 +282,35 @@ async function processGame(db, game) {
       pages,
       offset,
       scanned,
+      insertedRows,
       completed,
       baselinePending: true,
+      posts: Number(current?.posts || 0),
+      users: Number(current?.users || 0),
+      votes: Number(current?.votes || 0),
+      calculatedPoints: Number(current?.points || 0),
+      points: Number(current?.points || 0)
+    };
+  }
+
+  // A completed initial backfill needs one final exact aggregation even if
+  // its last page contained only duplicates. During incremental syncs, skip
+  // the full index scan when INSERT OR IGNORE added no new posts.
+  const wasBackfill = state.mode !== "incremental";
+  if (insertedRows === 0 && !(wasBackfill && completed)) {
+    const current = await db.prepare(
+      "SELECT posts, users, votes, points FROM steemgames WHERE id = ?"
+    ).bind(game.id).first();
+    return {
+      gameId: game.id,
+      gameName: game.game_name,
+      mode,
+      pages,
+      offset: completed ? 0 : offset,
+      scanned,
+      insertedRows,
+      completed,
+      aggregateSkipped: true,
       posts: Number(current?.posts || 0),
       users: Number(current?.users || 0),
       votes: Number(current?.votes || 0),
@@ -296,6 +327,7 @@ async function processGame(db, game) {
     pages,
     offset: completed ? 0 : offset,
     scanned,
+    insertedRows,
     completed,
     ...totals
   };
