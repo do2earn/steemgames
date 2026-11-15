@@ -44,14 +44,20 @@ const GAME_LOGO_FILES = [
 ];
 
 async function ensureGameLogoFilenames(db) {
-  for (const [normalizedName, filename] of GAME_LOGO_FILES) {
-    await db.prepare(`
-      UPDATE steemgames
-         SET game_logo = ?
-       WHERE lower(replace(replace(replace(game_name, ' ', ''), '-', ''), '_', '')) = ?
-         AND (game_logo IS NULL OR game_logo != ?)
-    `).bind(filename, normalizedName, filename).run();
-  }
+  const normalizedName = "lower(replace(replace(replace(game_name, ' ', ''), '-', ''), '_', ''))";
+  const cases = GAME_LOGO_FILES.map(() => "WHEN ? THEN ?").join(" ");
+  const names = GAME_LOGO_FILES.map(() => "?").join(", ");
+  const caseBindings = GAME_LOGO_FILES.flatMap(([name, filename]) => [name, filename]);
+  await db.prepare(`
+    UPDATE steemgames
+       SET game_logo = CASE ${normalizedName} ${cases} ELSE game_logo END
+     WHERE ${normalizedName} IN (${names})
+       AND game_logo IS NOT CASE ${normalizedName} ${cases} ELSE game_logo END
+  `).bind(
+    ...caseBindings,
+    ...GAME_LOGO_FILES.map(([name]) => name),
+    ...caseBindings
+  ).run();
 }
 
 async function verifyVoteSignature(username, gameId, message, signature) {
