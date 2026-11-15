@@ -182,7 +182,6 @@ export default {
       }
 
       if (url.pathname === "/api/games") {
-        await ensureGameLogoFilenames(env.DB);
         const includeInactive = url.searchParams.get("include_inactive") === "1";
         const query = includeInactive
           ? "SELECT id, game_name, game_logo, points, posts, votes, users, tag, developer, genres, about, website_url, is_active, stats_synced_at FROM steemgames ORDER BY game_name COLLATE NOCASE ASC"
