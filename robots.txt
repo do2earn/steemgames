@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://steemgames.do2earn.dev/sitemap.xml
