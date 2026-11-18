@@ -161,7 +161,7 @@
     <div class="sg-preloader-inner">
       <div class="sg-preloader-logo">
         <img src="assets/images/steemgames_logo.webp" alt="Steem Games" width="180" height="180"
-          onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/images/steemgames_logo.png';}">
+          onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/images/steemgames_logo.png';}" loading="eager" fetchpriority="high">
       </div>
       <svg class="sg-preloader-ring" viewBox="0 0 100 100" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <defs><linearGradient id="sgPreloaderRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -176,7 +176,7 @@
   <header class="topbar">
     <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
     <nav id="mainMenu" class="menu" aria-label="Main menu" hidden>
-      <a class="menu-brand" href="index.html" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo" width="72" height="72"></a>
+      <a class="menu-brand" href="index.html" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo" width="72" height="72" loading="lazy"></a>
       <a href="#home">🏠 <span>Home</span></a>
       <a href="faq.html">❓ <span>FAQ</span></a>
       <a href="about.html">ℹ️ <span>About</span></a>
@@ -200,7 +200,7 @@
           alt="Steem Games logo"
           width="128"
           height="128"
-          onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/do2earn/steemgames/88b0388ea6a4b90aaae63be6586a9b43e8f1ffb2/assets/images/steemgames_logo.png';"
+          onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/do2earn/steemgames/88b0388ea6a4b90aaae63be6586a9b43e8f1ffb2/assets/images/steemgames_logo.png';" loading="eager"
         >
         <h1 id="sg-intro-title"><span style="color:#ef4444">S</span><span style="color:#f59e0b">t</span><span style="color:#22c55e">e</span><span style="color:#06b6d4">e</span><span style="color:#3b82f6">m</span> <span style="color:#ec4899">G</span><span style="color:#f97316">a</span><span style="color:#14b8a6">m</span><span style="color:#6366f1">e</span><span style="color:#eab308">s</span></h1>
       </div>
@@ -208,10 +208,10 @@
       <p class="sg-intro-tagline">• Vote • Play • Earn •</p>
     
       <div class="sg-intro-messages">
-        <p>🔍 Discover the New Games on <span class="sg-token sg-token-steem" aria-label="STEEM blockchain"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25"><strong>$STEEM</strong></span> Blockchain.</p>
-        <p>✅ Vote the Steem Games &amp; Earn <img class="d2e-inline-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/0372a858e30d134523d9e2127918fbfe5532c150/assets/images/d2e_asset_logo1.png" alt="D2E logo" width="25" height="25"><strong>D2E</strong></p>
-        <p>🎮 Play the Steem Games &amp; Earn <span class="sg-token sg-token-steem" aria-label="STEEM token"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25"><strong>$STEEM</strong></span></p>
-        <p>📝 Publish the Gameplay Content &amp; Earn more <span class="sg-token sg-token-steem" aria-label="STEEM token"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25"><strong>$STEEM</strong></span></p>
+        <p>🔍 Discover the New Games on <span class="sg-token sg-token-steem" aria-label="STEEM blockchain"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25" loading="lazy"><strong>$STEEM</strong></span> Blockchain.</p>
+        <p>✅ Vote the Steem Games &amp; Earn <img class="d2e-inline-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/0372a858e30d134523d9e2127918fbfe5532c150/assets/images/d2e_asset_logo1.png" alt="D2E logo" width="25" height="25" loading="lazy"><strong>D2E</strong></p>
+        <p>🎮 Play the Steem Games &amp; Earn <span class="sg-token sg-token-steem" aria-label="STEEM token"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25" loading="lazy"><strong>$STEEM</strong></span></p>
+        <p>📝 Publish the Gameplay Content &amp; Earn more <span class="sg-token sg-token-steem" aria-label="STEEM token"><img src="assets/images/steem_logo.png" alt="Steem logo" width="25" height="25" loading="lazy"><strong>$STEEM</strong></span></p>
       </div>
     
       <div class="sg-intro-stats" aria-label="Steem Games statistics" aria-live="polite">
@@ -263,7 +263,7 @@
   </dialog>
   
 <dialog id="voteDialog" class="vote-dialog" aria-labelledby="voteTitle"><form method="dialog" class="vote-form"><button class="dialog-close" type="button" id="closeVote" aria-label="Close vote dialog">×</button><h2 id="voteTitle">Vote for this game</h2><p id="voteMessage">Sign in to vote once for this game each UTC day and receive a random reward of 1–5 D2E.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button id="voteLoginButton" class="button primary" type="button">Login to Vote</button></div></form></dialog>
-<dialog id="d2eRewardsDialog" class="d2e-rewards-dialog" aria-labelledby="d2eRewardsTitle"><div class="d2e-rewards-content"><button id="closeD2ERewards" class="dialog-close" type="button" aria-label="Close rewards">×</button><h2 id="d2eRewardsTitle">D2E Rewards</h2><img class="d2e-rewards-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/e171de408ee986846bf5518b8d47a0a765f3c59c/assets/images/d2e_asset_logo1.png" alt="Official D2E logo" width="112" height="112"><p id="d2eRewardMessage" role="status" aria-live="polite">You received a random D2E reward for voting!</p><button id="confirmD2ERewards" class="button primary" type="button">OK</button></div></dialog>
+<dialog id="d2eRewardsDialog" class="d2e-rewards-dialog" aria-labelledby="d2eRewardsTitle"><div class="d2e-rewards-content"><button id="closeD2ERewards" class="dialog-close" type="button" aria-label="Close rewards">×</button><h2 id="d2eRewardsTitle">D2E Rewards</h2><img class="d2e-rewards-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/e171de408ee986846bf5518b8d47a0a765f3c59c/assets/images/d2e_asset_logo1.png" alt="Official D2E logo" width="112" height="112" loading="lazy"><p id="d2eRewardMessage" role="status" aria-live="polite">You received a random D2E reward for voting!</p><button id="confirmD2ERewards" class="button primary" type="button">OK</button></div></dialog>
   <script>
     (() => {
         const apiBase = window.STEEM_GAMES_API_URL || '';
