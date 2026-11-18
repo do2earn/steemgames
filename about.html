@@ -34,7 +34,7 @@
     <div class="sg-preloader-inner">
       <div class="sg-preloader-logo">
         <img src="assets/images/steemgames_logo.webp" alt="Steem Games" width="180" height="180"
-          onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/images/steemgames_logo.png';}">
+          onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/images/steemgames_logo.png';}" loading="eager" fetchpriority="high">
       </div>
       <svg class="sg-preloader-ring" viewBox="0 0 100 100" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <defs><linearGradient id="sgPreloaderRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -49,7 +49,7 @@
   <header class="topbar">
     <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
     <nav id="mainMenu" class="menu" aria-label="Main menu" hidden>
-      <a class="menu-brand" href="index.html" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo" width="72" height="72"></a>
+      <a class="menu-brand" href="index.html" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo" width="72" height="72" loading="lazy"></a>
       <a href="index.html">🏠 <span>Home</span></a>
       <a href="faq.html">❓ <span>FAQ</span></a>
       <a href="about.html">ℹ️ <span>About</span></a>
