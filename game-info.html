@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Explore details, developer information, links and statistics for games built on the Steem blockchain.">
+  <meta name="description" content="Explore each Steem Game with its details, developer information, links, genres and statistics.">
   <title>Steem Game Details | Steem Games</title>
   <meta name="application-name" content="Steem Games">
   <meta name="robots" content="index,follow">
@@ -199,6 +199,10 @@
         const profile = developer ? 'https://steempro.com/@' + encodeURIComponent(developer) : '';
         const publishUrl = 'https://steemit.com/submit.html?tags=' + encodeURIComponent(tag);
         document.title = name + ' | Steem Games';
+        const metaDescription = 'Explore ' + name + ', a Steem Game, with developer information, genres, links and statistics on Steem Games.';
+        document.querySelector('meta[name="description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaDescription);
         card.innerHTML = `
           <img class="sg-game-info-logo" src="${esc(logo)}" alt="${esc(name)} logo" width="412" height="412" onerror="this.onerror=null;this.src='assets/images/game-placeholder.svg'" loading="eager" fetchpriority="high">
           <h1 class="sg-game-info-title">${esc(name)}</h1>
