@@ -24,41 +24,6 @@ function json(request, body, status = 200) {
   });
 }
 
-const GAME_LOGO_FILES = [
-  ["cur8games", "cur8_logo.png"],
-  ["drugwars", "drugwars_logo.png"],
-  ["hariraid", "hariraid_logo.png"],
-  ["memorygame", "memorygame_logo.png"],
-  ["pixelcraft", "pixelcraft_logo.png"],
-  ["steem4poker", "steem4poker_logo.png"],
-  ["steem4snake", "steem4snake_logo.png"],
-  ["steem8ball", "steem8ball_logo.png"],
-  ["steemarchers", "steemarchers_logo.png"],
-  ["steembingo", "steembingo_logo.png"],
-  ["steemflags", "steemflags_logo.png"],
-  ["steemheights", "steemheights_logo.png"],
-  ["steemhop", "steemhop_logo.png"],
-  ["steemludo", "steemludo_logo.png"],
-  ["steemmaze", "steemmaze_logo.png"],
-  ["steemretrogames", "steemretrogames_logo.png"]
-];
-
-async function ensureGameLogoFilenames(db) {
-  const normalizedName = "lower(replace(replace(replace(game_name, ' ', ''), '-', ''), '_', ''))";
-  const cases = GAME_LOGO_FILES.map(() => "WHEN ? THEN ?").join(" ");
-  const names = GAME_LOGO_FILES.map(() => "?").join(", ");
-  const caseBindings = GAME_LOGO_FILES.flatMap(([name, filename]) => [name, filename]);
-  await db.prepare(`
-    UPDATE steemgames
-       SET game_logo = CASE ${normalizedName} ${cases} ELSE game_logo END
-     WHERE ${normalizedName} IN (${names})
-       AND game_logo IS NOT CASE ${normalizedName} ${cases} ELSE game_logo END
-  `).bind(
-    ...caseBindings,
-    ...GAME_LOGO_FILES.map(([name]) => name),
-    ...caseBindings
-  ).run();
-}
 
 async function verifyVoteSignature(username, gameId, message, signature) {
  const lines=message.split("\n"), timestamp=Number(lines[3]?.replace("Timestamp: ","")), signedGameId=Number(lines[2]?.replace("Game ID: ","")), nonce=lines[4]?.replace("Nonce: ","");
@@ -222,7 +187,6 @@ export default {
     }
     ctx.waitUntil((async () => {
       try {
-        await ensureGameLogoFilenames(env.DB);
         const result = await refreshDueGameStats(env.DB);
         console.log("Steem Games scheduled statistics sync", JSON.stringify({
           scheduledTime: new Date(controller.scheduledTime).toISOString(),
