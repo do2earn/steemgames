@@ -70,6 +70,27 @@
     let html = String(value || "");
     html = html.replace(/<!--[\s\S]*?-->/g, "");
     html = compactInlineStyles(html);
+
+    // Inherit alignment and spacing from the game table instead of repeating
+    // the same long inline CSS on every cell.
+    html = html.replace(
+      /(<table\b[^>]*class=['"]sg-games-table['"][^>]*style=['"])([^'"]*)(['"])/i,
+      (match, open, css, close) => open + css + (css.endsWith(";") ? "" : ";") + "text-align:center;white-space:nowrap;vertical-align:middle" + close
+    );
+    html = html.replace(/<td\s+align=['"]center['"]\s+style=['"][^'"]*['"]>/gi, "<td>");
+    html = html.replace(/<th\s+style=['"]padding:5px 6px;text-align:center;['"]>/gi, "<th>");
+
+    // Shorten repeated image and Vote button styles without changing their look.
+    html = html.replace(/style=['"]display:block!important;width:144px!important;height:96px!important;max-width:144px!important;min-width:0!important;object-fit:contain!important;margin:auto;['"]/gi,
+      "style='display:block;width:144px;height:96px;object-fit:contain;margin:auto'");
+    html = html.replace(/style="display:inline-flex;align-items:center;justify-content:center;gap:3px;min-height:27px;padding:4px 8px;margin-top:5px;background:#15803d;border:0;border-radius:7px;color:#fff!important;text-decoration:none;font-family:inherit;font-size:14px;font-weight:800;white-space:nowrap;"/gi,
+      "style='display:inline-block;padding:4px 8px;margin-top:5px;background:#15803d;border-radius:7px;color:#fff;text-decoration:none;font-size:14px;font-weight:800;white-space:nowrap'");
+
+    // Cap only the free-form description of Today Game; all game statistics,
+    // rankings, chart values, links, and developer information remain intact.
+    html = html.replace(/(<p style=['"]margin:13px 0 0;text-align:left;line-height:1\.7;['"]>)([\s\S]*?)(<\/p>)/i,
+      (match, open, body, close) => body.length > 1200 ? open + body.slice(0, 1200).replace(/\s+\S*$/, "") + "… " + close : match);
+
     html = html.replace(/>\s+</g, "><");
     html = html.replace(/[ \t]+\n/g, "\n");
     html = html.replace(/\n[ \t]+/g, "\n");
@@ -254,7 +275,8 @@
   }
   function buildTodayGame(games) {
     const g = randomItem(games); if (!g) return "";
-    const tag = cleanTag(g.tag), about = String(g.about||"").trim();
+    const tag = cleanTag(g.tag), rawAbout = String(g.about||"").trim();
+    const about = rawAbout.length > 1200 ? rawAbout.slice(0, 1200).trimEnd().replace(/\s+\S*$/, "") + "…" : rawAbout;
     const website = /^https?:\/\//i.test(String(g.website_url||"").trim()) ? String(g.website_url).trim() : "";
     const playButton = website ? "<div style='text-align:center;margin-top:15px;'><a href='"+esc(website)+"' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;padding:11px 22px;background:#15803d;border:1px solid #166534;border-radius:10px;color:#fff!important;text-decoration:none;font-size:16px;font-weight:800;box-shadow:0 3px 0 #166534;'>🎮 Play Now!</a></div>" : "";
     return "<div style='border:2px solid #475569;border-radius:14px;background:#fef3c7;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>🎮 Today Game</h2><div style='text-align:center;margin:8px 0 14px;'><img src='"+esc(logoUrl(g))+"' alt='"+esc(g.game_name)+"' style='width:300px;height:220px;max-width:100%;object-fit:contain;'></div><div style='text-align:left;line-height:1.9;'><strong>⭐ Points:</strong> "+fmt(g.points)+"<br><strong>📄 Posts Numbers:</strong> "+fmt(g.posts)+"<br><strong>#️⃣ Dedicated Tag:</strong> "+(tag?"#"+esc(tag):"Not listed")+"<br><strong>👩‍💻 Developer:</strong> "+esc(g.developer||"Not listed")+"<br><strong>🗂️ Genres:</strong> "+esc(g.genres||"Not listed")+"</div><p style='margin:13px 0 0;text-align:left;line-height:1.7;'>"+(about?esc(about):"No game description is currently available.")+"</p>"+playButton+"</div>";
