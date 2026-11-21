@@ -458,7 +458,7 @@
       await new Promise(resolve => setTimeout(resolve,20));
       const report = buildReport(games,todayUTC());
       titleBox.value = report.title;
-      editor.value = optimizeReportHtml(report.html);
+      editor.value = report.html;
       tagsBox.value = report.tags;
       $("reportEditorSection").hidden = false;
       copyBtn.disabled = utf8Bytes(editor.value) > MAX_BYTES;
