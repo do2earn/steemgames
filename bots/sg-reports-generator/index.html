@@ -82,7 +82,9 @@ progress::-webkit-progress-bar{background:#e5e7eb}progress::-webkit-progress-val
 <div class="field editor-field" style="margin-top:10px"><div class="editor-field-heading"><label for="reportTagsBox">Report Tags</label><button class="mini-copy-btn" id="copyTagsBtn" type="button" aria-label="Copy game tags" title="Copy tags">⧉</button></div><textarea id="reportTagsBox" rows="2" spellcheck="false" aria-label="Report tags: #steemgame, top eight dedicated game tags, and #steemflags"></textarea></div>
 <div class="actions editor-actions">
 <button class="btn primary" id="previewHtmlBtn" type="button" disabled>↗ Preview HTML in New Tab</button>
+<button class="btn secondary" id="optimizeReportBtn" type="button" disabled>⚡ Optimize Report</button>
 </div>
+<p class="small" id="reportSizeMeter" role="status" aria-live="polite">Report size will appear here after generation. Recommended target: 58 KB.</p>
 <p class="small">Opens the latest edited HTML in a separate, full-page tab. The preview is sandboxed with scripts disabled.</p>
 </section>
 
@@ -105,6 +107,6 @@ import { verifyPostingKey, verifyKeychainLogin } from "../../assets/js/steem-aut
  loginBtn.addEventListener("click",login);logoutBtn.addEventListener("click",()=>setLoggedOut());methodSelect.addEventListener("change",updateMethod);window.addEventListener("storage",event=>{if(event.key!=="steemGamesSharedAuthSession")return;const username=readSGSession();if(username===ACCOUNT)setLoggedIn();else setLoggedOut("Your SG login session has ended. Please log in again.","warn",false);});updateMethod();if(readSGSession()===ACCOUNT)setLoggedIn();else setLoggedOut("Please log in with the same SG authentication methods. Access is restricted to @do2earn.");window.addEventListener("pagehide",()=>{window.sgReportsIsAuthorized=false;});
 })();
 </script>
-<script src="scripts/report-builder.js?v=20261121-3" defer></script>
+<script src="scripts/report-builder.js?v=20261122-1" defer></script>
 </body>
 </html>
