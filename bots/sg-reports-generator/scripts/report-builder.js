@@ -46,7 +46,7 @@
   }
 
   function compactInlineStyles(html) {
-    return html.replace(/\\bstyle=(['"])(.*?)\\1/gi, (full, quote, css) => {
+    return html.replace(/\bstyle=(['"])(.*?)\1/gi, (full, quote, css) => {
       const declarations = css.split(";");
       const byProperty = new Map();
       for (const declaration of declarations) {
@@ -54,10 +54,10 @@
         if (colon < 1) continue;
         const property = declaration.slice(0, colon).trim().toLowerCase();
         let value = declaration.slice(colon + 1).trim()
-          .replace(/\\s+/g, " ")
-          .replace(/\\s*([:,])\\s*/g, "$1")
-          .replace(/\\s*\\/\\s*/g, "/");
-        value = value.replace(/#([0-9a-f])\\1([0-9a-f])\\2([0-9a-f])\\3\\b/gi, "#$1$2$3");
+          .replace(/\s+/g, " ")
+          .replace(/\s*([:,])\s*/g, "$1")
+          .replace(/\s*\/\s*/g, "/");
+        value = value.replace(/#([0-9a-f])\1([0-9a-f])\2([0-9a-f])\3\b/gi, "#$1$2$3");
         if (property && value) byProperty.set(property, value);
       }
       return byProperty.size
@@ -68,16 +68,15 @@
 
   function optimizeReportHtml(value) {
     let html = String(value || "");
-    const before = html;
-    html = html.replace(/<!--[\\s\\S]*?-->/g, "");
+    html = html.replace(/<!--[\s\S]*?-->/g, "");
     html = compactInlineStyles(html);
-    html = html.replace(/>\\s+</g, "><");
-    html = html.replace(/[ \\t]+\\n/g, "\\n");
-    html = html.replace(/\\n[ \\t]+/g, "\\n");
-    html = html.replace(/\\n{3,}/g, "\\n\\n");
-    html = html.split("\\n").map(line => line.trim()).join("\\n");
+    html = html.replace(/>\s+</g, "><");
+    html = html.replace(/[ \t]+\n/g, "\n");
+    html = html.replace(/\n[ \t]+/g, "\n");
+    html = html.replace(/\n{3,}/g, "\n\n");
+    html = html.split("\n").map(line => line.trim()).join("\n");
     html = html.replace(/ {2,}/g, " ");
-    html = html.replace(/\\s+(?=\/?>)/g, "");
+    html = html.replace(/\s+(?=\/?>)/g, "");
     return html.trim();
   }
 
