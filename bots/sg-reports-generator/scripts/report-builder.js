@@ -84,6 +84,7 @@
       reportStatus.className = "status warn";
     }
     if (optimizeBtn) optimizeBtn.disabled = !editor.value.trim();
+    copyBtn.disabled = !editor.value.trim() || bytes > MAX_BYTES;
   }
 
   function optimizeCurrentReport() {
@@ -448,7 +449,7 @@
       editor.value = optimizeReportHtml(report.html);
       tagsBox.value = report.tags;
       $("reportEditorSection").hidden = false;
-      copyBtn.disabled = false;
+      copyBtn.disabled = utf8Bytes(editor.value) > MAX_BYTES;
       previewBtn.disabled = false;
       updateSizeMeter();
       $("reportResultSummary").textContent = report.summary.games + " active games · " + fmt(report.summary.posts) + " posts · " + fmt(report.summary.votes) + " votes · " + report.summary.beneficiaries + " developer beneficiaries · database points last updated: " + (lastUpdated || "not recorded") + ".";
