@@ -71,6 +71,13 @@
     html = html.replace(/<!--[\s\S]*?-->/g, "");
     html = compactInlineStyles(html);
 
+    // Compact repeated attributes without changing report content or layout.
+    // Keep explicit noopener protection for links that open a new tab.
+    html = html.replace(/\s+rel=['"]noopener noreferrer['"]/gi, " rel=noopener");
+    html = html.replace(/\b(target|width|height|cellpadding|cellspacing|border)=['"]([a-z0-9_-]+)['"]/gi, "$1=$2");
+    html = html.replace(/\s+aria-hidden=['"]true['"]/gi, "");
+    html = html.replace(/\s+decoding=['"]async['"]/gi, "");
+
     // Inherit alignment and spacing from the game table instead of repeating
     // the same long inline CSS on every cell.
     html = html.replace(
@@ -98,6 +105,8 @@
     html = html.split("\n").map(line => line.trim()).join("\n");
     html = html.replace(/ {2,}/g, " ");
     html = html.replace(/\s+(?=\/?>)/g, "");
+    // Remove redundant CSS separators while leaving all text and sections intact.
+    html = html.replace(/;{2,}/g, ";").replace(/: /g, ":").replace(/; /g, ";");
     return html.trim();
   }
 
