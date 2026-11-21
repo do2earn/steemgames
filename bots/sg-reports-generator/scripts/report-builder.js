@@ -14,6 +14,10 @@
   const tagsBox = $("reportTagsBox");
   const copyBtn = $("copyEditorBtn");
   const previewBtn = $("previewHtmlBtn");
+  const sizeMeter = $("reportSizeMeter");
+  const optimizeBtn = $("optimizeReportBtn");
+  const TARGET_BYTES = 58 * 1024;
+  const MAX_BYTES = 64 * 1024;
 
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -35,6 +39,61 @@
     progressLabel.textContent = label;
     reportStatus.textContent = label;
     reportStatus.className = "status " + type;
+  }
+
+  function utf8Bytes(value) {
+    return new TextEncoder().encode(String(value || "")).length;
+  }
+
+  function compactInlineStyles(html) {
+    return html.replace(/\bstyle=(['"])(.*?)\1/gi, (full, quote, css) => {
+      const declarations = css.split(";");
+      const byProperty = new Map();
+      for (const declaration of declarations) {
+        const colon = declaration.indexOf(":");
+        if (colon < 1) continue;
+        const property = declaration.slice(0, colon).trim().toLowerCase();
+        const value = declaration.slice(colon + 1).trim().replace(/\s+/g, " ");
+        if (property && value) byProperty.set(property, value);
+      }
+      return "style=" + quote + Array.from(byProperty, ([property,value]) => property + ":" + value).join(";") + quote;
+    });
+  }
+
+  function optimizeReportHtml(value) {
+    let html = String(value || "");
+    html = html.replace(/<!--[\s\S]*?-->/g, "");
+    html = compactInlineStyles(html);
+    html = html.replace(/>\s+</g, "><");
+    html = html.replace(/[ \t]+\n/g, "\n");
+    return html.trim();
+  }
+
+  function updateSizeMeter() {
+    if (!sizeMeter) return;
+    const bytes = utf8Bytes(editor.value);
+    const kb = (bytes / 1024).toFixed(2);
+    sizeMeter.textContent = kb + " KB / 64 KB maximum · " + bytes.toLocaleString("en-US") + " bytes";
+    sizeMeter.className = "small " + (bytes > MAX_BYTES ? "error" : bytes > TARGET_BYTES ? "warn" : "ok");
+    sizeMeter.setAttribute("aria-label", "Report body size: " + bytes + " bytes");
+    if (bytes > MAX_BYTES) {
+      reportStatus.textContent = "Report exceeds the 64 KB publishing limit. Use Optimize Report or shorten the content before publishing.";
+      reportStatus.className = "status error";
+    } else if (bytes > TARGET_BYTES) {
+      reportStatus.textContent = "Report is below the hard limit but above the recommended 58 KB safety target.";
+      reportStatus.className = "status warn";
+    }
+    if (optimizeBtn) optimizeBtn.disabled = !editor.value.trim();
+  }
+
+  function optimizeCurrentReport() {
+    if (!editor.value.trim()) return;
+    const before = utf8Bytes(editor.value);
+    const optimized = optimizeReportHtml(editor.value);
+    editor.value = optimized;
+    const after = utf8Bytes(optimized);
+    updateSizeMeter();
+    setProgress(progressBar.value, "Report optimized: " + before.toLocaleString("en-US") + " → " + after.toLocaleString("en-US") + " bytes (" + Math.max(0, before-after).toLocaleString("en-US") + " bytes saved).", after > MAX_BYTES ? "error" : after > TARGET_BYTES ? "warn" : "ok");
   }
 
   function gamePageUrl(game) {
@@ -386,11 +445,12 @@
       await new Promise(resolve => setTimeout(resolve,20));
       const report = buildReport(games,todayUTC());
       titleBox.value = report.title;
-      editor.value = report.html;
+      editor.value = optimizeReportHtml(report.html);
       tagsBox.value = report.tags;
       $("reportEditorSection").hidden = false;
       copyBtn.disabled = false;
       previewBtn.disabled = false;
+      updateSizeMeter();
       $("reportResultSummary").textContent = report.summary.games + " active games · " + fmt(report.summary.posts) + " posts · " + fmt(report.summary.votes) + " votes · " + report.summary.beneficiaries + " developer beneficiaries · database points last updated: " + (lastUpdated || "not recorded") + ".";
       setProgress(100,"Daily report generated from the live SG database. Review and edit the HTML, then open the full-page preview and copy.","ok");
     } catch(error) {
@@ -403,7 +463,9 @@
   editor.addEventListener("input",() => {
     copyBtn.disabled = !editor.value.trim();
     previewBtn.disabled = !editor.value.trim();
+    updateSizeMeter();
   });
+  if (optimizeBtn) optimizeBtn.addEventListener("click", optimizeCurrentReport);
   titleBox.addEventListener("input",() => {
     // The report title is kept in its own field and is not inserted into the report body.
   });
