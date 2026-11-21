@@ -159,17 +159,26 @@
     for (const g of games) {
       const tag = cleanTag(g.tag);
       if (!tag) continue;
-      if (tag === "cur8") { if (cur8 && !rows.some(x => x.tag === "cur8")) rows.push({tag, name:"CUR8 Games", posts:Number(cur8.posts)||0}); continue; }
+      if (tag === "cur8") {
+        if (cur8 && !rows.some(x => x.tag === "cur8")) rows.push({tag, name:"CUR8 Games", posts:Number(cur8.posts)||0});
+        continue;
+      }
       rows.push({tag, name:String(g.game_name||tag), posts:Number(g.posts)||0});
     }
     const max = Math.max(1, ...rows.map(x => x.posts));
     const colors = ["#2563eb","#0d9488","#7c3aed","#ea580c","#0891b2","#db2777","#65a30d"];
     const bars = rows.map((x,i) => {
-      const w = Math.max(x.posts ? 3 : 0, Math.round(x.posts/max*100));
-      return "<div style='display:grid;grid-template-columns:minmax(90px,145px) minmax(0,1fr);gap:8px;align-items:center;margin:9px 0;'><strong style='font-size:12px;text-align:left;overflow-wrap:anywhere;'>"+esc(x.name)+"</strong><div style='height:27px;background:#e8edf4;border-radius:6px;overflow:hidden;'><div style='height:27px;width:"+w+"%;min-width:"+(x.posts?34:0)+"px;background:"+colors[i%colors.length]+";display:flex;align-items:center;justify-content:flex-end;padding:0 7px;color:white;font-size:12px;font-weight:800;'>"+fmt(x.posts)+"</div></div></div>";
+      const w = Math.max(x.posts ? 1 : 0, Math.round(x.posts/max*100));
+      return "<div style='display:grid;grid-template-columns:minmax(90px,145px) minmax(0,1fr);gap:8px;align-items:center;margin:9px 0;'><strong style='font-size:12px;text-align:left;overflow-wrap:anywhere;'>"+esc(x.name)+"</strong><div style='height:30px;position:relative;background:#e8edf4;border-radius:7px;overflow:hidden;'><div style='position:absolute;inset:0 auto 0 0;width:"+w+"%;background:"+colors[i%colors.length]+";border-radius:7px;'></div><span style='position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:0 10px;color:"+(w>=35?"#ffffff":"#172033")+";font-size:12px;font-weight:800;white-space:nowrap;text-shadow:"+(w>=35?"0 1px 2px rgba(0,0,0,.25)":"none")+";'>"+fmt(x.posts)+"</span></div></div>";
     }).join("");
-    const total = rows.reduce((n,x)=>n+x.posts,0), leader = rows.slice().sort((a,b)=>b.posts-a.posts)[0], active = rows.filter(x=>x.posts>0).length;
-    const note = rows.length ? "<p style='margin:14px 0 7px;'>The chart covers "+rows.length+" game tags and records "+fmt(total)+" posts. "+(leader?leader.name+" leads with "+fmt(leader.posts)+" posts.":"")+"</p><p style='margin:0;'>"+active+" of "+rows.length+" entries have recorded posts. This snapshot compares content activity across game communities.</p>" : "<p>No dedicated game-tag statistics are available.</p>";
+    const total = rows.reduce((n,x)=>n+x.posts,0);
+    const leader = rows.slice().sort((a,b)=>b.posts-a.posts)[0];
+    const lowest = rows.filter(x=>x.posts>0).slice().sort((a,b)=>a.posts-b.posts)[0];
+    const active = rows.filter(x=>x.posts>0).length;
+    const leaderShare = total && leader ? (leader.posts/total*100).toFixed(1) : "0";
+    const note = rows.length
+      ? "<p style='margin:16px 0 9px;line-height:1.65;'>The chart compares "+rows.length+" dedicated game tags and shows a combined total of <strong>"+fmt(total)+" posts</strong> in the SG database. <strong>"+(leader?leader.name:"The leading game")+"</strong> ranks first with "+fmt(leader.posts)+" posts, representing "+leaderShare+"% of all posts included in this chart.</p><p style='margin:0 0 9px;line-height:1.65;'>"+active+" out of "+rows.length+" games have at least one recorded post. "+(lowest?"At the other end, "+lowest.name+" has the lowest non-zero count, with "+fmt(lowest.posts)+" posts. ":"")+"The gap between the most active game and the remaining communities shows that posting activity is concentrated unevenly across the game tags.</p><p style='margin:0;line-height:1.65;'>These figures are based on the post totals currently stored for each dedicated tag in the Steem Games database. They provide a snapshot of community publishing activity, not a measure of votes, players, or gameplay sessions. The CUR8 Games row represents only the selected CUR8 game's post count, as specified for this report.</p>"
+      : "<p>No dedicated game-tag statistics are currently available in the SG database.</p>";
     return "<div style='border:2px solid #475569;border-radius:14px;background:#f1f5f9;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>📊 Chart of Games Posts Statistics</h2>"+(bars||"<p>No game tags available.</p>")+note+"</div>";
   }
   function buildTodayGame(games) {
