@@ -153,6 +153,31 @@
     return [paragraphOne, paragraphTwo];
   }
 
+  function buildPostsChart(games) {
+    const rows = [];
+    const cur8 = games.find(g => cleanTag(g.tag) === "cur8");
+    for (const g of games) {
+      const tag = cleanTag(g.tag);
+      if (!tag) continue;
+      if (tag === "cur8") { if (cur8 && !rows.some(x => x.tag === "cur8")) rows.push({tag, name:"CUR8 Games", posts:Number(cur8.posts)||0}); continue; }
+      rows.push({tag, name:String(g.game_name||tag), posts:Number(g.posts)||0});
+    }
+    const max = Math.max(1, ...rows.map(x => x.posts));
+    const colors = ["#2563eb","#0d9488","#7c3aed","#ea580c","#0891b2","#db2777","#65a30d"];
+    const bars = rows.map((x,i) => {
+      const w = Math.max(x.posts ? 3 : 0, Math.round(x.posts/max*100));
+      return "<div style='display:grid;grid-template-columns:minmax(90px,145px) minmax(0,1fr);gap:8px;align-items:center;margin:9px 0;'><strong style='font-size:12px;text-align:left;overflow-wrap:anywhere;'>"+esc(x.name)+"</strong><div style='height:27px;background:#e8edf4;border-radius:6px;overflow:hidden;'><div style='height:27px;width:"+w+"%;min-width:"+(x.posts?34:0)+"px;background:"+colors[i%colors.length]+";display:flex;align-items:center;justify-content:flex-end;padding:0 7px;color:white;font-size:12px;font-weight:800;'>"+fmt(x.posts)+"</div></div></div>";
+    }).join("");
+    const total = rows.reduce((n,x)=>n+x.posts,0), leader = rows.slice().sort((a,b)=>b.posts-a.posts)[0], active = rows.filter(x=>x.posts>0).length;
+    const note = rows.length ? "<p style='margin:14px 0 7px;'>The chart covers "+rows.length+" game tags and records "+fmt(total)+" posts. "+(leader?leader.name+" leads with "+fmt(leader.posts)+" posts.":"")+"</p><p style='margin:0;'>"+active+" of "+rows.length+" entries have recorded posts. This snapshot compares content activity across game communities.</p>" : "<p>No dedicated game-tag statistics are available.</p>";
+    return "<div style='border:2px solid #475569;border-radius:14px;background:#f1f5f9;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>📊 Chart of Games Posts Statistics</h2>"+(bars||"<p>No game tags available.</p>")+note+"</div>";
+  }
+  function buildTodayGame(games) {
+    const g = randomItem(games); if (!g) return "";
+    const tag = cleanTag(g.tag), about = String(g.about||"").trim();
+    return "<div style='border:2px solid #475569;border-radius:14px;background:#fef3c7;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>🎮 Today Game</h2><div style='text-align:center;margin:8px 0 14px;'><img src='"+esc(logoUrl(g))+"' alt='"+esc(g.game_name)+"' style='width:150px;height:110px;max-width:100%;object-fit:contain;'></div><div style='text-align:left;line-height:1.9;'><strong>⭐ Points:</strong> "+fmt(g.points)+"<br><strong>📄 Posts Numbers:</strong> "+fmt(g.posts)+"<br><strong>#️⃣ Dedicated Tag:</strong> "+(tag?"#"+esc(tag):"Not listed")+"<br><strong>👩‍💻 Developer:</strong> "+esc(g.developer||"Not listed")+"<br><strong>🗂️ Genres:</strong> "+esc(g.genres||"Not listed")+"</div><p style='margin:13px 0 0;text-align:left;line-height:1.7;'>"+(about?esc(about):"No game description is currently available.")+"</p></div>";
+  }
+
   function buildReport(games, date) {
     const ranked = games.slice().sort((a,b) => Number(b.points || 0) - Number(a.points || 0) || String(a.game_name).localeCompare(String(b.game_name)));
     const totals = games.reduce((acc,g) => {
@@ -196,7 +221,8 @@
     const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
     const introFirst = sgLink + " is a directory and information hub for games on the Steem blockchain. On " + sgLink + ", you can access information about all these games. Discover new games on the Steem blockchain and vote for your favourites every day to help improve their points on " + sgLink + ". Play the games you enjoy and earn more $STEEM by creating and publishing gameplay content about them on Steem platforms.";
     const introSecond = "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
-    const analysis = buildStatParagraphs(ranked, totals);
+    const postsChart = buildPostsChart(games);
+    const todayGame = buildTodayGame(games);
     const html = [
       "![Image cover]()",
       "",
@@ -206,22 +232,23 @@
       "",
       introSecond,
       "",
-      '<center>' + '<a href="' + SITE_BASE + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;gap:14px;padding:16px 28px;margin:10px 0;text-align:center;background:linear-gradient(180deg,#ffffff 0%,#d1d5db 100%);border:2px solid #343a40;border-radius:14px;color:#000000!important;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:25px;font-weight:900;line-height:1.05;box-shadow:0 5px 0 #343a40;"><img src="' + SITE_BASE + '/assets/images/steemgames_logo.webp" alt="Steem Games Logo" width="68" height="68" style="display:block;width:68px;height:68px;object-fit:contain;flex:0 0 68px;"><span style="display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;white-space:nowrap;line-height:1.05;"><font color="#000000">Explore</font><span><span style="color:#ef4444!important;-webkit-text-fill-color:#ef4444!important">S</span><span style="color:#f59e0b!important;-webkit-text-fill-color:#f59e0b!important">t</span><span style="color:#22c55e!important;-webkit-text-fill-color:#22c55e!important">e</span><span style="color:#06b6d4!important;-webkit-text-fill-color:#06b6d4!important">e</span><span style="color:#3b82f6!important;-webkit-text-fill-color:#3b82f6!important">m</span> <span style="color:#ec4899!important;-webkit-text-fill-color:#ec4899!important">G</span><span style="color:#f97316!important;-webkit-text-fill-color:#f97316!important">a</span><span style="color:#14b8a6!important;-webkit-text-fill-color:#14b8a6!important">m</span><span style="color:#6366f1!important;-webkit-text-fill-color:#6366f1!important">e</span><span style="color:#eab308!important;-webkit-text-fill-color:#eab308!important">s</span></span></span></a></center>',
+      "<div style='border:2px solid #343a40;border-radius:16px;background:#fff;padding:18px 16px;margin:14px 0;color:#172033;text-align:center;'><h2 style='margin:0 0 12px;font-size:20px;'>What's Steem Games website?</h2><p style='margin:0 0 12px;text-align:center;'>Steem Games is a directory and information hub for games on the Steem blockchain. Discover games, explore developer information, and vote for your favourite projects.</p><a href='"+SITE_BASE+"' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:14px;padding:13px 24px;background:linear-gradient(180deg,#fff 0%,#d1d5db 100%);border:2px solid #343a40;border-radius:14px;color:#000!important;text-decoration:none;font-size:24px;font-weight:900;box-shadow:0 5px 0 #343a40;'><img src='"+SITE_BASE+"/assets/images/steemgames_logo.webp' alt='Steem Games Logo' width='60' height='60' style='width:60px;height:60px;object-fit:contain;'><span>Explore<br>Steem Games</span></a></div>",
       '<div style="height:16px;line-height:16px;"></div>',
       "",
       "<hr>",
       "",
-      "# SG Developer Updates",
+      "<div style='border:2px solid #475569;border-radius:14px;background:#e0f2fe;padding:16px;margin:16px 0;color:#172033;'>",
+      "<h2 style='margin:0 0 10px;font-size:20px;'>SG Developer Updates</h2>",
       "",
-      "<hr>",
+      "</div>",
       "",
-      "# Steem Games Table",
+      "# Steem Games Statistics",
       "",
       gameTable,
       "",
-      analysis[0],
+      postsChart,
       "",
-      analysis[1],
+      todayGame,
       "",
       "<table width='100%' cellpadding='16' cellspacing='0' border='0' style='width:100%;border:2px solid #3f8f45;border-radius:12px;border-collapse:separate;border-spacing:0;background:#e4f2d5;margin:10px 0 18px;'><tr><td align='left' style='text-align:left;background:#e4f2d5;border-radius:12px;padding:16px 18px;color:#254329;'><h2 style='margin:0 0 18px;text-align:left;color:#286b35;font-size:20px;font-weight:700;line-height:1.3;'>🎁 Selected Developer Rewards</h2><p style='margin:0 0 14px;text-align:left;'>" + esc(beneficiaryText) + "</p>" + (selectedDeveloper ? "<p style='margin:0;text-align:left;font-size:17px;line-height:1.7;'>🎉 <strong>Today Lucky Developer:</strong><br><strong style='font-size:21px;'>@" + esc(selectedDeveloper) + "</strong></p>" : "") + "</td></tr></table>",
       "",
