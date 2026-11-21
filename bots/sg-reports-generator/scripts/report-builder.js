@@ -158,7 +158,7 @@
     const cur8 = games.find(g => cleanTag(g.tag) === "cur8");
     for (const g of games) {
       const tag = cleanTag(g.tag);
-      if (!tag) continue;
+      if (!tag || tag === "drugwars-fight") continue;
       if (tag === "cur8") {
         if (cur8 && !rows.some(x => x.tag === "cur8")) rows.push({tag, name:"CUR8 Games", posts:Number(cur8.posts)||0});
         continue;
@@ -184,7 +184,9 @@
   function buildTodayGame(games) {
     const g = randomItem(games); if (!g) return "";
     const tag = cleanTag(g.tag), about = String(g.about||"").trim();
-    return "<div style='border:2px solid #475569;border-radius:14px;background:#fef3c7;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>🎮 Today Game</h2><div style='text-align:center;margin:8px 0 14px;'><img src='"+esc(logoUrl(g))+"' alt='"+esc(g.game_name)+"' style='width:150px;height:110px;max-width:100%;object-fit:contain;'></div><div style='text-align:left;line-height:1.9;'><strong>⭐ Points:</strong> "+fmt(g.points)+"<br><strong>📄 Posts Numbers:</strong> "+fmt(g.posts)+"<br><strong>#️⃣ Dedicated Tag:</strong> "+(tag?"#"+esc(tag):"Not listed")+"<br><strong>👩‍💻 Developer:</strong> "+esc(g.developer||"Not listed")+"<br><strong>🗂️ Genres:</strong> "+esc(g.genres||"Not listed")+"</div><p style='margin:13px 0 0;text-align:left;line-height:1.7;'>"+(about?esc(about):"No game description is currently available.")+"</p></div>";
+    const website = /^https?:\/\//i.test(String(g.website_url||"").trim()) ? String(g.website_url).trim() : "";
+    const playButton = website ? "<div style='text-align:center;margin-top:15px;'><a href='"+esc(website)+"' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;padding:11px 22px;background:#15803d;border:1px solid #166534;border-radius:10px;color:#fff!important;text-decoration:none;font-size:16px;font-weight:800;box-shadow:0 3px 0 #166534;'>🎮 Play Now!</a></div>" : "";
+    return "<div style='border:2px solid #475569;border-radius:14px;background:#fef3c7;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>🎮 Today Game</h2><div style='text-align:center;margin:8px 0 14px;'><img src='"+esc(logoUrl(g))+"' alt='"+esc(g.game_name)+"' style='width:150px;height:110px;max-width:100%;object-fit:contain;'></div><div style='text-align:left;line-height:1.9;'><strong>⭐ Points:</strong> "+fmt(g.points)+"<br><strong>📄 Posts Numbers:</strong> "+fmt(g.posts)+"<br><strong>#️⃣ Dedicated Tag:</strong> "+(tag?"#"+esc(tag):"Not listed")+"<br><strong>👩‍💻 Developer:</strong> "+esc(g.developer||"Not listed")+"<br><strong>🗂️ Genres:</strong> "+esc(g.genres||"Not listed")+"</div><p style='margin:13px 0 0;text-align:left;line-height:1.7;'>"+(about?esc(about):"No game description is currently available.")+"</p>"+playButton+"</div>";
   }
 
   function buildReport(games, date) {
@@ -235,9 +237,9 @@
     const html = [
       "![Image cover]()",
       "",
-      "Hello to All Fans and Developers of Steem Blockchain Games.",
+      "### Hello to All Fans and Developers of Steem Blockchain Games.",
       "",
-      "<div style='border:2px solid #343a40;border-radius:16px;background:#fff;padding:18px 16px;margin:14px 0;color:#172033;text-align:center;'><h2 style='margin:0 0 12px;font-size:20px;'>What's Steem Games website?</h2><div style='text-align:left;'>"+introFirst+" "+introSecond+"</div><a href='"+SITE_BASE+"' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:14px;padding:13px 24px;margin-top:14px;background:linear-gradient(180deg,#fff 0%,#d1d5db 100%);border:2px solid #343a40;border-radius:14px;color:#000!important;text-decoration:none;font-size:24px;font-weight:900;box-shadow:0 5px 0 #343a40;'><img src='"+SITE_BASE+"/assets/images/steemgames_logo.webp' alt='Steem Games Logo' width='60' height='60' style='width:60px;height:60px;object-fit:contain;'><span>Explore<br>Steem Games</span></a></div>",
+      "<div style='border:2px solid #343a40;border-radius:16px;background:#fff;padding:18px 16px;margin:14px 0;color:#172033;text-align:center;'><img src='"+SITE_BASE+"/assets/images/steemgames_logo.webp' alt='Official Steem Games Logo' width='92' height='92' style='display:block;width:92px;height:92px;max-width:100%;object-fit:contain;margin:0 auto 10px;'><h2 style='margin:0 0 12px;font-size:20px;'>What's Steem Games website?</h2><div style='text-align:left;'><p style='margin:0 0 12px;line-height:1.7;'>"+introFirst+"</p><p style='margin:0;line-height:1.7;'>"+introSecond+"</p></div><a href='"+SITE_BASE+"' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;gap:16px;padding:20px 38px;margin:10px 0;background:#2563eb;border:1px solid #1d4ed8;border-radius:14px;color:#fff!important;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:900;line-height:1.25;box-shadow:0 4px 12px rgba(37,99,235,.22);'><img src='"+SITE_BASE+"/assets/images/steemgames_logo.webp' alt='Steem Games Logo' width='60' height='60' style='display:block;width:60px;height:60px;object-fit:contain;flex:0 0 60px;'><span>Explore <span style='color:#ef4444'>S</span><span style='color:#f59e0b'>t</span><span style='color:#22c55e'>e</span><span style='color:#06b6d4'>e</span><span style='color:#3b82f6'>m</span> <span style='color:#ec4899'>G</span><span style='color:#f97316'>a</span><span style='color:#14b8a6'>m</span><span style='color:#6366f1'>e</span><span style='color:#eab308'>s</span></span></a></div>",
       '<div style="height:16px;line-height:16px;"></div>',
       "",
       "<hr>",
