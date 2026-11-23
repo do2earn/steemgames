@@ -84,13 +84,15 @@
     return result;
   }
   async function translateReportHtml(markdown,target,games,onProgress){
-    if(target==="en")return markdownToHtml(markdown);
-    const parsed=new DOMParser().parseFromString(markdownToHtml(markdown),"text/html");
+    const coverMarker = /^\\s*!\\[Image cover\\]\\(\\)\\s*/;
+    const hasCoverMarker = coverMarker.test(markdown);
+    const translatableMarkdown = hasCoverMarker ? markdown.replace(coverMarker,"") : markdown;
+    if(target==="en")return (hasCoverMarker ? "<p>![Image cover]()</p>\\n" : "") + markdownToHtml(translatableMarkdown);
+    const parsed=new DOMParser().parseFromString(markdownToHtml(translatableMarkdown),"text/html");
     const walker=parsed.createTreeWalker(parsed.body,NodeFilter.SHOW_TEXT),tasks=[];
     while(walker.nextNode()){
       const node=walker.currentNode;
-      // Keep the platform cover marker exactly as authored; it is not translatable report text.
-      if(node.nodeValue.trim()!=="![Image cover]()"&&node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))tasks.push(async()=>{node.nodeValue=await translatePlainText(node.nodeValue,target,games);});
+      if(node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))tasks.push(async()=>{node.nodeValue=await translatePlainText(node.nodeValue,target,games);});
     }
     for(const element of parsed.body.querySelectorAll("[alt],[title],[aria-label]")){
       for(const attribute of ["alt","title","aria-label"]){
@@ -109,9 +111,8 @@
       }
     });
     await Promise.all(workers);
-    return parsed.body.innerHTML;
+    return (hasCoverMarker ? "<p>![Image cover]()</p>\\n" : "") + parsed.body.innerHTML;
   }
-
 
   function setProgress(percent, label, type = "") {
     const safe = Math.max(0, Math.min(100, Math.round(percent)));
