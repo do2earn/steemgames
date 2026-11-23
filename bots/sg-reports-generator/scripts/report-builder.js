@@ -74,18 +74,25 @@
   async function translateReportHtml(markdown,target,games,onProgress){
     if(target==="en")return markdownToHtml(markdown);
     const parsed=new DOMParser().parseFromString(markdownToHtml(markdown),"text/html");
-    const walker=parsed.createTreeWalker(parsed.body,NodeFilter.SHOW_TEXT),nodes=[];
+    const walker=parsed.createTreeWalker(parsed.body,NodeFilter.SHOW_TEXT),tasks=[];
     while(walker.nextNode()){
       const node=walker.currentNode;
-      if(node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))nodes.push(node);
+      if(node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))tasks.push(async()=>{node.nodeValue=await translatePlainText(node.nodeValue,target,games);});
     }
+    for(const element of parsed.body.querySelectorAll("[alt],[title],[aria-label]")){
+      for(const attribute of ["alt","title","aria-label"]){
+        const value=element.getAttribute(attribute);
+        if(value&&value.trim())tasks.push(async()=>element.setAttribute(attribute,await translatePlainText(value,target,games)));
+      }
+    }
+    const total=tasks.length;
     let completed=0;
     const workers=Array.from({length:4},async()=>{
-      while(nodes.length){
-        const node=nodes.shift();
-        node.nodeValue=await translatePlainText(node.nodeValue,target,games);
+      while(tasks.length){
+        const task=tasks.shift();
+        await task();
         completed++;
-        if(onProgress)onProgress(completed,nodes.length+completed);
+        if(onProgress)onProgress(completed,total);
       }
     });
     await Promise.all(workers);
@@ -557,7 +564,7 @@
       const translatedHtml = await translateReportHtml(report.html,language,games,(done,total)=>setProgress(62+Math.round(done/Math.max(1,total)*28),"Translating report text ("+done+"/"+total+")…"));
       const translatedTitle = await translatePlainText(report.title,language,games);
       titleBox.value = translatedTitle;
-      editor.value = translatedHtml;
+      editor.value = optimizeReportHtml(translatedHtml);
       tagsBox.value = report.tags;
       $("reportEditorSection").hidden = false;
       copyBtn.disabled = utf8Bytes(editor.value) > MAX_BYTES;
