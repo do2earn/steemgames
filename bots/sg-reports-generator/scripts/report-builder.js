@@ -335,7 +335,7 @@
     return [paragraphOne, paragraphTwo];
   }
 
-  function buildPostsChart(games) {
+  function buildPostsChart(games, compact = false) {
     const rows = [];
     const cur8 = games.find(g => cleanTag(g.tag) === "cur8");
     for (const g of games) {
@@ -359,14 +359,17 @@
     const active = rows.filter(x=>x.posts>0).length;
     const leaderShare = total && leader ? (leader.posts/total*100).toFixed(1) : "0";
     const note = rows.length
-      ? "<p style='margin:16px 0 9px;line-height:1.65;'>The chart compares "+rows.length+" dedicated game tags and shows a combined total of <strong>"+fmt(total)+" posts</strong> in the SG database. <strong>"+(leader?leader.name:"The leading game")+"</strong> ranks first with "+fmt(leader.posts)+" posts, representing "+leaderShare+"% of all posts included in this chart.</p><p style='margin:0 0 9px;line-height:1.65;'>"+active+" out of "+rows.length+" games have at least one recorded post. "+(lowest?"At the other end, "+lowest.name+" has the lowest non-zero count, with "+fmt(lowest.posts)+" posts. ":"")+"The gap between the most active game and the remaining communities shows that posting activity is concentrated unevenly across the game tags.</p><p style='margin:0;line-height:1.65;'>These figures are based on the post totals currently stored for each dedicated tag in the Steem Games database. They provide a snapshot of community publishing activity, not a measure of votes, players, or gameplay sessions. The CUR8 Games row represents only the selected CUR8 game's post count, as specified for this report.</p>"
+      ? compact
+        ? "<p style='margin:12px 0 0;line-height:1.55;'>"+rows.length+" game tags: <strong>"+fmt(total)+" total posts</strong>. "+(leader?leader.name:"The leading game")+" leads with "+fmt(leader.posts)+" posts ("+leaderShare+"%). "+active+"/"+rows.length+" games have posts. Counts reflect the SG database snapshot; CUR8 shows the selected CUR8 game's posts.</p>"
+        : "<p style='margin:16px 0 9px;line-height:1.65;'>The chart compares "+rows.length+" dedicated game tags and shows a combined total of <strong>"+fmt(total)+" posts</strong> in the SG database. <strong>"+(leader?leader.name:"The leading game")+"</strong> ranks first with "+fmt(leader.posts)+" posts, representing "+leaderShare+"% of all posts included in this chart.</p><p style='margin:0 0 9px;line-height:1.65;'>"+active+" out of "+rows.length+" games have at least one recorded post. "+(lowest?"At the other end, "+lowest.name+" has the lowest non-zero count, with "+fmt(lowest.posts)+" posts. ":"")+"The gap between the most active game and the remaining communities shows that posting activity is concentrated unevenly across the game tags.</p><p style='margin:0;line-height:1.65;'>These figures are based on the post totals currently stored for each dedicated tag in the Steem Games database. They provide a snapshot of community publishing activity, not a measure of votes, players, or gameplay sessions. The CUR8 Games row represents only the selected CUR8 game's post count, as specified for this report.</p>"
       : "<p>No dedicated game-tag statistics are currently available in the SG database.</p>";
     return "<div style='border:2px solid #475569;border-radius:14px;background:#f1f5f9;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>📊 Chart of Games Posts Statistics</h2>"+(bars||"<p>No game tags available.</p>")+note+"</div>";
   }
-  function buildTodayGame(games) {
+  function buildTodayGame(games, compact = false) {
     const g = randomItem(games); if (!g) return "";
     const tag = cleanTag(g.tag), rawAbout = String(g.about||"").trim();
-    const about = rawAbout.length > 1200 ? rawAbout.slice(0, 1200).trimEnd().replace(/\s+\S*$/, "") + "…" : rawAbout;
+    const aboutLimit = compact ? 600 : 1200;
+    const about = rawAbout.length > aboutLimit ? rawAbout.slice(0, aboutLimit).trimEnd().replace(/\s+\S*$/, "") + "…" : rawAbout;
     const website = /^https?:\/\//i.test(String(g.website_url||"").trim()) ? String(g.website_url).trim() : "";
     const playButton = website ? "<div style='text-align:center;margin-top:15px;'><a href='"+esc(website)+"' target='_blank' rel='noopener noreferrer' style='display:inline-flex;align-items:center;justify-content:center;padding:11px 22px;background:#15803d;border:1px solid #166534;border-radius:10px;color:#fff!important;text-decoration:none;font-size:16px;font-weight:800;box-shadow:0 3px 0 #166534;'>🎮 Play Now!</a></div>" : "";
     return "<div style='border:2px solid #475569;border-radius:14px;background:#fef3c7;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>🎮 Today Game</h2><div style='text-align:center;margin:8px 0 14px;'><img src='"+esc(logoUrl(g))+"' alt='"+esc(g.game_name)+"' style='width:300px;height:220px;max-width:100%;object-fit:contain;'></div><div style='text-align:left;line-height:1.9;'><strong>⭐ Points:</strong> "+fmt(g.points)+"<br><strong>📄 Posts Numbers:</strong> "+fmt(g.posts)+"<br><strong>#️⃣ Dedicated Tag:</strong> "+(tag?"#"+esc(tag):"Not listed")+"<br><strong>👩‍💻 Developer:</strong> "+esc(g.developer||"Not listed")+"<br><strong>🗂️ Genres:</strong> "+esc(g.genres||"Not listed")+"</div><p style='margin:13px 0 0;text-align:left;line-height:1.7;'>"+(about?esc(about):"No game description is currently available.")+"</p>"+playButton+"</div>";
@@ -413,10 +416,13 @@
     const tags = Array.from(new Set(["steemgame", ...topTags, "steemflags"]));
     const title = "Steem Games | Daily Report | " + date;
     const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
-    const introFirst = sgLink + " is a directory and information hub for games on the Steem blockchain. On " + sgLink + ", you can access information about all these games. Discover new games on the Steem blockchain and vote for your favourites every day to help improve their points on " + sgLink + ". Play the games you enjoy and earn more $STEEM by creating and publishing gameplay content about them on Steem platforms.";
-    const introSecond = "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
-    const postsChart = buildPostsChart(games);
-    const todayGame = buildTodayGame(games);
+    const compactReport = language !== "en";
+    const introFirst = compactReport
+      ? sgLink + " lists games on the Steem blockchain. Explore games, vote daily to support their rankings, and publish gameplay content to earn $STEEM."
+      : sgLink + " is a directory and information hub for games on the Steem blockchain. On " + sgLink + ", you can access information about all these games. Discover new games on the Steem blockchain and vote for your favourites every day to help improve their points on " + sgLink + ". Play the games you enjoy and earn more $STEEM by creating and publishing gameplay content about them on Steem platforms.";
+    const introSecond = compactReport ? "Developers can invite their communities to vote for their games." : "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
+    const postsChart = buildPostsChart(games, compactReport);
+    const todayGame = buildTodayGame(games, compactReport);
     const html = [
       "![Image cover]()",
       "",
