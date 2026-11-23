@@ -413,8 +413,8 @@
       if (tag && !topTags.includes(tag)) topTags.push(tag);
       if (topTags.length === 8) break;
     }
-    const tags = Array.from(new Set(["steemgame", ...topTags, "steemflags"]));
-    const title = "Steem Games | Daily Report | " + date;
+    const tags = Array.from(new Set(["steemgame", ...topTags, "sg-dailyreport"]));
+    const title = "🎮 Steem Games | 📄 Daily Report | 📆 " + date;
     const sgLink = "<a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a>";
     const compactReport = language !== "en";
     const introFirst = compactReport
