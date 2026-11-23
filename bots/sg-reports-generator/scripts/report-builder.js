@@ -30,6 +30,68 @@
   const fmt = value => Math.round(Number(value) || 0).toLocaleString("en-US");
   const todayUTC = () => new Date().toISOString().slice(0, 10);
   const randomItem = list => list[Math.floor(Math.random() * list.length)];
+  const LANGUAGE_NAMES = {en:"English",uk:"Ukrainian",bn:"Bengali",es:"Spanish",ko:"Korean","zh-CN":"Simplified Chinese"};
+  const reportLanguage = $("reportLanguage");
+  function protectReportTerms(value, games) {
+    const terms=[], candidates=[];
+    for (const game of games || []) {
+      if(game.game_name)candidates.push(String(game.game_name));
+      if(game.developer)candidates.push("@"+String(game.developer).replace(/^@+/,""));
+      if(game.tag)candidates.push("#"+cleanTag(game.tag));
+    }
+    candidates.push("Steem Games","Steem","$STEEM","Do2Earn","@do2earn","@ukraine-steem","@amarbanglablog","@cotina","Ukraine on Steem","আমার বাংলা ব্লগ","Comunidad Latina","We Stand with Ukraine.","Community Support");
+    let output=String(value);
+    for(const term of [...new Set(candidates)].sort((a,b)=>b.length-a.length)){
+      if(!term)continue;
+      const token="SGKEEP"+terms.length+"TOKEN";
+      const escaped=term.replace(/[|\\{}()[\]^$+*?.]/g,"\\  const randomItem = list => list[Math.floor(Math.random() * list.length)];");
+      output=output.replace(new RegExp(escaped,"gi"),token);
+      if(output.includes(token))terms.push({token,term});
+    }
+    return {output,terms};
+  }
+  async function translatePlainText(value,target,games){
+    if(!value||target==="en")return value;
+    const protectedText=protectReportTerms(value,games),source=protectedText.output,chunks=[];
+    for(let i=0;i<source.length;){
+      let end=Math.min(i+2800,source.length);
+      if(end<source.length){const boundary=source.lastIndexOf(" ",end);if(boundary>i+1200)end=boundary;}
+      chunks.push(source.slice(i,end));i=end;
+    }
+    const translated=[];
+    for(const chunk of chunks){
+      const url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl="+encodeURIComponent(target)+"&dt=t&q="+encodeURIComponent(chunk);
+      const response=await fetch(url,{method:"GET",mode:"cors",cache:"no-store"});
+      if(!response.ok)throw new Error("Google Translate returned HTTP "+response.status+".");
+      const data=await response.json();
+      if(!Array.isArray(data?.[0]))throw new Error("Google Translate returned an unreadable response.");
+      translated.push(data[0].map(part=>part?.[0]||"").join(""));
+    }
+    let result=translated.join("");
+    for(const item of protectedText.terms)result=result.split(item.token).join(item.term);
+    return result;
+  }
+  async function translateReportHtml(markdown,target,games,onProgress){
+    if(target==="en")return markdownToHtml(markdown);
+    const parsed=new DOMParser().parseFromString(markdownToHtml(markdown),"text/html");
+    const walker=parsed.createTreeWalker(parsed.body,NodeFilter.SHOW_TEXT),nodes=[];
+    while(walker.nextNode()){
+      const node=walker.currentNode;
+      if(node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))nodes.push(node);
+    }
+    let completed=0;
+    const workers=Array.from({length:4},async()=>{
+      while(nodes.length){
+        const node=nodes.shift();
+        node.nodeValue=await translatePlainText(node.nodeValue,target,games);
+        completed++;
+        if(onProgress)onProgress(completed,nodes.length+completed);
+      }
+    });
+    await Promise.all(workers);
+    return parsed.body.innerHTML;
+  }
+
 
   function setProgress(percent, label, type = "") {
     const safe = Math.max(0, Math.min(100, Math.round(percent)));
@@ -291,7 +353,7 @@
     return "<div style='border:2px solid #475569;border-radius:14px;background:#fef3c7;padding:16px;margin:18px 0;color:#172033;'><h2 style='margin:0 0 14px;font-size:20px;'>🎮 Today Game</h2><div style='text-align:center;margin:8px 0 14px;'><img src='"+esc(logoUrl(g))+"' alt='"+esc(g.game_name)+"' style='width:300px;height:220px;max-width:100%;object-fit:contain;'></div><div style='text-align:left;line-height:1.9;'><strong>⭐ Points:</strong> "+fmt(g.points)+"<br><strong>📄 Posts Numbers:</strong> "+fmt(g.posts)+"<br><strong>#️⃣ Dedicated Tag:</strong> "+(tag?"#"+esc(tag):"Not listed")+"<br><strong>👩‍💻 Developer:</strong> "+esc(g.developer||"Not listed")+"<br><strong>🗂️ Genres:</strong> "+esc(g.genres||"Not listed")+"</div><p style='margin:13px 0 0;text-align:left;line-height:1.7;'>"+(about?esc(about):"No game description is currently available.")+"</p>"+playButton+"</div>";
   }
 
-  function buildReport(games, date) {
+  function buildReport(games, date, language) {
     const ranked = games.slice().sort((a,b) => Number(b.points || 0) - Number(a.points || 0) || String(a.game_name).localeCompare(String(b.game_name)));
     const totals = games.reduce((acc,g) => {
       acc.points += Number(g.points) || 0;
@@ -456,7 +518,7 @@
       setProgress(progressBar.value,"The preview tab was blocked. Allow pop-ups for this site, then try again.","warn");
       return;
     }
-    const rendered = markdownToHtml(content);
+    const rendered = /<(?:div|p|h[1-6]|table|hr)\\b/i.test(content) ? content : markdownToHtml(content);
     previewTab.document.open();
     previewTab.document.write("<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Steem Games Report Preview</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;color:#263445;line-height:1.65}body{padding:0 20px 30px}.toolbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;margin:0 -20px 22px;background:#14243b;color:#fff;box-shadow:0 2px 10px #0002}.toolbar button{border:0;border-radius:8px;padding:9px 15px;background:#fff;color:#14243b;font-weight:700;cursor:pointer}.report{max-width:1100px;margin:0 auto}.report h1,.report h2{color:#17365d}.report p{margin:0 0 18px;text-align:justify}.report a{color:#175bb5}.table-wrap{width:100%;overflow-x:auto;margin:14px 0 22px}table{border-collapse:collapse;width:100%;table-layout:auto;font-size:12px;font-weight:700}th,td{border:1px solid #cbd5e1;padding:7px 6px;text-align:center;vertical-align:middle;font-weight:700}th{background:#eaf0f7}.sg-games-table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.sg-games-table{width:auto;max-width:100%;min-width:0;margin:0 auto;table-layout:auto;white-space:nowrap}.sg-games-table th,.sg-games-table td{white-space:nowrap;overflow-wrap:normal;word-break:normal;padding:4px 5px}.sg-games-table td img{display:block!important;width:144px!important;height:96px!important;max-width:144px!important;min-width:0!important;object-fit:contain!important;vertical-align:middle;margin-left:auto!important;margin-right:auto!important}.sg-games-table td a{white-space:nowrap}.sg-games-table td strong{font-size:20px}li{margin:4px 0}hr{border:0;border-top:1px solid #dce5ef;margin:18px 0}.report .sg-games-table-wrap{margin:14px 0 22px}.report p[style*='font-size:11px']{font-size:11px!important}@media(max-width:600px){body{padding-left:12px;padding-right:12px}.toolbar{margin-left:-12px;margin-right:-12px}}</style></head><body><header class='toolbar'><strong>Steem Games · Report Preview</strong><button id='closePreview' type='button'>✕ Close Preview</button></header><main class='report'>" + rendered + "</main></body></html>");
     previewTab.document.close();
@@ -486,9 +548,13 @@
       const {games,lastUpdated} = await fetchGames();
       setProgress(55,"Preparing the daily ranking and developer beneficiaries…");
       await new Promise(resolve => setTimeout(resolve,20));
-      const report = buildReport(games,todayUTC());
-      titleBox.value = report.title;
-      editor.value = report.html;
+      const language = reportLanguage?.value || "en";
+      const report = buildReport(games,todayUTC(),language);
+      setProgress(62,"Translating the complete report into "+(LANGUAGE_NAMES[language]||language)+"…");
+      const translatedHtml = await translateReportHtml(report.html,language,games,(done,total)=>setProgress(62+Math.round(done/Math.max(1,total)*28),"Translating report text ("+done+"/"+total+")…"));
+      const translatedTitle = await translatePlainText(report.title,language,games);
+      titleBox.value = translatedTitle;
+      editor.value = translatedHtml;
       tagsBox.value = report.tags;
       $("reportEditorSection").hidden = false;
       copyBtn.disabled = utf8Bytes(editor.value) > MAX_BYTES;
