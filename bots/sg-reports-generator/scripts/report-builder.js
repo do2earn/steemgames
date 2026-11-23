@@ -84,10 +84,13 @@
     return result;
   }
   async function translateReportHtml(markdown,target,games,onProgress){
-    const coverMarker = /^\\s*!\\[Image cover\\]\\(\\)\\s*/;
-    const hasCoverMarker = coverMarker.test(markdown);
-    const translatableMarkdown = hasCoverMarker ? markdown.replace(coverMarker,"") : markdown;
-    if(target==="en")return (hasCoverMarker ? "<p>![Image cover]()</p>\\n" : "") + markdownToHtml(translatableMarkdown);
+    // Keep the Steem cover placeholder as the exact first report line.
+    // Remove it before HTML parsing/translation, then restore it unchanged.
+    const coverPattern = /^!\[Image cover\]\(\)\s*/;
+    const hasCoverMarker = coverPattern.test(markdown);
+    const coverPrefix = hasCoverMarker ? "![Image cover]()\n\n" : "";
+    const translatableMarkdown = hasCoverMarker ? markdown.replace(coverPattern,"") : markdown;
+    if(target==="en")return coverPrefix + markdownToHtml(translatableMarkdown);
     const parsed=new DOMParser().parseFromString(markdownToHtml(translatableMarkdown),"text/html");
     const walker=parsed.createTreeWalker(parsed.body,NodeFilter.SHOW_TEXT),tasks=[];
     while(walker.nextNode()){
@@ -111,7 +114,7 @@
       }
     });
     await Promise.all(workers);
-    return (hasCoverMarker ? "<p>![Image cover]()</p>\\n" : "") + parsed.body.innerHTML;
+    return coverPrefix + parsed.body.innerHTML;
   }
 
   function setProgress(percent, label, type = "") {
