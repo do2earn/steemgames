@@ -89,7 +89,8 @@
     const walker=parsed.createTreeWalker(parsed.body,NodeFilter.SHOW_TEXT),tasks=[];
     while(walker.nextNode()){
       const node=walker.currentNode;
-      if(node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))tasks.push(async()=>{node.nodeValue=await translatePlainText(node.nodeValue,target,games);});
+      // Keep the platform cover marker exactly as authored; it is not translatable report text.
+      if(node.nodeValue.trim()!=="![Image cover]()"&&node.nodeValue.trim()&&!/^(SCRIPT|STYLE)$/i.test(node.parentElement?.tagName||""))tasks.push(async()=>{node.nodeValue=await translatePlainText(node.nodeValue,target,games);});
     }
     for(const element of parsed.body.querySelectorAll("[alt],[title],[aria-label]")){
       for(const attribute of ["alt","title","aria-label"]){
