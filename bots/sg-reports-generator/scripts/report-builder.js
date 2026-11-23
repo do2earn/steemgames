@@ -39,7 +39,7 @@
       if(game.developer)candidates.push("@"+String(game.developer).replace(/^@+/,""));
       if(game.tag)candidates.push("#"+cleanTag(game.tag));
     }
-    candidates.push("Steem Games","Steem","$STEEM","Do2Earn","@do2earn","@ukraine-steem","@amarbanglablog","@cotina","Ukraine on Steem","আমার বাংলা ব্লগ","Comunidad Latina","We Stand with Ukraine.","Community Support");
+    candidates.push("Steem Games","Steem","$STEEM","Do2Earn","@do2earn","@ukraine-steem","@amarbanglablog","@cotina","Ukraine on Steem","আমার বাংলা ব্লগ","Comunidad Latina","We Stand with Ukraine.");
     let output=String(value);
     for(const term of [...new Set(candidates)].sort((a,b)=>b.length-a.length)){
       if(!term)continue;
