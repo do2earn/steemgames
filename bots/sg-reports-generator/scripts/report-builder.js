@@ -61,10 +61,22 @@
     const translated=[];
     for(const chunk of chunks){
       const url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl="+encodeURIComponent(target)+"&dt=t&q="+encodeURIComponent(chunk);
-      const response=await fetch(url,{method:"GET",mode:"cors",cache:"no-store"});
-      if(!response.ok)throw new Error("Google Translate returned HTTP "+response.status+".");
-      const data=await response.json();
-      if(!Array.isArray(data?.[0]))throw new Error("Google Translate returned an unreadable response.");
+      let data=null, lastError=null;
+      const endpoints=[
+        url,
+        "https://api.allorigins.win/raw?url="+encodeURIComponent(url),
+        "https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(url)
+      ];
+      for(const endpoint of endpoints){
+        try{
+          const response=await fetch(endpoint,{method:"GET",mode:"cors",cache:"no-store"});
+          if(!response.ok)throw new Error("Translation endpoint returned HTTP "+response.status+".");
+          data=await response.json();
+          if(!Array.isArray(data?.[0]))throw new Error("Translation endpoint returned an unreadable response.");
+          break;
+        }catch(error){lastError=error;}
+      }
+      if(!data)throw new Error("Translation service is unreachable from this browser. "+(lastError?.message||"Please retry later."));
       translated.push(data[0].map(part=>part?.[0]||"").join(""));
     }
     let result=translated.join("");
@@ -87,7 +99,7 @@
     }
     const total=tasks.length;
     let completed=0;
-    const workers=Array.from({length:4},async()=>{
+    const workers=Array.from({length:2},async()=>{
       while(tasks.length){
         const task=tasks.shift();
         await task();
