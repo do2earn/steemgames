@@ -21,8 +21,8 @@
   </main>
   <script>
     (function () {
-      var path = window.location.pathname.replace(/\\/+$/, '');
-      var match = path.match(/^\\/games\\/([^/]+)$/i);
+      var path = window.location.pathname.replace(/\/+$/, '');
+      var match = path.match(/^\/games\/([^/]+)$/i);
       if (!match) return;
       var slug = match[1];
       window.location.replace('/game-info.html?game=' + encodeURIComponent(slug));
