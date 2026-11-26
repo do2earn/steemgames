@@ -315,5 +315,22 @@
         })();
       })();
   </script>
+  <script>
+    // Remove the obsolete duplicate game-link card if an older component or cached markup injects it.
+    (() => {
+      const removeExploreCard = () => {
+        const heading = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]
+          .find(el => el.textContent.trim().replace(/\\s+/g, ' ') === 'Explore Steem Games');
+        if (!heading) return;
+        const card = heading.closest('.sg-content-card, .card, section, article') || heading.parentElement?.parentElement;
+        if (card && !card.contains(document.getElementById('games'))) card.remove();
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', removeExploreCard, { once: true });
+      } else {
+        removeExploreCard();
+      }
+    })();
+  </script>
 </body>
 </html>
