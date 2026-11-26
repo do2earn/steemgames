@@ -133,6 +133,22 @@ def build_page(template: str, game: dict) -> tuple[str, str]:
         "<title>" + html.escape(title) + "</title>",
         template, count=1, flags=re.IGNORECASE | re.DOTALL,
     )
+    # Put game-specific content in the initial HTML so crawlers and social
+    # preview bots do not depend on client-side JavaScript to discover the page.
+    page = re.sub(
+        r'<h1 class="sg-game-info-title">.*?</h1>',
+        '<h1 class="sg-game-info-title">' + html.escape(name) + '</h1>',
+        page, count=1, flags=re.IGNORECASE | re.DOTALL,
+    )
+    initial_intro = about or (
+        f"Explore {name}, a game on the Steem blockchain. "
+        "Discover its developer, genres, website and community activity on Steem Games."
+    )
+    page = re.sub(
+        r'<p class="sg-game-about">.*?</p>',
+        '<p class="sg-game-about">' + html.escape(initial_intro) + '</p>',
+        page, count=1, flags=re.IGNORECASE | re.DOTALL,
+    )
     page = replace_meta(page, "name", "description", description)
     page = set_canonical(page, url)
     for attr_name, attr_value, value in [
