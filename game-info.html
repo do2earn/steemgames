@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="assets/css/style.css?v=20261101-7">
   <link rel="stylesheet" href="assets/css/preloader.css?v=20261101-2">
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261126-1"></script>
+  <script type="module" src="assets/js/app.js?v=20261126-4"></script>
   <script src="assets/js/preloader.js?v=20261101-6" defer></script>
 </head>
 <body>
@@ -201,7 +201,8 @@
         const profile = developer ? 'https://steempro.com/@' + encodeURIComponent(developer) : '';
         const publishUrl = 'https://steemit.com/submit.html?tags=' + encodeURIComponent(tag);
         document.title = name + ' | Steem Games';
-        const gameSlug = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');\n        const gameUrl = window.SG_GAME_URL || (location.origin + '/games/' + gameSlug(name) + '/');
+        const gameSlug = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const gameUrl = window.SG_GAME_URL || (location.origin + '/games/' + gameSlug(name) + '/');
         const metaDescription = 'Explore ' + name + ', a game on the Steem blockchain. Read its description, discover its developer and genres, visit its website and view activity statistics on Steem Games.';
         document.querySelector('meta[name="description"]')?.setAttribute('content', metaDescription);
         document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
