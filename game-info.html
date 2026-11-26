@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <base href="/">
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Explore each Steem Game with its details, developer information, links, genres and statistics.">
   <title>Steem Game Details | Steem Games</title>
@@ -168,9 +169,11 @@
       const card = document.getElementById('gameInfoCard');
       const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
       const params = new URLSearchParams(location.search);
-      const requestedName = String(window.SG_GAME_NAME || params.get('game') || '').trim();
+      const routeMatch = location.pathname.match(/^\/games\/([^/]+)\/?$/i);
+      const routeSlug = routeMatch ? decodeURIComponent(routeMatch[1]) : '';
+      const requestedName = String(window.SG_GAME_NAME || params.get('game') || routeSlug || '').trim();
       const normalizeGameSlug = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      const requestedSlug = normalizeGameSlug(requestedName);
+      const requestedSlug = normalizeGameSlug(routeSlug || requestedName);
       let currentGame = null;
       let availableGenres = [];
       const genresReady = fetch("assets/data/game-genres.json", { cache: "no-cache" })
@@ -212,7 +215,9 @@
         document.querySelector('meta[property="og:url"]')?.setAttribute('content', gameUrl);
         document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', document.title);
         document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaDescription);
-        document.querySelector('link[rel="canonical"]')?.setAttribute('href', gameUrl);
+        let canonicalLink = document.querySelector('link[rel="canonical"]');
+        if (!canonicalLink) { canonicalLink = document.createElement('link'); canonicalLink.rel = 'canonical'; document.head.appendChild(canonicalLink); }
+        canonicalLink.href = gameUrl;
         const structuredData = document.querySelector('script[type="application/ld+json"]');
         if (structuredData) {
           structuredData.textContent = JSON.stringify({
@@ -376,7 +381,7 @@
           if (!data.success || !Array.isArray(data.games)) throw new Error('INVALID_API_RESPONSE');
           const game = data.games.find(item => String(item.game_name || '').toLowerCase() === requestedName.toLowerCase() || normalizeGameSlug(item.game_name) === requestedSlug);
           if (!game) {
-            card.innerHTML = '<p role="status">Game not found: <strong>' + esc(requestedName) + '</strong></p><p><a href="index.html#games">Back to games</a></p>';
+            card.innerHTML = '<p role="status">Game not found: <strong>' + esc(requestedName) + '</strong></p><p><a href="/#games">Back to games</a></p>';
             return;
           }
           render(game);
@@ -384,7 +389,7 @@
           if (logo && !logo.complete) await new Promise(resolve => { logo.addEventListener('load', resolve, { once: true }); logo.addEventListener('error', resolve, { once: true }); window.setTimeout(resolve, 2500); });
         } catch (error) {
           console.error('Unable to load game information:', error);
-          card.innerHTML = '<p role="status">Unable to load game information. Please try again later.</p><p><a href="index.html#games">Back to games</a></p>';
+          card.innerHTML = '<p role="status">Unable to load game information. Please try again later.</p><p><a href="/#games">Back to games</a></p>';
         } finally {
           markPageReady();
         }
