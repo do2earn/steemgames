@@ -1,2 +1,0 @@
-# Clean game detail URLs: serve the shared template without changing the browser URL.
-/games/*  /game-info.html  200
