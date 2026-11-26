@@ -37,6 +37,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check generator JavaScript syntax
+        run: node --check scripts/build-game-pages.mjs
+
       - name: Prepare clean GitHub Pages output
         shell: bash
         run: |
