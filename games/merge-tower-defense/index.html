@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n  <base href="/">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Explore Merge Tower Defense, a game on the Steem blockchain. Discover its gameplay, developer, genres, official website and community activity on Steem Games.">
+  <title>Merge Tower Defense | Steem Blockchain Game | Steem Games</title>
+  <meta name="application-name" content="Steem Games">
+  <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://steemgames.do2earn.dev/games/merge-tower-defense/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Steem Games">
+  <meta property="og:title" content="Merge Tower Defense | Steem Games">
+  <meta property="og:description" content="Explore Merge Tower Defense, a game on the Steem blockchain. Discover its gameplay, developer, genres, official website and community activity on Steem Games.">
+  <meta property="og:url" content="https://steemgames.do2earn.dev/games/merge-tower-defense/">
+  <meta property="og:image" content="https://steemgames.do2earn.dev/assets/images/steemgames_logo.png">
+  <meta property="og:image:alt" content="Steem Games logo">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Merge Tower Defense | Steem Games">
+  <meta name="twitter:description" content="Explore Merge Tower Defense, a game on the Steem blockchain. Discover its gameplay, developer, genres, official website and community activity on Steem Games.">
+  <meta name="twitter:image" content="https://steemgames.do2earn.dev/assets/images/steemgames_logo.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Merge Tower Defense | Steem Games","url":"https://steemgames.do2earn.dev/games/merge-tower-defense/","description":"Explore Merge Tower Defense, a game on the Steem blockchain. Discover its gameplay, developer, genres, official website and community activity on Steem Games.","isPartOf":{"@type":"WebSite","name":"Steem Games","url":"https://steemgames.do2earn.dev/"}}</script>
+  <link rel="stylesheet" href="assets/css/style.css?v=20261101-7">
+  <link rel="stylesheet" href="assets/css/preloader.css?v=20261101-2">
+  <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev"; window.SG_GAME_NAME = "Merge Tower Defense"; window.SG_GAME_URL = "https://steemgames.do2earn.dev/games/merge-tower-defense/";</script>
+  <script type="module" src="assets/js/app.js?v=20261102-2"></script>
+  <script src="assets/js/preloader.js?v=20261101-6" defer></script>
+</head>
+<body>
+
+  <div id="sg-preloader" class="sg-preloader" role="status" aria-label="Steem Games">
+    <div class="sg-preloader-inner">
+      <div class="sg-preloader-logo">
+        <img src="assets/images/steemgames_logo.webp" alt="Steem Games" width="180" height="180"
+          onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/images/steemgames_logo.png';}" loading="eager" fetchpriority="high">
+      </div>
+      <svg class="sg-preloader-ring" viewBox="0 0 100 100" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <defs><linearGradient id="sgPreloaderRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2563eb"></stop><stop offset="55%" stop-color="#0ea5e9"></stop><stop offset="100%" stop-color="#06b6d4"></stop>
+        </linearGradient></defs>
+        <circle class="sg-preloader-ring-track" cx="50" cy="50" r="46" pathLength="100"></circle>
+        <circle class="sg-preloader-ring-progress" cx="50" cy="50" r="46" pathLength="100"></circle>
+      </svg>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <button id="menuButton" class="icon-button" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav id="mainMenu" class="menu" aria-label="Main menu" hidden>
+      <a class="menu-brand" href="index.html" aria-label="Steem Games Home"><img src="assets/images/steemgames_logo.png" alt="Steem Games logo" width="72" height="72" loading="lazy"></a>
+      <a href="index.html">🏠 <span>Home</span></a>
+      <a href="faq.html">❓ <span>FAQ</span></a>
+      <a href="about.html">ℹ️ <span>About</span></a>
+      <button id="menuLoginButton" type="button"><span class="menu-auth-icon" aria-hidden="true">🔐</span><span>Login</span></button>
+      <button id="logoutButton" type="button" hidden><span class="menu-auth-icon" aria-hidden="true">🚪</span><span>Logout</span></button>
+    </nav>
+    <div id="headerAssetsComponent" class="header-assets-component"></div>
+  </header>
+  <main class="page sg-static-page">
+    <section id="gameInfoCard" class="sg-content-card sg-game-info-card" aria-live="polite">
+      <h1 class="sg-game-info-title">Merge Tower Defense</h1>
+      <p class="sg-game-about">Explore Merge Tower Defense, a game on the Steem blockchain. Discover its gameplay, developer, genres, official website and community activity on Steem Games.</p>
+      <p class="muted" id="gameInfoStatus">Loading game information…</p>
+    </section>
+  </main>
+  <div id="footerComponent"></div>
+  <dialog id="loginDialog" class="login-dialog" aria-labelledby="loginTitle">
+    <form id="loginForm" class="login-form">
+      <button class="dialog-close" type="button" id="closeLogin" aria-label="Close login">×</button>
+      <p class="eyebrow">ACCOUNT</p>
+      <h2 id="loginTitle">Login to Steem Games</h2>
+      <p class="muted">The directory is public. Login is only needed for actions such as voting.</p>
+      <label for="loginMethod">Login Method</label>
+      <select id="loginMethod" name="loginMethod">
+        <option value="keychain">Steem Keychain</option>
+        <option value="postingKey" selected>Steem Posting Key</option>
+      </select>
+      <label for="usernameInput">Steem Username</label>
+      <input id="usernameInput" name="username" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9.-]{3,32}" required>
+      <div id="postingKeyFields">
+        <label for="postingKeyInput">Posting Key</label>
+        <input id="postingKeyInput" name="postingKey" type="password" autocomplete="off" spellcheck="false">
+        <small>Your Posting Key is checked and never saved.</small>
+      </div>
+      <button id="loginButton" class="button primary" type="submit">Login</button>
+      <p id="loginFeedback" class="status" role="status" aria-live="polite"></p>
+      <a class="signup" href="https://signup.steemit.com/" target="_blank" rel="noopener noreferrer">Don't have a Steem account? Create one.</a>
+    </form>
+  </dialog>
+
+  
+<dialog id="voteDialog" class="vote-dialog" aria-labelledby="voteTitle"><form method="dialog" class="vote-form"><button class="dialog-close" type="button" id="closeVote" aria-label="Close vote dialog">×</button><h2 id="voteTitle">Vote for this game</h2><p id="voteMessage">Sign in to vote once for this game each UTC day and receive a random reward of 1–5 D2E.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button id="voteLoginButton" class="button primary" type="button">Login to Vote</button></div></form></dialog>
+<dialog id="d2eRewardsDialog" class="d2e-rewards-dialog" aria-labelledby="d2eRewardsTitle"><div class="d2e-rewards-content"><button id="closeD2ERewards" class="dialog-close" type="button" aria-label="Close rewards">×</button><h2 id="d2eRewardsTitle">D2E Rewards</h2><img class="d2e-rewards-logo" src="https://raw.githubusercontent.com/do2earn/steemgames/e171de408ee986846bf5518b8d47a0a765f3c59c/assets/images/d2e_asset_logo1.png" alt="Official D2E logo" width="112" height="112" loading="lazy"><p id="d2eRewardMessage" role="status" aria-live="polite">You received a random D2E reward for voting!</p><button id="confirmD2ERewards" class="button primary" type="button">OK</button></div></dialog>
+<dialog id="editGameDialog" class="login-dialog" aria-labelledby="editGameTitle">
+    <form id="editGameForm" class="login-form">
+      <button class="dialog-close" type="button" id="closeEditGame" aria-label="Close editor">×</button>
+      <p class="eyebrow">ADMIN TOOLS</p>
+      <h2 id="editGameTitle">⚙️ Edit Game</h2>
+      <p class="muted">Changes are saved to the shared Steem Games database.</p>
+      <div class="edit-game-fields">
+        <label for="editGameName">Game Name</label><input id="editGameName" required maxlength="100">
+        <label for="editGameLogo">Game Logo (filename or URL)</label><input id="editGameLogo">
+        <label for="editGameTag">Dedicated Tag</label><input id="editGameTag" required maxlength="100">
+        <label for="editGameDeveloper">Developer (username)</label><input id="editGameDeveloper" maxlength="100">
+        <label>Genres</label><div id="editGameGenres" class="edit-game-genres" aria-label="Select game genres"><p class="muted">Loading genres…</p></div>
+        <label for="editGameWebsite">Website URL</label><input id="editGameWebsite" type="url" maxlength="1000">
+        <label for="editGameAbout">About</label><textarea id="editGameAbout" rows="5" maxlength="10000"></textarea>
+        <label for="editGameActive">Status</label><select id="editGameActive"><option value="1">Active</option><option value="0">Inactive</option></select>
+      </div>
+      <p id="editGameFeedback" class="status" role="status" aria-live="polite"></p>
+      <div class="sg-game-info-actions">
+        <button class="sg-game-vote" id="saveGameEdit" type="submit">Save ✅</button>
+        <button class="sg-game-edit" id="cancelGameEdit" type="button">Cancel ❌</button>
+      </div>
+    </form>
+  </dialog>
+  <style>
+    .sg-game-info-card { text-align:center; min-width:0; }
+    .sg-game-info-logo { display:block; width:auto; max-width:100%; height:auto; max-height:412.5px; object-fit:contain; margin:0 auto 6px; }
+    .sg-static-page .sg-game-info-card h1.sg-game-info-title { margin:0 auto 14px; font-size:2em; line-height:1.2; letter-spacing:normal; overflow-wrap:anywhere; }
+    .sg-game-info-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:18px 0; }
+    .sg-game-info-actions a, .sg-game-info-actions button { display:inline-flex; align-items:center; justify-content:center; min-width:105px; padding:11px 18px; border:0; border-radius:9px; color:#fff; font:inherit; font-weight:800; text-decoration:none; cursor:pointer; }
+    .sg-game-play { background:#16a34a; } .sg-game-vote { background:#2563eb; }
+    .sg-game-publish { background:#16a34a; } .sg-game-share { background:#eab308; color:#172033 !important; }
+    .sg-game-edit { background:#6b7280; }
+    .sg-game-info-actions button[hidden] { display:none !important; }
+    #editGameDialog { width:min(620px, calc(100% - 24px)); max-height:90dvh; overflow:auto; border:0; border-radius:16px; padding:24px; }
+    #editGameDialog::backdrop { background:rgba(15,23,42,.62); }
+    .edit-game-fields { display:grid; gap:8px; text-align:left; }
+    .edit-game-fields input, .edit-game-fields textarea, .edit-game-fields select { width:100%; box-sizing:border-box; padding:11px; border:1px solid #cbd5e1; border-radius:8px; font:inherit; }
+    .edit-game-fields input[readonly] { background:#f1f5f9; color:#475569; }
+    .edit-game-genres { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:8px 12px; max-height:260px; overflow:auto; padding:10px; border:1px solid #cbd5e1; border-radius:9px; text-align:left; }
+    .edit-game-genre-option { display:flex; align-items:center; gap:7px; font-weight:500; }
+    .edit-game-genre-option input { width:17px; height:17px; margin:0; accent-color:#2563eb; }
+    .sg-game-info-divider { border:0; border-top:1px solid #d8dee8; margin:18px 0; }
+    .sg-game-info-stats { text-align:left; display:grid; gap:12px; font-size:1.05rem; min-width:0; }
+    .sg-game-info-stats > div { min-width:0; overflow-wrap:anywhere; }
+    .sg-game-developer { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .sg-game-tag-link { color:#2563eb; font-weight:700; text-decoration:none; text-underline-offset:3px; }
+    .sg-game-tag-link:hover { color:#1d4ed8; text-decoration:underline; }
+    .sg-game-developer img { width:38px; height:38px; border-radius:50%; object-fit:cover; }
+    .sg-game-genres { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+    .sg-game-genre { display:inline-flex; align-items:center; padding:3px 9px; border-radius:7px; background:#e0f2fe; color:#075985; font:inherit; font-size:inherit; font-weight:600; line-height:1.5; }
+    .sg-game-developer a { font-weight:800; text-decoration:none; }
+    .sg-game-about { text-align:left; overflow-wrap:anywhere; line-height:1.7; white-space:pre-line; }
+    @media (max-width:600px) {
+      .sg-static-page { width:calc(100% - 20px); padding-top:10px; padding-bottom:14px; }
+      .sg-static-page .sg-game-info-card { padding:16px 12px; border-radius:14px; }
+      .sg-game-info-logo { max-height:360px; margin-bottom:4px; }
+      .sg-static-page .sg-game-info-card h1.sg-game-info-title { font-size:2em; margin-bottom:12px; }
+      .sg-game-info-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:16px 0; }
+      .sg-game-info-actions a, .sg-game-info-actions button { min-width:0; width:100%; padding:11px 8px; font-size:.92rem; }
+      .sg-game-info-divider { margin:16px 0; }
+      .sg-game-info-stats { gap:10px; font-size:1rem; }
+      #editGameDialog { padding:18px 14px; }
+      .edit-game-genres { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    }
+    @media (max-width:360px) {
+      .sg-static-page .sg-game-info-card { padding:14px 10px; }
+      .sg-game-info-actions a, .sg-game-info-actions button { font-size:.86rem; }
+      .sg-game-genres { gap:6px; }
+    }
+  </style>
+  <script>
+    (() => {
+      const API_BASE = window.STEEM_GAMES_API_URL || 'https://steemgames.do2earn.workers.dev';
+      const card = document.getElementById('gameInfoCard');
+      const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const params = new URLSearchParams(location.search);
+      const requestedName = String(window.SG_GAME_NAME || params.get('game') || '').trim();
+      let currentGame = null;
+      let availableGenres = [];
+      const genresReady = fetch("assets/data/game-genres.json", { cache: "no-cache" })
+        .then(response => { if (!response.ok) throw new Error("GENRES_LOAD_FAILED"); return response.json(); })
+        .then(data => { availableGenres = Array.isArray(data.genres) ? data.genres : []; })
+        .catch(error => { console.error("Unable to load game genres:", error); availableGenres = []; });
+      const markPageReady = () => { document.documentElement.dataset.sgPageContentReady = 'true'; window.dispatchEvent(new Event('sgPageContentReady')); };
+      if (!requestedName) {
+        card.innerHTML = '<p role="status">No game was specified. Open this page as <code>game-info.html?game=Game%20Name</code>.</p>';
+        markPageReady();
+        return;
+      }
+      const assetUrl = value => {
+        const raw = String(value || '').trim();
+        if (!raw) return 'assets/images/game-placeholder.svg';
+        if (/^(https?:|data:image\/)/i.test(raw) || raw.startsWith('/')) return raw;
+        if (raw.includes('/')) return raw;
+        return 'assets/games-logos/' + raw;
+      };
+      const render = game => {
+        currentGame = game;
+        const name = String(game.game_name || requestedName);
+        const developer = String(game.developer || '').replace(/^@/, '').trim();
+        const genres = (Array.isArray(game.genres) ? game.genres : String(game.genres || '').split(/[|,;]/))
+          .map(genre => String(genre || '').trim()).filter(Boolean);
+        const logo = assetUrl(game.game_logo);
+        const website = String(game.website_url || '').trim();
+        const tag = String(game.tag || 'steem-games').replace(/^#/, '').trim();
+        const about = String(game.about || 'No description is available yet.');
+        const profile = developer ? 'https://steempro.com/@' + encodeURIComponent(developer) : '';
+        const publishUrl = 'https://steemit.com/submit.html?tags=' + encodeURIComponent(tag);
+        document.title = name + ' | Steem Games';
+        const gameSlug = value => String(value || '').normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');\n        const gameUrl = window.SG_GAME_URL || (location.origin + '/games/' + gameSlug(name) + '/');
+        const metaDescription = 'Explore ' + name + ', a game on the Steem blockchain. Read its description, discover its developer and genres, visit its website and view activity statistics on Steem Games.';
+        document.querySelector('meta[name="description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
+        document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('meta[property="og:url"]')?.setAttribute('content', gameUrl);
+        document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', document.title);
+        document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('link[rel="canonical"]')?.setAttribute('href', gameUrl);
+        const structuredData = document.querySelector('script[type="application/ld+json"]');
+        if (structuredData) {
+          structuredData.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: name + ' | Steem Games',
+            url: gameUrl,
+            description: metaDescription,
+            isPartOf: { '@type': 'WebSite', name: 'Steem Games', url: location.origin + '/' }
+          });
+        }
+        card.innerHTML = `
+          <img class="sg-game-info-logo" src="${esc(logo)}" alt="${esc(name)} logo" width="412" height="412" onerror="this.onerror=null;this.src='assets/images/game-placeholder.svg'" loading="eager" fetchpriority="high">
+          <h1 class="sg-game-info-title">${esc(name)}</h1>
+          <hr class="sg-game-info-divider">
+          <div class="sg-game-info-actions">
+            ${website ? '<a class="sg-game-play" href="' + esc(website) + '" target="_blank" rel="noopener noreferrer">▶️ Play</a>' : '<a class="sg-game-play" href="#" aria-disabled="true" style="opacity:.55;pointer-events:none">▶️ Play</a>'}
+            <button class="sg-game-vote" type="button" data-vote-game="${Number(game.id)}"><span class="sg-vote-check" aria-hidden="true"></span><span class="sg-vote-label">Vote</span></button>
+            <a class="sg-game-publish" href="${esc(publishUrl)}" target="_blank" rel="noopener noreferrer">📝 Publish</a>
+            <button class="sg-game-share" id="shareGameButton" type="button">⬆️ Share</button>
+            <button class="sg-game-edit" id="editGameButton" type="button" hidden>⚙️ Edit</button>
+          </div>
+          <hr class="sg-game-info-divider">
+          <div class="sg-game-info-stats">
+            <div><strong>⭐ Points:</strong> ${Math.round(Number(game.points) || 0).toLocaleString()}</div>
+            <div><strong>📄 Posts Numbers:</strong> ${Math.round(Number(game.posts) || 0).toLocaleString()}</div>
+            <div><strong>#️⃣ Dedicated Tag:</strong> <a class="sg-game-tag-link" href="https://steemx.org/created/${encodeURIComponent(tag)}" target="_blank" rel="noopener noreferrer">#${esc(tag)}</a></div>
+            <div class="sg-game-developer"><strong>👩‍💻 Developer:</strong> ${developer && profile ? '<img src="https://steemitimages.com/u/' + encodeURIComponent(developer) + '/avatar" alt="" width="38" height="38" onerror="this.style.display=\'none\'" loading="lazy"><a href="' + esc(profile) + '" target="_blank" rel="noopener noreferrer">@' + esc(developer) + '</a>' : '<span>Not specified</span>'}</div>
+            ${genres.length ? '<div class="sg-game-genres"><strong>🗂️ Genres:</strong>' + genres.map(genre => '<span class="sg-game-genre">' + esc(genre) + '</span>').join('') + '</div>' : ''}
+          </div>
+          <hr class="sg-game-info-divider">
+          <h2 style="text-align:left;margin:0 0 10px">About</h2>
+          <div class="sg-game-about">${esc(about)}</div>
+        `;
+        window.dispatchEvent(new Event('steemGamesGameInfoReady'));
+        const editButton = document.getElementById('editGameButton');
+        const syncEditVisibility = () => {
+          try {
+            const session = JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null');
+            editButton.hidden = String(session?.username || '').toLowerCase() !== 'do2earn';
+          } catch { editButton.hidden = true; }
+        };
+        syncEditVisibility();
+        window.addEventListener('steemGamesAuthChanged', syncEditVisibility);
+        document.getElementById('loginDialog')?.addEventListener('close', syncEditVisibility);
+        document.getElementById('logoutButton')?.addEventListener('click', () => setTimeout(syncEditVisibility, 0));
+        const editDialog = document.getElementById('editGameDialog');
+        const loginDialog = document.getElementById('loginDialog');
+        let pendingAdminReauth = false;
+        window.addEventListener('steemGamesAuthChanged', () => {
+          if (!pendingAdminReauth || typeof window.steemGamesAdminSignMessage !== 'function') return;
+          pendingAdminReauth = false;
+          editDialog.showModal();
+          document.getElementById('editGameFeedback').textContent = 'Posting Key verified. Your changes are still here; press Save again.';
+        });
+        loginDialog?.addEventListener('close', () => {
+          if (!pendingAdminReauth || typeof window.steemGamesAdminSignMessage === 'function') return;
+          pendingAdminReauth = false;
+          if (!editDialog.open) editDialog.showModal();
+          document.getElementById('editGameFeedback').textContent = 'Login was cancelled. Please log in with the @do2earn Posting Key before saving.';
+        });
+        const editFields = {
+          game_name: 'editGameName', game_logo: 'editGameLogo', tag: 'editGameTag',
+          developer: 'editGameDeveloper', website_url: 'editGameWebsite',
+          about: 'editGameAbout', is_active: 'editGameActive'
+        };
+        const renderGenreCheckboxes = selectedGenres => {
+          const container = document.getElementById("editGameGenres");
+          const selected = new Set(selectedGenres);
+          const options = [...availableGenres];
+          selectedGenres.forEach(genre => { if (!options.includes(genre)) options.push(genre); });
+          container.innerHTML = options.map((genre, index) => '<label class="edit-game-genre-option"><input type="checkbox" name="gameGenre" value="' + esc(genre) + '"' + (selected.has(genre) ? ' checked' : '') + '><span>' + esc(genre) + '</span></label>').join("");
+          if (!options.length) container.innerHTML = '<p class="muted">Genre list could not be loaded. Please try again.</p>';
+        };
+        const setField = (id, value) => { document.getElementById(id).value = value ?? ''; };
+        const fillEditForm = game => {
+          setField('editGameName', game.game_name); setField('editGameLogo', game.game_logo);
+          setField('editGameTag', String(game.tag || '').replace(/^#/, ''));
+          setField('editGameDeveloper', String(game.developer || '').replace(/^@/, ''));
+          setField('editGameWebsite', game.website_url);
+          setField('editGameAbout', game.about); setField('editGameActive', Number(game.is_active) === 0 ? '0' : '1');
+          const selectedGenres = (Array.isArray(game.genres) ? game.genres : String(game.genres || '').split(/[|,;]/)).map(value => String(value).trim()).filter(Boolean);
+          renderGenreCheckboxes(selectedGenres);
+          document.getElementById('editGameFeedback').textContent = '';
+        };
+        editButton.addEventListener('click', async () => {
+          if (!currentGame || editButton.hidden) return;
+          await genresReady;
+          fillEditForm(currentGame);
+          editDialog.showModal();
+        });
+        const closeEditor = () => editDialog.close();
+        document.getElementById('closeEditGame').addEventListener('click', closeEditor);
+        document.getElementById('cancelGameEdit').addEventListener('click', closeEditor);
+        document.getElementById('editGameForm').addEventListener('submit', async event => {
+          event.preventDefault();
+          const feedback = document.getElementById('editGameFeedback');
+          const saveButton = document.getElementById('saveGameEdit');
+          if (!currentGame || String(currentGame.id) === '') return;
+          const username = (() => { try { return JSON.parse(sessionStorage.getItem('steemGamesAuthSession') || 'null')?.username || ''; } catch { return ''; } })().toLowerCase();
+          if (username !== 'do2earn') { feedback.textContent = 'Only @do2earn can edit game information.'; return; }
+          if (typeof window.steemGamesAdminSignMessage !== 'function') {
+            pendingAdminReauth = true;
+            const loginMethod = document.getElementById('loginMethod');
+            const usernameInput = document.getElementById('usernameInput');
+            loginMethod.value = 'postingKey';
+            loginMethod.dispatchEvent(new Event('change'));
+            usernameInput.value = 'do2earn';
+            document.getElementById('loginFeedback').textContent = 'Your previous login did not carry the Posting Key to this page. Re-enter the @do2earn Posting Key to continue editing.';
+            editDialog.close();
+            if (!loginDialog.open) loginDialog.showModal();
+            return;
+          }
+          const fields = {};
+          for (const [key, id] of Object.entries(editFields)) fields[key] = document.getElementById(id).value;
+          fields.genres = [...document.querySelectorAll('input[name="gameGenre"]:checked')].map(input => input.value).join(' | ');
+          fields.tag = String(fields.tag || '').replace(/^#/, '').trim();
+          fields.developer = String(fields.developer || '').replace(/^@/, '').trim();
+          fields.is_active = Number(fields.is_active);
+          const timestamp = Date.now(), nonce = crypto.randomUUID();
+          const payloadHex = [...new TextEncoder().encode(JSON.stringify(fields))].map(b => b.toString(16).padStart(2, '0')).join('');
+          const message = 'Steem Games Admin Edit\nAccount: do2earn\nGame ID: ' + Number(currentGame.id) + '\nTimestamp: ' + timestamp + '\nNonce: ' + nonce + '\nPayload: ' + payloadHex;
+          saveButton.disabled = true; feedback.textContent = 'Verifying @do2earn login and saving changes…';
+          try {
+            const signature = await window.steemGamesAdminSignMessage('do2earn', message);
+            feedback.textContent = 'Saving changes…';
+            const response = await fetch(API_BASE + '/api/admin/game', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, gameId: Number(currentGame.id), fields, message, signature })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success || !result.game) throw new Error(result.error || 'SAVE_FAILED');
+            currentGame = result.game;
+            render(currentGame);
+            feedback.textContent = 'Saved successfully.';
+            setTimeout(() => { if (editDialog.open) editDialog.close(); }, 650);
+          } catch (error) {
+            feedback.textContent = error.message === 'ADMIN_SIGNATURE_INVALID' ? 'The signature could not be verified. Make sure you approved it with @do2earn.' : 'Save failed: ' + (error.message || 'Please try again.');
+          } finally { saveButton.disabled = false; }
+        });
+        document.getElementById('shareGameButton').addEventListener('click', async () => {
+          const shareData = { title: name + ' | Steem Games', text: 'Explore ' + name + ' on Steem Games', url: location.href };
+          try {
+            if (navigator.share) await navigator.share(shareData);
+            else if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(location.href);
+              const button = document.getElementById('shareGameButton');
+              button.textContent = 'Link Copied!';
+              setTimeout(() => { if (button.isConnected) button.textContent = 'Share'; }, 1800);
+            } else window.prompt('Copy this game link:', location.href);
+          } catch (error) {
+            if (error && error.name !== 'AbortError') window.prompt('Copy this game link:', location.href);
+          }
+        });
+      };
+      (async () => {
+        try {
+          const response = await fetch(API_BASE + '/api/games', { cache: 'no-store' });
+          if (!response.ok) throw new Error('API_' + response.status);
+          const data = await response.json();
+          if (!data.success || !Array.isArray(data.games)) throw new Error('INVALID_API_RESPONSE');
+          const game = data.games.find(item => String(item.game_name || '').toLowerCase() === requestedName.toLowerCase());
+          if (!game) {
+            card.innerHTML = '<p role="status">Game not found: <strong>' + esc(requestedName) + '</strong></p><p><a href="index.html#games">Back to games</a></p>';
+            return;
+          }
+          render(game);
+          const logo = card.querySelector('.sg-game-info-logo');
+          if (logo && !logo.complete) await new Promise(resolve => { logo.addEventListener('load', resolve, { once: true }); logo.addEventListener('error', resolve, { once: true }); window.setTimeout(resolve, 2500); });
+        } catch (error) {
+          console.error('Unable to load game information:', error);
+          card.innerHTML = '<p role="status">Unable to load game information. Please try again later.</p><p><a href="index.html#games">Back to games</a></p>';
+        } finally {
+          markPageReady();
+        }
+      })();
+    })();
+  </script>
+
+</body>
+</html>
