@@ -159,7 +159,19 @@
   </style>
   <script src="https://cdn.jsdelivr.net/npm/steem-keychain@latest/dist/steem-keychain.min.js" defer></script>
   <script>window.STEEM_GAMES_API_URL = "https://steemgames.do2earn.workers.dev";</script>
-  <script type="module" src="assets/js/app.js?v=20261126-3"></script>
+  <script>
+    window.setTimeout(() => {
+      const directory = document.getElementById('steemgamesComponent');
+      if (directory && directory.dataset.loadState !== 'ready' && directory.dataset.loadState !== 'error' && directory.textContent.includes('Loading Steem Games directory')) {
+        directory.textContent = window.sgAppModuleStarted
+          ? 'The Steem Games directory has not started loading. Please refresh the page.'
+          : 'The Steem Games page script could not start. Please refresh the page.';
+        directory.dataset.loadState = 'startup-timeout';
+        console.error('Steem Games directory startup watchdog: app module did not initialize or loadGames did not start.');
+      }
+    }, 15000);
+  </script>
+  <script type="module" src="assets/js/app.js?v=20261126-4"></script>
   <script src="assets/js/preloader.js?v=20261101-6" defer></script>
 
 </head>
