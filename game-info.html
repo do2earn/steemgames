@@ -169,6 +169,8 @@
       const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
       const params = new URLSearchParams(location.search);
       const requestedName = String(window.SG_GAME_NAME || params.get('game') || '').trim();
+      const normalizeGameSlug = value => String(value || '').normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const requestedSlug = normalizeGameSlug(requestedName);
       let currentGame = null;
       let availableGenres = [];
       const genresReady = fetch("assets/data/game-genres.json", { cache: "no-cache" })
@@ -372,7 +374,7 @@
           if (!response.ok) throw new Error('API_' + response.status);
           const data = await response.json();
           if (!data.success || !Array.isArray(data.games)) throw new Error('INVALID_API_RESPONSE');
-          const game = data.games.find(item => String(item.game_name || '').toLowerCase() === requestedName.toLowerCase());
+          const game = data.games.find(item => String(item.game_name || '').toLowerCase() === requestedName.toLowerCase() || normalizeGameSlug(item.game_name) === requestedSlug);
           if (!game) {
             card.innerHTML = '<p role="status">Game not found: <strong>' + esc(requestedName) + '</strong></p><p><a href="index.html#games">Back to games</a></p>';
             return;
