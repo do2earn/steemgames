@@ -198,6 +198,60 @@ def build_page(template: str, game: dict) -> tuple[str, str]:
     return page, url
 
 
+
+def inject_homepage_game_links(games: list[dict]) -> None:
+    """Add crawlable game-detail links to the homepage's second directory card."""
+    index_path = OUTPUT / "index.html"
+    if not index_path.is_file():
+        raise RuntimeError("Homepage index.html is missing from the Pages build output.")
+
+    active_games = [
+        game for game in games
+        if str(game.get("is_active", 1)).strip().lower() not in {"0", "false", "no"}
+    ]
+    items = []
+    for game in sorted(active_games, key=lambda item: str(item["game_name"]).casefold()):
+        name = str(game["game_name"]).strip()
+        slug = game["_slug"]
+        items.append(
+            '<li><a href="/games/' + html.escape(slug, quote=True) + '/">'
+            + html.escape(name) + '</a></li>'
+        )
+
+    navigation = (
+        '<nav class="sg-seo-game-links" aria-label="Steem Games information pages">'
+        '<h2>Explore Steem Games</h2>'
+        '<ul>' + "".join(items) + '</ul>'
+        '</nav>\n      '
+    )
+    style = """
+  <style id="sg-seo-game-links-style">
+    .sg-seo-game-links{margin:0 0 18px;padding:16px 18px;border:1px solid #e5e9f0;border-radius:16px;background:#fff}
+    .sg-seo-game-links h2{margin:0 0 12px;font-size:1.1rem;line-height:1.35;color:#172033}
+    .sg-seo-game-links ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px 18px;margin:0;padding:0;list-style:none}
+    .sg-seo-game-links a{color:#2563eb;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+    .sg-seo-game-links a:hover{text-decoration-thickness:2px}
+  </style>
+"""
+    document = index_path.read_text(encoding="utf-8")
+    if 'id="sg-seo-game-links"' in document:
+        raise RuntimeError("Homepage SEO game links already exist in the source build output.")
+    marker = '<div id="steemgamesComponent"'
+    if marker not in document:
+        raise RuntimeError("Could not find the homepage game directory insertion point.")
+    if "</head>" not in document:
+        raise RuntimeError("Homepage head closing tag is missing.")
+    document = document.replace("</head>", style + "</head>", 1)
+    navigation = navigation.replace(
+        '<nav class="sg-seo-game-links"',
+        '<nav id="sg-seo-game-links" class="sg-seo-game-links"',
+        1,
+    )
+    document = document.replace(marker, navigation + marker, 1)
+    index_path.write_text(document, encoding="utf-8")
+    print(f"Added {len(active_games)} crawlable game-detail links to the homepage directory card.")
+
+
 def update_sitemap(games: list[dict]) -> None:
     sitemap_path = OUTPUT / "sitemap.xml"
     namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -249,6 +303,7 @@ def main() -> int:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(page, encoding="utf-8")
 
+    inject_homepage_game_links(games)
     update_sitemap(games)
     print(f"Generated {len(games)} SEO-ready game pages in the Pages build artifact.")
     print("Generated games/ files are build output only and are not committed to the source repository.")
