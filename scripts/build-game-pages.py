@@ -207,7 +207,8 @@ def inject_homepage_game_links(games: list[dict]) -> None:
 
     active_games = [
         game for game in games
-        if str(game.get("is_active", 1)).strip().lower() not in {"0", "false", "no"}
+        if game.get("is_active", 1) is not None
+        and str(game.get("is_active", 1)).strip().lower() not in {"0", "false", "no"}
     ]
     items = []
     for game in sorted(active_games, key=lambda item: str(item["game_name"]).casefold()):
