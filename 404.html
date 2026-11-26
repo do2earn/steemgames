@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <title>Game page not found | Steem Games</title>
+  <style>
+    :root{color-scheme:light dark;font-family:system-ui,sans-serif}
+    body{min-height:100vh;margin:0;display:grid;place-items:center;background:#101827;color:#f8fafc}
+    main{max-width:34rem;padding:2rem;text-align:center}
+    p{line-height:1.6;color:#cbd5e1}
+    a{color:#7dd3fc}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Opening game information…</h1>
+    <p>This game page is being located in the Steem Games directory.</p>
+    <p><a href="/">Return to Steem Games</a></p>
+  </main>
+  <script>
+    (function () {
+      var path = window.location.pathname.replace(/\\/+$/, '');
+      var match = path.match(/^\\/games\\/([^/]+)$/i);
+      if (!match) return;
+      var slug = match[1];
+      window.location.replace('/game-info.html?game=' + encodeURIComponent(slug));
+    })();
+  </script>
+</body>
+</html>
