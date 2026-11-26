@@ -1,4 +1,6 @@
 import {verifyPostingKey,verifyKeychainLogin} from './steem-auth.js?v=20261030-1';
+window.sgAppModuleStarted=true;
+document.documentElement.dataset.sgAppModule='started';
 let bufferPromise;
 async function getBuffer(){
  if(globalThis.Buffer)return globalThis.Buffer;
@@ -50,7 +52,75 @@ function applyVoteButtonStates(){
 }
 function scheduleVoteStatusRefresh(){const now=new Date();const nextUtcMidnight=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1)+1000;window.setTimeout(async()=>{await refreshVoteStatuses();scheduleVoteStatusRefresh()},Math.max(1000,nextUtcMidnight-Date.now()))}
 function renderRankings(){const el=$('rankingsList');if(!el)return;const top=[...state.games].sort((a,b)=>(Number(b.points)||0)-(Number(a.points)||0)).slice(0,6);el.innerHTML=top.length?top.map((g,i)=>'<div class="ranking-item"><span class="rank-number">#'+(i+1)+'</span><div><strong>'+esc(g.game_name)+'</strong><small>'+Number(g.points||0).toFixed(1)+' points · '+Number(g.votes||0)+' votes</small></div></div>').join(''):'<p class="muted">No game data is available yet.</p>'}
-async function loadGames(){const component=$('steemgamesComponent');try{const response=await fetch('steemgames.html',{cache:'no-cache'});if(!response.ok)throw Error('COMPONENT_'+response.status);component.innerHTML=await response.text();$('gameSearch').addEventListener('input',renderGames);$('closeGameInfo').addEventListener('click',()=>$('gameInfoDialog').close());$('gamesTableBody').addEventListener('click',event=>{const vote=event.target.closest('[data-vote-game]');if(vote){requestVote(Number(vote.dataset.voteGame));return}const info=event.target.closest('[data-info-game]');if(info){const game=state.games.find(g=>Number(g.id)===Number(info.dataset.infoGame));if(game){$('gameInfoTitle').textContent=game.game_name||'Game information';$('gameInfoDeveloper').textContent='Developer: '+(game.developer||'Community');$('gameInfoAbout').textContent=game.about||'No description is available yet.';$('gameInfoTag').textContent=game.tag?'Dedicated tag: #'+game.tag:'';const link=$('gameInfoWebsite');if(game.website_url){link.href=game.website_url;link.hidden=false}else link.hidden=true;$('gameInfoDialog').showModal()}}});if(!API_BASE){$('gamesStatus').textContent='Game data API is not configured yet.';state.games=[];renderGames();return}const controller=new AbortController();const requestTimeout=window.setTimeout(()=>controller.abort(),20000);let dataResponse;try{dataResponse=await fetch(API_BASE+'/api/games',{cache:'no-store',signal:controller.signal})}finally{window.clearTimeout(requestTimeout)}if(!dataResponse.ok)throw Error('API_'+dataResponse.status);const data=await dataResponse.json();if(!data.success||!Array.isArray(data.games))throw Error('INVALID_API_RESPONSE');renderPointsUpdatedAt(data.last_points_updated_at);state.games=data.games.filter(g=>Number(g.is_active)!==0);renderGames();$('gamesStatus').textContent=state.games.length?'Showing '+state.games.length+' active games.':'No active games found.'}catch(error){if(component)component.textContent='Unable to load the Steem Games directory. Please refresh the page.';console.error(error)}}
+async function fetchDirectoryComponent(){
+ const url=new URL('steemgames.html',document.baseURI);
+ let lastError;
+ for(let attempt=0;attempt<2;attempt++){
+  const controller=new AbortController();
+  const timer=window.setTimeout(()=>controller.abort(),10000);
+  try{
+   if(attempt)url.searchParams.set('_retry',String(Date.now()));
+   const response=await fetch(url.href,{cache:'no-store',signal:controller.signal});
+   if(!response.ok)throw Error('COMPONENT_HTTP_'+response.status);
+   const markup=await response.text();
+   if(!markup.trim())throw Error('COMPONENT_EMPTY');
+   return markup;
+  }catch(error){lastError=error}
+  finally{window.clearTimeout(timer)}
+ }
+ throw lastError||Error('COMPONENT_UNAVAILABLE');
+}
+async function loadGames(){
+ const component=$('steemgamesComponent');
+ if(!component)return;
+ component.dataset.loadState='loading';
+ try{
+  component.innerHTML=await fetchDirectoryComponent();
+  component.dataset.loadState='component-loaded';
+  const search=$('gameSearch'),closeInfo=$('closeGameInfo'),tableBody=$('gamesTableBody');
+  if(!search||!closeInfo||!tableBody)throw Error('COMPONENT_MARKUP_INCOMPLETE');
+  search.addEventListener('input',renderGames);
+  closeInfo.addEventListener('click',()=>$('gameInfoDialog').close());
+  tableBody.addEventListener('click',event=>{
+   const vote=event.target.closest('[data-vote-game]');
+   if(vote){requestVote(Number(vote.dataset.voteGame));return}
+   const info=event.target.closest('[data-info-game]');
+   if(info){
+    const game=state.games.find(g=>Number(g.id)===Number(info.dataset.infoGame));
+    if(game){
+     $('gameInfoTitle').textContent=game.game_name||'Game information';
+     $('gameInfoDeveloper').textContent='Developer: '+(game.developer||'Community');
+     $('gameInfoAbout').textContent=game.about||'No description is available yet.';
+     $('gameInfoTag').textContent=game.tag?'Dedicated tag: #'+game.tag:'';
+     const link=$('gameInfoWebsite');
+     if(game.website_url){link.href=game.website_url;link.hidden=false}else link.hidden=true;
+     $('gameInfoDialog').showModal();
+    }
+   }
+  });
+  if(!API_BASE){$('gamesStatus').textContent='Game data API is not configured yet.';state.games=[];renderGames();return}
+  const controller=new AbortController();
+  const requestTimeout=window.setTimeout(()=>controller.abort(),20000);
+  let dataResponse;
+  try{dataResponse=await fetch(API_BASE+'/api/games',{cache:'no-store',signal:controller.signal})}
+  finally{window.clearTimeout(requestTimeout)}
+  if(!dataResponse.ok)throw Error('API_'+dataResponse.status);
+  const data=await dataResponse.json();
+  if(!data.success||!Array.isArray(data.games))throw Error('INVALID_API_RESPONSE');
+  renderPointsUpdatedAt(data.last_points_updated_at);
+  state.games=data.games.filter(g=>Number(g.is_active)!==0);
+  renderGames();
+  $('gamesStatus').textContent=state.games.length?'Showing '+state.games.length+' active games.':'No active games found.';
+  component.dataset.loadState='ready';
+ }catch(error){
+  if(component){
+   component.dataset.loadState='error';
+   const message=error?.name==='AbortError'?'The Steem Games directory request timed out. Please refresh the page.':'Unable to load the Steem Games directory ('+(error?.message||'unknown error')+'). Please refresh the page.';
+   component.textContent=message;
+  }
+  console.error('Steem Games directory loading failed:',error);
+ }
+}
 function requestVote(gameId){if(state.username&&state.votedGameIds.has(Number(gameId)))return;state.pendingVoteGame=gameId;if(!state.username){$('voteDialog').showModal();return}if(!state.postingPrivateKey&&typeof window.steem_keychain?.requestSignBuffer!=='function'){if($('usernameInput'))$('usernameInput').value=state.username;if($('loginMethod')){$('loginMethod').value='postingKey';updateMethod()}$('loginFeedback').textContent='Please re-enter your Posting Key to authorize this vote.';openLogin();return}submitVote(gameId)}
 async function signVoteMessage(username,message){if(state.postingPrivateKey){const Buffer=await getBuffer();const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(message));return state.postingPrivateKey.sign(Buffer.from(digest)).toString()}if(typeof window.steem_keychain?.requestSignBuffer==='function'){return new Promise((resolve,reject)=>{let settled=false;const finish=(fn,value)=>{if(settled)return;settled=true;fn(value)};try{window.steem_keychain.requestSignBuffer(username,message,'Posting',response=>{if(response?.success&&response?.result)return finish(resolve,response.result);finish(reject,Error(response?.message||response?.error||'VOTE_SIGNATURE_REJECTED'))})}catch(error){finish(reject,error)}})}throw Error('VOTE_SIGNER_UNAVAILABLE')}
 async function submitVote(gameId){if(!state.username||!Number.isInteger(Number(gameId)))return;const buttons=[...document.querySelectorAll('[data-vote-game="'+Number(gameId)+'"]')];buttons.forEach(b=>{b.disabled=true;b.innerHTML='<span class="sg-vote-label">Voting…</span>'});try{const timestamp=Date.now(),nonce=crypto.randomUUID(),message='Steem Games Vote\nAccount: '+state.username+'\nGame ID: '+Number(gameId)+'\nTimestamp: '+timestamp+'\nNonce: '+nonce;const signature=await signVoteMessage(state.username,message);const response=await fetch(API_BASE+'/api/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:state.username,gameId:Number(gameId),message,signature})});const result=await response.json();if(response.status===409||result.error==='ALREADY_VOTED_TODAY')throw Error('ALREADY_VOTED_TODAY');if(!response.ok||!result.success)throw Error(result.error||'VOTE_FAILED');state.pendingVoteGame=null;state.votedGameIds.add(Number(gameId));const game=state.games.find(g=>Number(g.id)===Number(gameId));if(game&&result.game){game.votes=Number(result.game.votes)||0;game.points=Number(result.game.points)||game.points;renderGames()}await refreshHeaderAssets();$('d2eRewardMessage').textContent='Congratulations! You received '+Number(result.reward)+' D2E for voting!';if(!$('d2eRewardsDialog').open)$('d2eRewardsDialog').showModal()}catch(error){if(error.message==='ALREADY_VOTED_TODAY'){state.votedGameIds.add(Number(gameId));applyVoteButtonStates();alert('You have already voted for this game today. You can vote again after 00:00 UTC.');}else if(error.message==='VOTE_SIGNATURE_INVALID')alert('Your vote authorization could not be verified. Please log in again.');else alert('Vote failed: '+(error.message||'Please try again.'))}finally{state.pendingVoteGame=null;buttons.forEach(b=>{if(b.isConnected){const voted=state.username&&state.votedGameIds.has(Number(gameId));setVoteButtonState(b,Boolean(voted))}})}}
