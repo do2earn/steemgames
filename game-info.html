@@ -59,6 +59,8 @@
   </header>
   <main class="page sg-static-page">
     <section id="gameInfoCard" class="sg-content-card sg-game-info-card" aria-live="polite">
+      <h1 class="sg-game-info-title">Steem Blockchain Game Details</h1>
+      <p class="sg-game-about">Explore games built on the Steem blockchain. Each game page provides its description, developer, genres, dedicated community tag, website link and available activity statistics.</p>
       <p class="muted" id="gameInfoStatus">Loading game information…</p>
     </section>
   </main>
@@ -199,10 +201,26 @@
         const profile = developer ? 'https://steempro.com/@' + encodeURIComponent(developer) : '';
         const publishUrl = 'https://steemit.com/submit.html?tags=' + encodeURIComponent(tag);
         document.title = name + ' | Steem Games';
-        const metaDescription = 'Explore ' + name + ', a Steem Game, with developer information, genres, links and statistics on Steem Games.';
+        const gameUrl = location.origin + location.pathname + '?game=' + encodeURIComponent(name);
+        const metaDescription = 'Explore ' + name + ', a game on the Steem blockchain. Read its description, discover its developer and genres, visit its website and view activity statistics on Steem Games.';
         document.querySelector('meta[name="description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
         document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('meta[property="og:url"]')?.setAttribute('content', gameUrl);
+        document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', document.title);
         document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaDescription);
+        document.querySelector('link[rel="canonical"]')?.setAttribute('href', gameUrl);
+        const structuredData = document.querySelector('script[type="application/ld+json"]');
+        if (structuredData) {
+          structuredData.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: name + ' | Steem Games',
+            url: gameUrl,
+            description: metaDescription,
+            isPartOf: { '@type': 'WebSite', name: 'Steem Games', url: location.origin + '/' }
+          });
+        }
         card.innerHTML = `
           <img class="sg-game-info-logo" src="${esc(logo)}" alt="${esc(name)} logo" width="412" height="412" onerror="this.onerror=null;this.src='assets/images/game-placeholder.svg'" loading="eager" fetchpriority="high">
           <h1 class="sg-game-info-title">${esc(name)}</h1>
