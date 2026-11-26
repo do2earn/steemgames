@@ -67,7 +67,7 @@ const makeStaticCard = (game, gameUrl) => {
   const profile = developer ? "https://steempro.com/@" + encodeURIComponent(developer) : "";
   const publishUrl = "https://steemit.com/submit.html?tags=" + encodeURIComponent(tag);
   return '<section id="gameInfoCard" class="sg-content-card sg-game-info-card" aria-live="polite">' +
-    '<img class="sg-game-info-logo" src="' + escapeHtml(logo) + '" alt="' + escapeHtml(name) + ' logo" width="412" height="412" loading="eager" fetchpriority="high" onerror="this.onerror=null;this.src=\\'assets/images/game-placeholder.svg\\'">' +
+    '<img class="sg-game-info-logo" src="' + escapeHtml(logo) + '" alt="' + escapeHtml(name) + ' logo" width="412" height="412" loading="eager" fetchpriority="high" onerror="this.onerror=null;this.src=\'assets/images/game-placeholder.svg\'">' +
     '<h1 class="sg-game-info-title">' + escapeHtml(name) + '</h1>' +
     '<hr class="sg-game-info-divider">' +
     '<div class="sg-game-info-actions">' +
