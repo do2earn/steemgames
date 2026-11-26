@@ -376,15 +376,21 @@
           if (!data.success || !Array.isArray(data.games)) throw new Error('INVALID_API_RESPONSE');
           const game = data.games.find(item => String(item.game_name || '').toLowerCase() === requestedName.toLowerCase() || normalizeGameSlug(item.game_name) === requestedSlug);
           if (!game) {
-            card.innerHTML = '<p role="status">Game not found: <strong>' + esc(requestedName) + '</strong></p><p><a href="index.html#games">Back to games</a></p>';
+            const notice = document.createElement('p');
+            notice.className = 'muted';
+            notice.textContent = 'Live actions are unavailable because this game is not currently listed as active.';
+            card.append(notice);
             return;
           }
           render(game);
           const logo = card.querySelector('.sg-game-info-logo');
           if (logo && !logo.complete) await new Promise(resolve => { logo.addEventListener('load', resolve, { once: true }); logo.addEventListener('error', resolve, { once: true }); window.setTimeout(resolve, 2500); });
         } catch (error) {
-          console.error('Unable to load game information:', error);
-          card.innerHTML = '<p role="status">Unable to load game information. Please try again later.</p><p><a href="index.html#games">Back to games</a></p>';
+          console.error('Unable to load live game information:', error);
+          const notice = document.createElement('p');
+          notice.className = 'muted';
+          notice.textContent = 'Live actions are temporarily unavailable. The published game information is still shown above.';
+          card.append(notice);
         } finally {
           markPageReady();
         }
