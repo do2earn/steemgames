@@ -44,7 +44,7 @@
     for(const term of [...new Set(candidates)].sort((a,b)=>b.length-a.length)){
       if(!term)continue;
       const token="SGKEEP"+terms.length+"TOKEN";
-      const escaped=term.replace(/[|\\{}()[\]^$+*?.]/g,"\\  const randomItem = list => list[Math.floor(Math.random() * list.length)];");
+      const escaped=term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
       output=output.replace(new RegExp(escaped,"gi"),token);
       if(output.includes(token))terms.push({token,term});
     }
