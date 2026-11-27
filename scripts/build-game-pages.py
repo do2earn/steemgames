@@ -226,6 +226,16 @@ def update_sitemap(games: list[dict]) -> None:
     )
 
 
+def ignore_build_files(directory: str, names: list[str]) -> set[str]:
+    """Exclude repository/build internals without pruning nested app assets."""
+    ignored = {
+        ".git", ".github", ".vscode", "__pycache__", "node_modules",
+    }
+    if Path(directory).resolve() == ROOT:
+        ignored.update({"scripts", "dist", "games"})
+    return {name for name in names if name in ignored}
+
+
 def main() -> int:
     if not TEMPLATE.is_file():
         raise RuntimeError("Required template game-info.html is missing.")
@@ -236,10 +246,7 @@ def main() -> int:
     shutil.copytree(
         ROOT,
         OUTPUT,
-        ignore=shutil.ignore_patterns(
-            ".git", ".github", ".vscode", "__pycache__", "node_modules",
-            "scripts", "dist", "games",
-        ),
+        ignore=ignore_build_files,
     )
 
     (OUTPUT / ".nojekyll").write_text("", encoding="utf-8")
