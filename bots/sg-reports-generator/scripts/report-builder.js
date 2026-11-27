@@ -439,6 +439,7 @@
     const introSecond = compactReport ? "Developers can invite their communities to vote for their games." : "Game developers can invite their communities to vote for their games on " + sgLink + " to help improve their rankings.";
     const postsChart = buildPostsChart(games, compactReport);
     const todayGame = buildTodayGame(games, compactReport);
+    const communitySupportCard = "<div style='border:2px solid #2563eb;border-radius:12px;background:#eaf4ff;padding:16px 18px;margin:10px 0 18px;color:#172033;'><h2 style='margin:0 0 12px;text-align:left;color:#1d4ed8;font-size:20px;font-weight:700;line-height:1.3;'>👥 Community Support</h2><p style='margin:0 0 12px;text-align:left;line-height:1.7;'>10% of the author rewards from this daily report is allocated to the curators of &quot;Steem Alliance&quot; community;</p><p style='margin:0 0 12px;text-align:left;line-height:1.8;'>👤 @nusuranur: <strong>5% Beneficiaries</strong><br>👤 @alsarzilsiam: <strong>5% Beneficiaries</strong></p><p style='margin:0 0 12px;text-align:left;line-height:1.7;'>We invite all Steem curation teams to review the daily reports from the Steem Games website and, if they wish, to support them by including these reports in their curation lists;</p><p style='margin:0 0 12px;text-align:left;line-height:1.7;'>🗒️<strong><a href='/created/sg-dailyreport' target='_blank' rel='noopener noreferrer' style='color:#1d4ed8;text-decoration:underline;'>Daily Reports of Steem Games Website</a></strong></p><p style='margin:0;text-align:left;line-height:1.7;'>CC: @ahsansharif @dasudi @m-fdo @adeljose @max-pro @oswaldocuarta @lhorgic @uzma4882 @mvchacin @ruthjoe</p></div>";
     const html = [
       "![Image cover]()",
       "",
@@ -462,6 +463,7 @@
       "",
       todayGame,
       "",
+      language==="en" ? communitySupportCard :
       language==="uk" ? "<div style='border:3px solid #0057b8;border-radius:12px;background:#fff4b8;padding:16px 18px;margin:10px 0 18px;color:#172033;text-align:center;'><h2 style='margin:0 0 12px;font-size:22px;'>🇺🇦 We Stand with Ukraine.</h2><img src='https://raw.githubusercontent.com/do2earn/steemgames/20f7ae6291974091c0fcebe6c9d8b4ef72ef3d52/assets/images/we-stand-with-ukraine.png' alt='We Stand with Ukraine' style='display:block;width:100%;max-width:520px;height:auto;margin:0 auto 12px;'><p style='margin:0;font-weight:700;line-height:1.7;'>10% of the author rewards from this daily report is allocated to curator profile of “Ukraine on Steem” community (@ukraine-steem).</p></div>" :
       language==="bn" ? "<div style='border:3px solid #dc2626;border-radius:12px;background:#e5f4d7;padding:16px 18px;margin:10px 0 18px;color:#172033;'><h2 style='margin:0 0 12px;font-size:20px;'>🤝 Community Support</h2><p style='margin:0;font-weight:700;line-height:1.7;'>10% of the author rewards from this daily report is allocated to curator profile of “আমার বাংলা ব্লগ” community (@amarbanglablog).</p></div>" :
       language==="es" ? "<div style='border:3px solid #2563eb;border-radius:12px;background:#dbeafe;padding:16px 18px;margin:10px 0 18px;color:#172033;'><h2 style='margin:0 0 12px;font-size:20px;'>🤝 Community Support</h2><p style='margin:0;font-weight:700;line-height:1.7;'>10% of the author rewards from this daily report is allocated to curator profile of “Comunidad Latina” community (@cotina).</p></div>" :
@@ -474,7 +476,7 @@
       "<p style='margin:8px 0 0;text-align:center;color:#667085;font-size:11px;line-height:1.6;'>Published by <a href='https://do2earn.dev' target='_blank' rel='noopener noreferrer'>Do2Earn</a> (@do2earn)<br>© <a href='" + SITE_BASE + "' target='_blank' rel='noopener noreferrer'>Steem Games</a> Daily Report</p>"
     ].join("\n");
 
-    return {title,html,tags:tags.map(tag=>"#"+tag).join(" "),summary:{games:games.length,posts:totals.posts,votes:totals.votes,points:totals.points,beneficiaries:selectedDeveloper ? 1 : 0}};
+    return {title,html,tags:tags.map(tag=>"#"+tag).join(" "),summary:{games:games.length,posts:totals.posts,votes:totals.votes,points:totals.points,beneficiaries:language==="en" ? 2 : (selectedDeveloper ? 1 : 0)}};
   }
 
   async function fetchGames() {
