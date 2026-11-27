@@ -481,7 +481,7 @@
     const response = await fetch(API_BASE + "/api/games", {cache:"no-store"});
     if (!response.ok) throw new Error("SG database API returned HTTP " + response.status + ".");
     const data = await response.json();
-    if (!data?.success || !Array.isArray(data.games)) throw new Error("The SG database returned an invalid game list.");
+    if (!Array.isArray(data?.games)) throw new Error("The SG database returned an invalid game list.");
     const games = data.games.filter(game => Number(game.is_active) !== 0);
     if (!games.length) throw new Error("No active games were found in the SG database.");
     return {games,lastUpdated:data.last_points_updated_at || null};
@@ -626,4 +626,7 @@
   $("copyTitleBtn").addEventListener("click",() => copyTextBox(titleBox,"Report title"));
   $("copyEditorBtn").addEventListener("click",() => copyTextBox(editor,"Report content"));
   $("copyTagsBtn").addEventListener("click",() => copyTextBox(tagsBox,"Report tags"));
+  window.sgReportsBuilderReady = true;
+  reportStatus.textContent = "Generator ready. Press Generate Daily Report to begin.";
+  reportStatus.className = "status ok";
 })();
