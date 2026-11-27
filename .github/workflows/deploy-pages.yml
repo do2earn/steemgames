@@ -29,6 +29,9 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Validate SG Reports Generator JavaScript
+        run: node --check bots/sg-reports-generator/scripts/report-builder.js
+
       - name: Generate SEO-ready game pages
         env:
           STEEM_GAMES_API_URL: https://steemgames.do2earn.workers.dev
